@@ -221,6 +221,30 @@ nav button[aria-current=page],.fl .on,.fl .on:hover:not(:disabled){background:#a
 .toast{background:linear-gradient(180deg,#b4b4bd,#8a8a94);color:#0a0a0c;box-shadow:0 0 30px -8px rgba(170,170,185,.5)}
 .ch3d .tip b{color:#d6d6dc}.pill{color:#c8c8d0;border-color:rgba(255,255,255,.2)}
 :focus-visible{outline-color:#b4b4bd}
+
+/* ===== v2 ===== */
+.toast{left:auto;right:16px;top:calc(16px + env(safe-area-inset-top));bottom:auto;transform:none;border-radius:12px;animation:tin .3s ease}@keyframes tin{from{opacity:0;transform:translateX(30px)}}
+#ld{position:fixed;inset:0;z-index:20;background:rgba(5,4,12,.92);display:grid;place-content:center;justify-items:center;gap:14px;font-weight:650;transition:opacity .25s}#ld.out{opacity:0;pointer-events:none}
+#ld i{width:34px;height:34px;border-radius:50%;border:3px solid #333;border-top-color:#ec4899;animation:sp .7s linear infinite}@keyframes sp{to{transform:rotate(1turn)}}
+.lc{width:100%;height:auto}.lc text{fill:#9a9aa8;font-size:11px}
+.pi2{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-top:10px}.pi2 span{font-size:13px;word-break:break-all}
+.g3{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px}.g3 .box{margin:0}@media(min-width:800px){.g3{grid-template-columns:repeat(4,1fr)}}
+.row2{display:flex;gap:8px;flex-wrap:wrap}.row2 input{flex:1 1 140px;margin:0}
+input[type=number]{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:12px;padding:12px;font:inherit;margin:8px 0}
+.su{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--ln)}.sr{display:flex;align-items:center;gap:10px;min-width:150px}
+.pp.s{width:36px;height:36px;border-radius:50%;object-fit:cover}.sv{flex:1 0 100%;padding:10px 12px;border:1px solid var(--ln);border-radius:12px;font-size:13px}
+#md{position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.75);display:grid;place-items:center;padding:14px}.mp{width:min(520px,100%);max-height:92vh;overflow:auto;background:#0e0c18;border:1px solid var(--ln);border-radius:18px;padding:18px}
+.chips{display:flex;gap:8px;margin:8px 0 14px;flex-wrap:wrap}.tg2{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;margin-bottom:14px}
+.tm,.dy{background:none;border:1px solid var(--ln);color:#fff;border-radius:10px;padding:9px 6px;cursor:pointer}.tm:disabled{opacity:.3;cursor:not-allowed;text-decoration:line-through}.tm.sel,.dy.sel{background:#ec4899;border-color:#ec4899;color:#fff}
+.gcard{position:relative;max-width:460px;margin:0 auto 18px;padding:22px;border-radius:20px;background:linear-gradient(135deg,#ec4899,#7c3aed 70%,#312e81);box-shadow:0 20px 50px -20px #ec4899}
+.gcard .t{display:flex;justify-content:space-between;font-weight:800;letter-spacing:.12em;font-size:12px}.gcard .chip2{width:42px;height:30px;border-radius:7px;background:linear-gradient(135deg,#fde68a,#f59e0b);margin:22px 0 12px}
+.gcard input{background:rgba(0,0,0,.35);text-align:center;letter-spacing:.08em;font-weight:700}
+#fx2{position:fixed;inset:0;z-index:25;pointer-events:none;display:grid;place-items:center}#fx2 b{font-size:clamp(44px,14vw,96px);animation:pop 1.6s ease forwards;color:#fff;text-shadow:0 0 40px #ec4899}@keyframes pop{0%{transform:scale(.2);opacity:0}25%{transform:scale(1.15);opacity:1}80%{opacity:1}100%{transform:translateY(-60px) scale(1);opacity:0}}
+#fx2 i{position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:2px;animation:bst 1.4s ease-out forwards}@keyframes bst{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+#app .fl{display:flex;gap:4px;padding:5px;border:1px solid var(--ln);border-radius:14px;background:rgba(0,0,0,.4);overflow-x:auto}
+#app .fl .b{flex:1 0 auto;border:0;background:none;box-shadow:none;border-radius:10px;color:var(--dim)}#app .fl .b:hover:not(:disabled){color:#fff;background:rgba(255,255,255,.08);transform:none;box-shadow:none}
+#app .fl .b.on,#app .fl .b.on:hover{background:#ec4899;color:#fff}
+.lgn{max-width:420px;margin:8vh auto;text-align:center;padding:30px 20px}
 </style>
 </head>
 <body>
@@ -241,7 +265,7 @@ const S={me:null,tab:"home",start:null,dur:60,taken:{},busy:false,f:"a",notif:tr
 
 /* ===== Network (Bearer token on /api/site routes) ===== */
 const tok=()=>{try{return localStorage.getItem("spyaj_t")||""}catch{return""}},setTok=t=>{try{t?localStorage.setItem("spyaj_t",t):localStorage.removeItem("spyaj_t")}catch{}};
-{const m=location.hash.match(/[#&]t=([\w.-]+)/);if(m){setTok(m[1]);history.replaceState(null,"",location.pathname)}}
+{const m=location.hash.match(/[#&]t=([\w.-]+)/);if(m){setTok(m[1]);S.tab0=1;history.replaceState(null,"",location.pathname)}}
 async function api(path,body){
   if(!CONFIG.API_BASE)return{ok:false,status:0,data:{error:"API not configured: set CONFIG.API_BASE"}};
   try{const r=await fetch((path.startsWith(A+"/")?CONFIG.SITE_BASE:CONFIG.API_BASE)+path,{method:body?"POST":"GET",headers:{...(body?{"Content-Type":"application/json"}:{}),...(tok()&&path.startsWith(A)?{Authorization:"Bearer "+tok()}:{})},body:body?JSON.stringify(body):undefined});
@@ -294,7 +318,7 @@ function board(){
   if(!L.length)return flt+`<div class="box">${none("No ranked players yet.")}</div>`;
   const pc=(r,i)=>`<div class="box pc p${i}${r.name===me?" me":""}"><span class="av">${ini(r.name)}</span><b>#${i+1} ${esc(r.name)}</b><p class="dim">${+r.count||0} caught</p><b>${fmt(r.value)}</b></div>`;
   return flt+(L.length>=3?`<div class="pod">${[1,0,2].map(i=>pc(L[i],i)).join("")}</div>`:"")
-  +`<div class="box sx"><table><thead><tr><th>#</th><th>Player</th><th>Caught</th><th>Total value</th></tr></thead><tbody>${L.slice(0,10).map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+1}</td><td><span class="av">${ini(r.name)}</span> ${esc(r.name)}</td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`}
+  +`<div class="box sx"><table><thead><tr><th>#</th><th>Player</th><th>Caught</th><th>Total value</th></tr></thead><tbody>${L.slice(0,10).map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+1}</td><td><span class="av">${ini(r.name)}</span> ${esc(r.name)}<br><span class="dim">${esc(r.discord||"")} ${esc(r.id||"")}</span></td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`}
 function slots(){
   let cells="";const f=first();
   for(let i=0;i<count();i++){const c=f+i,t=S.taken[c]??0,ms=c*CELL,d=new Date(ms),full=t>=CONFIG.SEATS;
@@ -339,11 +363,11 @@ const legal=()=>{const[t,sec]=LEGAL[S.tab];return`<h1 class="sm">${t}</h1><div c
 const TABS=[["dash","Dashboard"],["slots","Slots"],["buy","Buy"],["gift","Giftcard"],["stats","Stats"],["board","Leaderboard"],["settings","Settings"]];
 const menuHtml=()=>{const all=[["home","Home"],...TABS,...(S.me?.user?.owner?[["owner","Owner"]]:[])];return`<div class="mn" id="mn" role="menu" hidden>`+all.map(([id,n])=>{const lk=!S.me&&!["home","stats"].includes(id);return`<button role="menuitem" data-act="mtab" data-t="${id}"${S.tab===id?' aria-current="page"':""}${lk?' class="lk"':""}>${n}${lk?'<span class="dim">Login</span>':""}</button>`}).join("")+`<hr>`+(S.me?`<button data-act="logout">Log out</button>`:`<button data-act="login">Log in with Discord</button>`)+`</div>`};
 function render(){
-  const V={home,stats,buy,board,slots,gift,settings,dash,owner:()=>S.me?.user?.owner?owner():home(),legal,terms:legal,privacy:legal,refund:legal};
+  const V={home,stats,buy,board,slots,gift:gift2,settings,dash,login:loginView,owner:()=>S.me?.user?.owner?owner():home(),legal,terms:legal,privacy:legal,refund:legal};
   if(!S.me&&["buy","board","slots","gift","settings","dash","owner"].includes(S.tab))S.tab="home";
-  $("#app").innerHTML=`${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><span class="hl"><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button><a class="ic" href="https://discord.gg/spyhub" target="_blank" rel="noopener" aria-label="Join our Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg></a></span><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span>`:'<button class="b sm" data-act="login">Login</button>'}<button class="ic" data-act="menu" aria-label="Menu" aria-expanded="false" aria-haspopup="true"><svg class="bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></span>${menuHtml()}</header>
+  $("#app").innerHTML=`${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><span class="hl"><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button></span><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span>`:'<button class="b sm" data-act="login">Login</button>'}<button class="ic" data-act="menu" aria-label="Menu" aria-expanded="false" aria-haspopup="true"><svg class="bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></span>${menuHtml()}</header>
   <main>${S.tab!=="home"&&!S.me?'<button class="b sm back" data-act="tab" data-t="home">← Back</button>':""}${V[S.tab]()}</main>
-  <footer><span>© SpyHub AJ</span>${[["legal","Legal Notice"],["terms","Terms of Service"],["privacy","Privacy Policy"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
+  <footer><span>© SpyHub AJ</span>${[["terms","Terms of Service"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
   if(S.tab==="slots")upd();document.body.classList.toggle("home",S.tab==="home");
   if(S._t!==S.tab){S._t=S.tab;$("main").classList.add("pg")}
   document.querySelectorAll(".fc,.pk,.pc,.grid>.box").forEach(e=>e.classList.add("tilt"));paintCharts();reveal();if(S.tab==="owner")ownerPaint()}
@@ -473,6 +497,77 @@ let run=true;function loop(t){if(run)draw(t);requestAnimationFrame(loop)}
 addEventListener("resize",()=>{size();if(still)draw(0)});
 document.addEventListener("visibilitychange",()=>{run=!document.hidden});
 size();still?draw(0):requestAnimationFrame(loop)})();
+</script>
+<script>
+/* ===== v2 ===== */
+const snow=id=>{try{return new Date(Number(BigInt(id)>>22n)+1420070400000)}catch{return null}};
+const dts=d=>d?d.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"}):"—";
+const av2=(src,n)=>src?`<img class="pp s" src="${esc(src)}" alt="" referrerpolicy="no-referrer">`:`<span class="av">${esc(String(n||"?")[0].toUpperCase())}</span>`;
+/* loader */
+let ldT;function showLd(ms=450){let e=$("#ld");if(!e){e=document.createElement("div");e.id="ld";e.innerHTML="<i></i><span>Loading...</span>";document.body.appendChild(e)}e.className="";clearTimeout(ldT);ldT=setTimeout(()=>e.classList.add("out"),ms)}
+showLd(900);
+const _render=render;let _lt=null;
+render=function(){if(S.me&&S.tab0){S.tab="dash";S.tab0=0}const ch=S.tab!==_lt;_lt=S.tab;_render();if(ch)showLd();
+  if(S.tab==="dash")dashFx();if(S.tab==="slots")slotUsers()};
+/* login page */
+const loginView=()=>`<div class="box lgn"><h1 class="sm">Sign in</h1>${none("Log in to open your dashboard.")}<button class="b s w" data-act="login" style="margin-top:14px">Continue with Discord</button></div>`;
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act=dash]");if(b&&!S.me){e.stopImmediatePropagation();S.tab="login";render()}
+  const p=e.target.closest("[data-act=buy]");if(p&&S.me){e.stopImmediatePropagation();openPlan(+p.dataset.h)}},true);
+/* dashboard */
+function line(v,lb,col,f){const W=640,H=170,L=40,B=22,T=8,mx=nice(Math.max(1,...v)),x=i=>L+(W-L-6)*i/Math.max(1,v.length-1),y=n=>T+(H-T-B)*(1-n/mx),p=v.map((n,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(n).toFixed(1)).join("");let g="";
+ for(let i=0;i<=3;i++){const yy=y(mx*i/3);g+=`<line x1="${L}" x2="${W-6}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.08)"/><text x="${L-6}" y="${yy+4}" text-anchor="end">${f(mx*i/3)}</text>`}
+ const xl=[0,v.length>>1,v.length-1].map(i=>`<text x="${x(i)}" y="${H-6}" text-anchor="middle">${lb[i]}</text>`).join("");
+ return`<svg class="lc" viewBox="0 0 ${W} ${H}"><path d="${p}L${x(v.length-1)} ${H-B}L${x(0)} ${H-B}Z" fill="${col}" opacity=".16"/><path d="${p}" fill="none" stroke="${col}" stroke-width="2.5"/>${g}${xl}</svg>`}
+function dash(){const m=S.me,u=m.user||{},now=Date.now(),R=[...m.reservations].sort((a,b)=>b.start-a.start),cur=R.find(r=>now>=r.start&&now<r.end),nx=[...R].reverse().find(r=>r.start>now),mn=R.reduce((a,r)=>a+(r.end-r.start)/6e4,0),sp=R.reduce((a,r)=>a+r.price,0),nm=esc(u.name||"Player"),o=S.taken[Math.floor(now/CELL)]??0;S.end=cur?cur.end:0;
+ const k=(a,b)=>`<div class="box"><span class="dim">${a}</span><div class="big">${b}</div></div>`;
+ return`<h1 class="sm">Dashboard</h1><div class="box prof">${u.avatar?`<img class="pp" src="${esc(u.avatar)}" alt="" referrerpolicy="no-referrer">`:`<span class="av xl">${nm[0]?.toUpperCase()||"?"}</span>`}<div class="pi"><h2>${nm}${u.owner?' <span class="ow">Owner</span>':""}</h2><div class="pi2"><span class="dim">Discord ID</span><span>${esc(u.id||"—")}</span><span class="dim">Email</span><span>${esc(u.email||"—")}</span><span class="dim">Account created</span><span>${dts(snow(u.id))}</span><span class="dim">Role</span><span>${u.owner?"Owner":"Member"}</span><span class="dim">Bookings</span><span>${R.length}</span></div></div></div>
+ <div class="grid"><div class="box"><span class="dim">Balance</span><div class="big">${money(m.balance)}</div><button class="b sm" data-act="tab" data-t="gift" style="margin-top:10px">Top up</button></div>
+ <div class="box"><span class="dim">Current slot</span>${cur?`<div class="big" id="cd">--:--:--</div>${none(hm(cur.start)+" to "+hm(cur.end))}`:none("None")}<p style="margin:8px 0 0"><b id="uo">${o} / ${CONFIG.SEATS}</b> <span class="dim">users connected</span></p>${cur?"":'<button class="b sm" data-act="tab" data-t="buy" style="margin-top:10px">Buy a slot</button>'}</div></div>
+ <div class="g3">${k("Hours left",m.hours)}${k("Spent",money(sp))}${k("Auto-join time",dur(mn))}${k("Next booking",nx?hm(nx.start):"—")}</div>
+ <div class="box"><h2>Brainrot logs received</h2><p class="dim" style="margin:0 0 8px">Last 24 hours</p><div id="dc1"></div></div>
+ <div class="box"><h2>My spending</h2><p class="dim" style="margin:0 0 8px">Last 14 days</p><div id="dc2"></div></div>
+ <div class="box"><h2>Send money</h2>${none("Send part of your balance to any user with their Discord ID.")}<div class="row2"><input id="tid" type="text" inputmode="numeric" placeholder="Discord ID" autocomplete="off"><input id="tam" type="number" min="0.01" step="0.01" placeholder="Amount $"></div><button class="b s w" data-act="send" style="margin-top:8px">Send</button></div>
+ <div class="box"><h2>History</h2>${R.length?`<div class="sx"><table><thead><tr><th>Date</th><th>Duration</th><th>Price</th><th>Status</th></tr></thead><tbody>${R.slice(0,5).map(r=>`<tr><td>${new Date(r.start).toLocaleDateString("en-US")} ${hm(r.start)}</td><td>${dur((r.end-r.start)/6e4)}</td><td>${money(r.price)}</td><td>${now<r.start?"Upcoming":now<r.end?"Active":"Done"}</td></tr>`).join("")}</tbody></table></div>`:none("No bookings yet.")}</div>`}
+function paintDash(){const a=$("#dc1"),b=$("#dc2");if(a){const h=hist();a.innerHTML=line(h.map(x=>x.finds),h.map((_,i)=>i===23?"Now":(23-i)+"h"),"#ec4899",int)}
+ if(b){const base=new Date();base.setHours(0,0,0,0);const d=Array.from({length:14},(_,i)=>base.getTime()-(13-i)*864e5),v=d.map(t=>S.me.reservations.filter(r=>r.start>=t&&r.start<t+864e5).reduce((a,r)=>a+r.price,0));
+  b.innerHTML=line(v,d.map(t=>new Date(t).toLocaleDateString("en-US",{month:"numeric",day:"numeric"})),"#34d399",n=>"$"+(+n.toFixed(1)))}}
+function dashFx(){paintDash();if(!DK.upd)loadDock().then(()=>S.tab==="dash"&&paintDash());loadAvail().then(()=>{const e=$("#uo");if(e)e.textContent=(S.taken[Math.floor(Date.now()/CELL)]??0)+" / "+CONFIG.SEATS})}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-act=send]");if(!b)return;const to=$("#tid").value.trim(),am=+$("#tam").value;
+ if(!/^\d{15,22}$/.test(to))return toast("Invalid Discord ID");if(!(am>0))return toast("Enter an amount");if(am>S.me.balance)return toast("Not enough balance");
+ const r=await api(A+"/transfer",{to,amount:am});if(r.ok){S.me.balance=r.data.balance??S.me.balance-am;toast(money(am)+" sent");render()}else toast(r.data.error||"Transfer failed")});
+/* slots: live users */
+const _slots=slots;slots=function(){return`<h1 class="sm">Slots</h1><div class="box"><h2>Live now · <span id="sn">${S.taken[Math.floor(Date.now()/CELL)]??0} / ${CONFIG.SEATS}</span></h2><div id="su">${none("Loading...")}</div></div>`+_slots().replace('<h1 class="sm">Slots</h1>',"")};
+async function slotUsers(){const r=await api(A+"/slot/users"),el=$("#su");if(!el)return;const L=r.ok?(r.data.users||[]):null;if(!L){el.innerHTML=none("Live users unavailable.");return}$("#sn").textContent=L.length+" / "+CONFIG.SEATS;S._su=L;
+ el.innerHTML=L.length?L.map((u,i)=>`<div class="su"><div class="sr">${av2(u.robloxAvatar,u.roblox)}<div><b>${esc(u.roblox||"?")}</b><br><span class="dim">Roblox</span></div></div><div class="sr">${av2(u.discordAvatar,u.discordName)}<div><b>${esc(u.discordName||"?")}</b><br><span class="dim">${esc(u.discordId||"")}</span></div></div><button class="b sm" data-su="${i}">View</button><div class="sv" id="sv${i}" hidden>Script ends after <b>${u.maxBuy??"∞"}</b> buys · bought <b>${u.bought??0}</b></div></div>`).join(""):none("Nobody is using a slot right now.")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-su]");if(b){const v=$("#sv"+b.dataset.su);v.hidden=!v.hidden}});
+setInterval(()=>{if(S.tab==="slots")slotUsers()},10000);
+/* buy planner */
+let P={};const closePlan=()=>$("#md")?.remove();
+async function openPlan(h){P={h,day:0,start:null};await loadAvail();drawPlan()}
+function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="md";document.body.appendChild(m)}
+ const f=first(),need=P.h*2,base=new Date();base.setHours(0,0,0,0);const T=[];
+ for(let i=0;i<count();i++){const c=f+i,ms=c*CELL,d=new Date(ms);d.setHours(0,0,0,0);if(Math.round((d-base)/864e5)!==P.day)continue;const ok=Array.from({length:need},(_,k)=>c+k).every(x=>x in S.taken&&S.taken[x]<CONFIG.SEATS);T.push(`<button class="tm${P.start===c?" sel":""}" data-pl="t" data-c="${c}" ${ok?"":"disabled"}>${hm(ms)}</button>`)}
+ const dys=[0,1].map(i=>`<button class="dy${P.day===i?" sel":""}" data-pl="d" data-d="${i}">${i?"Tomorrow":"Today"} · ${new Date(base.getTime()+i*864e5).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>`).join("");
+ const s0=P.start*CELL,sum=P.start==null?none("Pick a start time."):`<p><b>${day(s0)}</b><br>${hm(s0)} → ${hm(s0+P.h*36e5)} (${P.h} h)</p><p>Price: <b>${money(price(P.h,(PACKS.find(x=>x[0]===P.h)||[0,1])[1]))}</b>. Balance: ${money(S.me.balance)}</p>`;
+ m.innerHTML=`<div class="mp"><h2>Plan your ${P.h} h slot</h2><b>1. Day</b><div class="chips">${dys}</div><b>2. Start time</b><div class="tg2">${T.join("")||none("No time left today.")}</div><b>3. Summary</b>${sum}<div class="row2" style="margin-top:12px"><button class="b" data-pl="x">Cancel</button><button class="b s" data-pl="ok" ${P.start==null?"disabled":""}>Confirm and pay</button></div></div>`}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-pl]");if(!b){if(e.target.id==="md")closePlan();return}const a=b.dataset.pl;
+ if(a==="t"){P.start=+b.dataset.c;drawPlan()}else if(a==="d"){P.day=+b.dataset.d;P.start=null;drawPlan()}else if(a==="x")closePlan();
+ else if(a==="ok"){b.disabled=true;const r1=await api(A+"/buy",{hours:P.h});if(!r1.ok){b.disabled=false;return toast(r1.data.error||"Purchase failed")}
+  const r=await api(A+"/reserve",{start:P.start*CELL,minutes:P.h*60});if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);toast("Slot booked");closePlan();S.tab="dash";await loadAvail();render()}else{toast(r.data.error||"Booking failed");await load();closePlan()}}});
+/* giftcard */
+const gift2=()=>`<h1 class="sm">Giftcard</h1><div class="gcard" id="gb"><div class="t"><span>SPYHUB AJ</span><span>GIFT CARD</span></div><div class="chip2"></div><input id="code" type="text" placeholder="SPY.AJ_XXXXXXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="b s w" data-act="redeem">Redeem code</button></div>
+<div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
+const _toast=toast;toast=function(t){_toast(t);const m=/^(\$[\d.]+) added/.exec(t);if(!m)return;const f=document.createElement("div");f.id="fx2";f.innerHTML=`<b>+${m[1]}</b>`+Array.from({length:36},()=>{const a=Math.random()*6.28,d=120+Math.random()*180;return`<i style="--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;--r:${Math.random()*720}deg;background:hsl(${300+Math.random()*60},90%,65%)"></i>`}).join("");document.body.appendChild(f);setTimeout(()=>f.remove(),1700)};
+/* stats */
+const _sh=statsHtml;statsHtml=function(){const s=S.stats,l=S.list;if(!s&&!l)return _sh();const last=Math.max(0,...(l||[]).map(b=>b.timestamp||0)),fz=s&&s.scanners===0&&(!last||Date.now()-last>12e5),c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`,bs=s&&s.bestScanner;
+ return(s?`<div class="grid g4">${c("Finds today",s.activeToday??"—")}${c("Top value",s.topMps!=null?fmt(s.topMps):"—")}${c("Scanners",fz?'<span class="bad">Frozen</span>':"Online")}</div>`:"")
+ +`<div class="box"><h2>Best Brainrot scanner today</h2>${bs?`<div class="line"><span>${esc(bs.name||bs.id)}</span><b>${bs.count??""} finds</b></div>`:none("No data yet.")}</div>`
+ +`<div class="box"><h2>Top brainrots</h2>${l&&l.length?`<div class="sx"><table><thead><tr><th>Name</th><th>Value</th><th>Found</th></tr></thead><tbody>${l.map(b=>`<tr><td>${esc(b.name)}</td><td>${fmt(b.mps)}</td><td class="dim">${b.timestamp?ago(b.timestamp):"—"}</td></tr>`).join("")}</tbody></table></div>`:none("No brainrots yet.")}</div>`};
+/* settings */
+settings=function(){const m=S.me,u=m.user||{},l=m.license,r=(a,b)=>`<div class="line"><span class="dim">${a}</span><b style="word-break:break-all;text-align:right">${esc(b||"—")}</b></div>`;
+ return`<h1 class="sm">Settings</h1><div class="box prof">${av2(u.avatar,u.name)}<div class="pi"><h2>Discord account</h2></div></div><div class="box">${r("Username",u.name)}${r("Display name",u.globalName||u.name)}${r("Discord ID",u.id)}${r("Email",u.email)}${r("Account created",dts(snow(u.id)))}${r("Role",u.owner?"Owner":"Member")}</div>
+ <div class="box"><h2>Your license key</h2>${none("Only you can see it. Paste it into the script.")}<div class="line"><code id="key">${l.key?"spy_****"+esc(l.key.slice(-4)):"—"}</code><span><button class="b sm" data-act="show">Show</button> <button class="b sm" data-act="copy">Copy</button></span></div></div>
+ <div class="box"><h2>Preferences</h2><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div><button class="b out" data-act="logout">Log out</button>`};
 </script>
 </body>
 </html>
