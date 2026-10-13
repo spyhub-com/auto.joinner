@@ -155,10 +155,20 @@ main{padding-top:0}
 .tl{gap:6px}.cell{flex-basis:44px}.cell i{width:28px;height:10px;border-radius:4px;border-color:rgba(255,255,255,.5)}.cell i.on{background:#8b5cf6;border-color:#8b5cf6}.cell.sel{border-color:#a78bfa;background:rgba(139,92,246,.2)}
 .ann{margin:12px 0 0;padding:10px 16px;border:1px solid rgba(190,170,255,.4);border-radius:14px;background:rgba(124,58,237,.18);font-size:13px;text-align:center}
 #ow label{display:block;margin-top:6px}#ow input:not([type=checkbox]){width:100%;background:rgba(255,255,255,.06);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;color:#fff;font:inherit;margin:4px 0 10px}#ow input[type=checkbox]{margin-right:8px}#ow code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}#ow table{width:100%}#ow td,#ow th{padding:6px 8px;text-align:left;vertical-align:top}
+/* ===== Header icons, menu, network ===== */
+.hl{display:flex;align-items:center;gap:10px}
+.ic{display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid var(--ln);border-radius:50%;background:none;color:#fff;cursor:pointer;text-decoration:none;transition:background .25s ease,border-color .25s ease}
+.ic:hover{background:rgba(255,255,255,.1);border-color:#fff}.ic svg{width:18px;height:18px;fill:currentColor}.ic svg.bg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.mn{position:absolute;right:0;top:calc(100% + 10px);width:min(270px,calc(100vw - 36px));padding:8px;border:1px solid rgba(255,255,255,.2);border-radius:18px;background:rgba(10,8,30,.97);box-shadow:0 18px 50px -12px rgba(0,0,0,.8);z-index:20;animation:mn .18s ease}
+.mn[hidden]{display:none}@keyframes mn{from{opacity:0;transform:translateY(-6px) scale(.98)}}
+.mn button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:10px;background:none;border:0;color:#fff;font:inherit;padding:11px 12px;border-radius:12px;cursor:pointer;text-align:left}
+.mn button:hover,.mn button[aria-current=page]{background:rgba(255,255,255,.1)}.mn button.lk{color:var(--dim)}.mn hr{border:0;border-top:1px solid var(--ln);margin:6px 4px}
+#net{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.5;transition:opacity .8s ease}body.home #net{opacity:1}
+.hit{cursor:crosshair}.hit:hover{fill:rgba(255,255,255,.05)}
 </style>
 </head>
 <body>
-<div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><canvas id="fx" aria-hidden="true"></canvas><canvas id="planet" aria-hidden="true"></canvas>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><canvas id="fx" aria-hidden="true"></canvas><canvas id="net" aria-hidden="true"></canvas>
 <div id="app"></div>
 <script>
 /* ===== Settings: put your Worker URL in API_BASE and fill in the legal details ===== */
@@ -204,8 +214,7 @@ async function load(){
 const STEPS=[["Sign in","Log in with your Discord account."],["Book a slot","Pick a start time and a duration."],["Run the script","Paste your key and let the auto-join work."]];
 const FAQ=[["What if I don't connect during my slot?","The slot keeps running, you just don't use it."],["How many people at once?","4 users maximum per slot."],["How do I pay?","With your balance, topped up by gift card. There is no subscription."],["I changed device, what now?","Reset your HWID from Settings, once per day."],["Is it affiliated with Roblox?","No. SpyHub AJ is independent. See the Legal Notice."]];
 const ctas=`<div class="cta"><button class="b s" data-act="dash">Get Dashboard</button><button class="b" data-act="tab" data-t="stats">Live Stats</button></div>`;
-const home=()=>`<section class="hero rv"><h1>SpyHub Auto Joinner</h1><p class="lead">Spots the best brainrots live and joins the right server for you. Book a slot, run the script, that's it.</p>${ctas}</section>
-<section class="sec rv"><div class="box lgc"><h2 class="t">Logs — Last 24 Hours</h2><p class="dim" style="margin:0">Finds and frozen sessions per hour. Move your mouse to rotate.</p><div class="ch3d"></div></div></section>`;
+const home=()=>`<section class="hero rv"><h1>SpyHub Auto Joinner</h1><p class="lead">Spots the best brainrots live and joins the right server for you. Book a slot, run the script, that's it.</p>${ctas}</section>`;
 const none=t=>`<p class="dim">${t}</p>`;
 function statsHtml(){
   const s=S.stats,l=S.list;
@@ -213,7 +222,7 @@ function statsHtml(){
   const c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`;
   return(s?`<div class="grid g4">${c("In database",s.total??"—")}${c("Today",s.activeToday??"—")}${c("Active scanners",s.scanners??"—")}${c("Top value",s.topMps!=null?fmt(s.topMps):"—")}</div>`:"")
   +`<div class="box"><h2>Top brainrots</h2>${l&&l.length?`<div class="sx"><table><thead><tr><th>Name</th><th>Value</th><th>Found</th></tr></thead><tbody>${l.map(b=>`<tr><td>${esc(b.name)}</td><td>${fmt(b.mps)}</td><td class="dim">${b.timestamp?ago(b.timestamp):"—"}</td></tr>`).join("")}</tbody></table></div>`:none("No brainrots yet.")}</div>`}
-const stats=()=>`<h1 class="sm">Live Stats</h1><div id="st" aria-live="polite">${statsHtml()}</div>`;
+const stats=()=>`<h1 class="sm">Live Stats</h1><div id="st" aria-live="polite">${statsHtml()}</div><div class="box lgc"><h2 class="t">Logs, last 24 hours</h2><p class="dim" style="margin:0">Finds and frozen sessions per hour.</p><div class="ch3d" id="ch"></div></div>`;
 const paintStats=()=>{const e=$("#st");if(e)e.innerHTML=statsHtml()};
 const PACKS=[[1,1],[5,.9],[10,.8],[24,.7]],price=(h,d)=>+(CONFIG.PRICE_PER_HOUR*h*d).toFixed(2);
 function buy(){
@@ -272,11 +281,11 @@ const legal=()=>{const[t,sec]=LEGAL[S.tab];return`<h1 class="sm">${t}</h1><div c
 
 /* ===== Rendering ===== */
 const TABS=[["dash","Dashboard"],["slots","Slots"],["buy","Buy"],["gift","Giftcard"],["stats","Stats"],["board","Leaderboard"],["settings","Settings"]];
+const menuHtml=()=>{const all=[["home","Home"],...TABS,...(S.me?.user?.owner?[["owner","Owner"]]:[])];return`<div class="mn" id="mn" role="menu" hidden>`+all.map(([id,n])=>{const lk=!S.me&&!["home","stats"].includes(id);return`<button role="menuitem" data-act="mtab" data-t="${id}"${S.tab===id?' aria-current="page"':""}${lk?' class="lk"':""}>${n}${lk?'<span class="dim">Login</span>':""}</button>`}).join("")+`<hr>`+(S.me?`<button data-act="logout">Log out</button>`:`<button data-act="login">Log in with Discord</button>`)+`</div>`};
 function render(){
   const V={home,stats,buy,board,slots,gift,settings,dash,owner:()=>S.me?.user?.owner?owner():home(),legal,terms:legal,privacy:legal,refund:legal};
   if(!S.me&&["buy","board","slots","gift","settings","dash","owner"].includes(S.tab))S.tab="home";
-  $("#app").innerHTML=`${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span><button class="b sm" data-act="tab" data-t="settings">Account</button>`:'<button class="b sm" data-act="login">Login</button>'}</span></header>
-  ${S.me?`<nav aria-label="Navigation">${[...TABS,...(S.me?.user?.owner?[["owner","Owner"]]:[])].map(([id,n])=>`<button data-act="tab" data-t="${id}" ${S.tab===id?'aria-current="page"':""}>${n}</button>`).join("")}</nav>`:""}
+  $("#app").innerHTML=`${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><span class="hl"><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button><a class="ic" href="https://discord.gg/spyhub" target="_blank" rel="noopener" aria-label="Join our Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg></a></span><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span>`:'<button class="b sm" data-act="login">Login</button>'}<button class="ic" data-act="menu" aria-label="Menu" aria-expanded="false" aria-haspopup="true"><svg class="bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></span>${menuHtml()}</header>
   <main>${S.tab!=="home"&&!S.me?'<button class="b sm back" data-act="tab" data-t="home">← Back</button>':""}${V[S.tab]()}</main>
   <footer><span>© SpyHub AJ</span>${[["legal","Legal Notice"],["terms","Terms of Service"],["privacy","Privacy Policy"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
   if(S.tab==="slots")upd();document.body.classList.toggle("home",S.tab==="home");
@@ -290,7 +299,9 @@ document.addEventListener("click",async e=>{
   if(a==="login")login();
   else if(a==="dash"){if(!S.me)login();else{S.tab="dash";render()}}
   else if(a==="tab"){S.tab=b.dataset.t;render();scrollTo(0,0);
-    if(S.tab==="stats")loadStats();else if(S.tab==="board")loadBoard();else if(S.tab==="buy"||S.tab==="slots"){await loadAvail();render()}}
+    if(S.tab==="stats"){loadStats();loadDock()}else if(S.tab==="board")loadBoard();else if(S.tab==="buy"||S.tab==="slots"){await loadAvail();render()}}
+  else if(a==="menu"){const m=$("#mn");m.hidden=!m.hidden;b.setAttribute("aria-expanded",String(!m.hidden))}
+  else if(a==="mtab"){const t=b.dataset.t;if(!S.me&&!["home","stats"].includes(t))return login();S.tab=t;render();scrollTo(0,0);if(t==="stats"){loadStats();loadDock()}else if(t==="board")loadBoard();else if(t==="buy"||t==="slots"){await loadAvail();render()}}
   else if(a==="cell"){S.start=+b.dataset.c;upd()}
   else if(a==="reserve"){S.busy=true;upd();const r=await api(A+"/reserve",{start:S.start*CELL,minutes:S.dur});S.busy=false;
     if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);S.start=null;toast("Slot booked");S.tab="dash";await loadAvail();render()}
@@ -309,6 +320,8 @@ document.addEventListener("click",async e=>{
 });
 document.addEventListener("input",e=>{if(e.target.id==="dur"){S.dur=+e.target.value;upd()}});
 
+document.addEventListener("click",e=>{const m=$("#mn");if(m&&!m.hidden&&!e.target.closest("#mn,[data-act=menu]")){m.hidden=true;document.querySelector("[data-act=menu]")?.setAttribute("aria-expanded","false")}});
+addEventListener("keydown",e=>{if(e.key==="Escape"){const m=$("#mn");if(m)m.hidden=true}});
 /* ===== Refresh: countdown 1 s, history 30 s, stats 5 s ===== */
 setInterval(()=>{const c=$("#cd");if(!c)return;const l=Math.max(0,S.end-Date.now()),p=n=>String(n).padStart(2,"0");c.textContent=p(l/36e5|0)+":"+p(l/6e4%60|0)+":"+p(l/1e3%60|0);if(!l)render()},1000);
 setInterval(()=>{if(S.me&&S.tab==="dash")render()},30000);
@@ -327,37 +340,19 @@ setInterval(()=>{if(S.tab==="stats")loadStats()},5000);
     t.style.setProperty("--mx",x*100+"%");t.style.setProperty("--my",y*100+"%");
     t.style.transform=`perspective(800px) rotateX(${(.5-y)*12}deg) rotateY(${(x-.5)*14}deg) translateZ(8px)`},{passive:true});
   document.addEventListener("pointerleave",reset);document.addEventListener("scroll",reset,{passive:true})})();
-/* ===== 3D planet (canvas, no library) ===== */
-(()=>{const cv=$("#planet"),cx=cv.getContext("2d"),CS=800,R=212,D=R*2,still=matchMedia("(prefers-reduced-motion:reduce)").matches;cv.width=cv.height=CS;
-  const TW=768,TH=384,tex=new Uint8Array(TW*TH),T2=6.283185;
-  const ph=[0,1.3,2.1,.4,3.2],qh=[0,.7,2.4,1.1,4.1];
-  for(let y=0;y<TH;y++){const fy=y/TH;for(let x=0;x<TW;x++){const fx=x/TW;let v=0;
-    for(let i=1;i<5;i++)v+=Math.sin(T2*(i*2*fx)+ph[i]+2.2*Math.sin(T2*fy*(i*1.3+1)+qh[i]))/i;
-    const t=.5+.2*v+.22*Math.sin(T2*fy*6+1.4*Math.sin(T2*fy*2+fx*T2*3));tex[y*TW+x]=Math.max(0,Math.min(255,t*255))|0}}
-  const pal=[[0,6,8,26],[.3,18,22,66],[.55,52,56,140],[.8,130,142,222],[1,226,232,255]],LR=new Uint8Array(256),LG=new Uint8Array(256),LB=new Uint8Array(256);
-  for(let k=0;k<256;k++){const t=k/255;let a=pal[0],b=pal[1];for(let q=1;q<pal.length;q++){if(t<=pal[q][0]){a=pal[q-1];b=pal[q];break}}const f=(t-a[0])/(b[0]-a[0]||1);LR[k]=a[1]+(b[1]-a[1])*f;LG[k]=a[2]+(b[2]-a[2])*f;LB[k]=a[3]+(b[3]-a[3])*f}
-  const N=D*D,U=new Uint16Array(N),V=new Uint16Array(N),SH=new Float32Array(N),RM=new Float32Array(N),AL=new Uint8Array(N);
-  const L=[-.55,-.5,.67],ll=Math.hypot(...L),tilt=.38,ct=Math.cos(tilt),st=Math.sin(tilt);
-  for(let y=0;y<D;y++)for(let x=0;x<D;x++){const nx=(x+.5-R)/R,ny=(y+.5-R)/R,d=nx*nx+ny*ny,dist=Math.sqrt(d),i=y*D+x;if(dist>1.01)continue;
-    const nz=Math.sqrt(Math.max(0,1-d));AL[i]=Math.max(0,Math.min(1,(1-dist)*R/1.5+.5))*255;
-    const y2=ny*ct+nz*st,z2=-ny*st+nz*ct,lat=Math.asin(Math.max(-1,Math.min(1,y2))),lon=Math.atan2(nx,z2);
-    U[i]=Math.min(TW-1,Math.floor((lon/T2+.5)*TW));V[i]=Math.min(TH-1,Math.floor((lat/Math.PI+.5)*TH));
-    const dot=(nx*L[0]+ny*L[1]+nz*L[2])/ll;SH[i]=.05+Math.pow(Math.max(0,dot),1.1)*1.05;RM[i]=Math.pow(1-nz,3)*Math.max(0,dot+.35)*.9}
-  const off=document.createElement("canvas");off.width=off.height=D;const oc=off.getContext("2d"),img=oc.createImageData(D,D),d32=new Uint32Array(img.data.buffer);
-  const rings=[[1.38,12,.16],[1.45,22,.3],[1.54,7,.12],[1.63,18,.26],[1.73,9,.15],[1.84,5,.1]];
-  function ring(back){cx.save();cx.translate(CS/2,CS/2);cx.rotate(-.32);cx.scale(1,.26);
-    for(const[r,w,a]of rings){cx.beginPath();cx.arc(0,0,r*R,back?Math.PI:0,back?T2:Math.PI);cx.lineWidth=w;cx.strokeStyle=`rgba(190,200,255,${a})`;cx.stroke()}cx.restore()}
-  let mx=0,my=0,px=0,py=0,last=0;addEventListener("pointermove",e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
-  function frame(t){if(!still)requestAnimationFrame(frame);if(t-last<32&&last)return;last=t;
-    const o=((t*.012)|0)%TW;
-    for(let i=0;i<N;i++){const a=AL[i];if(!a){d32[i]=0;continue}let u=U[i]+o;if(u>=TW)u-=TW;const k=tex[V[i]*TW+u],s=SH[i],m=RM[i];
-      const r=Math.min(255,LR[k]*s+m*90),g=Math.min(255,LG[k]*s+m*130),b=Math.min(255,LB[k]*s+m*255);d32[i]=(a<<24)|(b<<16)|(g<<8)|r}
-    oc.putImageData(img,0,0);cx.clearRect(0,0,CS,CS);
-    const gl=cx.createRadialGradient(CS/2,CS/2,R*.97,CS/2,CS/2,R*1.4);gl.addColorStop(0,"rgba(120,140,255,.3)");gl.addColorStop(1,"rgba(120,140,255,0)");cx.fillStyle=gl;cx.fillRect(0,0,CS,CS);
-    ring(true);cx.drawImage(off,CS/2-R,CS/2-R);ring(false);
-    px+=(mx*28-px)*.05;py+=(my*20-py)*.05;cv.style.transform=`translate(calc(-50% + ${px}px),calc(-50% + ${py}px))`}
-  requestAnimationFrame(frame)})();
-/* ===== Live analytics dock (bottom bar) ===== */
+/* ===== Server network background (canvas, no library) ===== */
+(()=>{const cv=$("#net"),cx=cv.getContext("2d"),still=matchMedia("(prefers-reduced-motion:reduce)").matches,dpr=Math.min(devicePixelRatio||1,2),N=[],F=[],V=["$1.2B/s","$640M/s","$2.4B/s","$890M/s","$3.1B/s"];let W=0,H=0,mx=.5,my=.5,pu=null,hops=0,wait=0,last=0;
+  function size(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);const n=Math.round(Math.min(70,Math.max(26,W*H/16000)));N.length=0;for(let i=0;i<n;i++)N.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,z:Math.random()*.8+.2,f:0,X:0,Y:0})}
+  const near=(a,r)=>N.filter(q=>q!==a&&Math.hypot(q.X-a.X,q.Y-a.Y)<r);
+  function frame(t){if(!still)requestAnimationFrame(frame);if(last&&t-last<33)return;last=t;cx.clearRect(0,0,W,H);const ox=(mx-.5)*34,oy=(my-.5)*34;
+    for(const p of N){p.x+=p.vx;p.y+=p.vy;if(p.x<-20)p.x=W+20;else if(p.x>W+20)p.x=-20;if(p.y<-20)p.y=H+20;else if(p.y>H+20)p.y=-20;p.f*=.94;p.X=p.x+ox*p.z;p.Y=p.y+oy*p.z}
+    cx.lineWidth=1;for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){const a=N[i],b=N[j],d=Math.hypot(a.X-b.X,a.Y-b.Y);if(d<150){cx.strokeStyle=`rgba(150,170,255,${(1-d/150)*.3})`;cx.beginPath();cx.moveTo(a.X,a.Y);cx.lineTo(b.X,b.Y);cx.stroke()}}
+    for(const p of N){cx.fillStyle=`rgba(190,200,255,${.3+.35*p.z+p.f*.6})`;cx.beginPath();cx.arc(p.X,p.Y,1.2+p.z*1.2+p.f*4,0,6.283);cx.fill()}
+    if(!still){if(!pu&&--wait<=0){const a=N[Math.random()*N.length|0],c=near(a,200);if(c.length){pu={a,b:c[Math.random()*c.length|0],k:0};hops=0}else wait=30}
+      if(pu){pu.k+=.04;const{a,b,k}=pu,x=a.X+(b.X-a.X)*k,y=a.Y+(b.Y-a.Y)*k,g=cx.createRadialGradient(x,y,0,x,y,16);g.addColorStop(0,"rgba(167,139,250,.95)");g.addColorStop(1,"rgba(167,139,250,0)");cx.fillStyle=g;cx.beginPath();cx.arc(x,y,16,0,6.283);cx.fill();
+        if(k>=1){b.f=1;F.push({x:b.X,y:b.Y,t:0,s:V[Math.random()*V.length|0]});const c=near(b,200);if(++hops<6&&c.length)pu={a:b,b:c[Math.random()*c.length|0],k:0};else{pu=null;wait=60}}}
+      cx.font="12px ui-sans-serif,system-ui,sans-serif";cx.textAlign="center";for(let i=F.length-1;i>=0;i--){const f=F[i];f.t+=.012;if(f.t>=1){F.splice(i,1);continue}cx.fillStyle=`rgba(255,255,255,${(1-f.t)*.8})`;cx.fillText(f.s,f.x,f.y-10-f.t*26)}}}
+  addEventListener("resize",size);addEventListener("pointermove",e=>{mx=e.clientX/W;my=e.clientY/H},{passive:true});size();requestAnimationFrame(frame)})();
 const DK={open:false,f:"all",stats:null,recent:[],logs:[],demo:!CONFIG.API_BASE,off:false,key:"",upd:0};
 const stillM=matchMedia("(prefers-reduced-motion:reduce)").matches,int=n=>Math.round(n).toLocaleString("en-US");
 const DEMO_N=["Los Tralaleritos","La Grande Combinasion","Garama and Madundung","Chimpanzini Spiderini","Nuclearo Dinossauro","Graipuss Medussi","Esok Sekolah","Tralaledon","Pot Hotspot","Strawberry Elephant"],DEMO_L=["Scanner joined a new server","Hub broadcast sent to 4 users","Scanner reconnected","Auto-join completed","Server hop in 1.2 s"];
@@ -372,69 +367,23 @@ async function loadDock(){
   if(DK.demo)demoStep();else{const[b,c]=await Promise.all([api("/api/brainrots?limit=100"),api("/api/logs")]);
     if(b.ok)DK.recent=b.data.brainrots||[];if(c.ok)DK.logs=c.data.logs||[]}
   DK.upd=Date.now();paintCharts()}
-/* ===== 3D logs chart (canvas, no library) ===== */
+/* ===== Logs chart (SVG) ===== */
 const SER=[["finds","Finds",[236,31,180]],["frozen","Frozen",[92,200,255]]],SHOW={finds:1,frozen:1};
 const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return Math.max(1,(f<=1?1:f<=2?2:f<=5?5:10)*p)};
 function hist(){
   if(DK.demo){if(!DK.hist)DK.hist=Array.from({length:24},(_,i)=>{const h=Math.pow(Math.max(0,Math.sin((i-1.5)/13.5*Math.PI)),1.25),f=Math.round(3600*h*(.72+.22*Math.sin(i*1.9+1)+Math.random()*.08));return{finds:f,frozen:Math.round(f*.07*(.6+Math.abs(Math.sin(i*2.7))))}});return DK.hist}
   const H=36e5,now=Date.now(),b=Array.from({length:24},()=>({finds:0,frozen:0})),add=(t,k)=>{const i=23-Math.floor((now-t)/H);if(t&&i>=0&&i<24)b[i][k]++};
   DK.recent.forEach(x=>add(x.timestamp,"finds"));DK.logs.forEach(l=>{if(/frozen|freez|stuck|err|fail/i.test((l.type||"")+" "+(l.message||"")))add(l.timestamp,"frozen")});return b}
-const C3={el:null,cv:null,x:null,W:0,H:0,dpr:1,yaw:0,pit:0,tx:0,ty:0,t0:0,hov:-1,polys:[],last:0,mx:-1,my:-1};
-function size3d(){if(!C3.el)return;const dpr=C3.dpr=Math.min(devicePixelRatio||1,2);C3.W=Math.max(280,C3.el.clientWidth);C3.H=C3.W<520?330:480;C3.cv.width=C3.W*dpr;C3.cv.height=C3.H*dpr;C3.cv.style.height=C3.H+"px"}
-function mount3d(){const el=document.querySelector(".ch3d");if(!el){C3.el=null;return}
-  const lg=SER.map(s=>`<button class="${SHOW[s[0]]?"":"off"}" data-act="ser" data-k="${s[0]}"><i style="background:rgb(${s[2]})"></i>${s[1]}</button>`).join("");
-  if(C3.el!==el){C3.el=el;el.innerHTML=`<div class="lg">${lg}</div><canvas></canvas><div class="tip"></div>`;C3.cv=el.querySelector("canvas");C3.x=C3.cv.getContext("2d");C3.t0=performance.now();C3.hov=-1;size3d()}
-  else{el.querySelector(".lg").innerHTML=lg;size3d()}}
-function paintCharts(){mount3d()}
-const inPoly=(p,x,y)=>{let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++)if((p[i][1]>y)!==(p[j][1]>y)&&x<(p[j][0]-p[i][0])*(y-p[i][1])/(p[j][1]-p[i][1])+p[i][0])c=!c;return c};
-function draw3d(t){
-  const{x,W,H,dpr}=C3,b=hist(),vis=SER.filter(s=>SHOW[s[0]]);x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
-  const mxv=Math.max(1,...vis.flatMap(s=>b.map(r=>r[s[0]]))),st=nice(mxv/4),top=st*4,A=1.7,HY=1.1,ZB=.48,BD=.13,dx=2*A/23,BW=dx*.36;
-  C3.yaw+=(C3.tx-C3.yaw)*.06;C3.pit+=(C3.ty-C3.pit)*.06;
-  const yaw=C3.yaw+(stillM?0:.16*Math.sin(t*.0004)),pit=-.62+C3.pit*.14,cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pit),sp=Math.sin(pit),D=5.4,S=Math.min(W/(2*A)*(W<520?.74:.8),H*.5),ox=W/2+(W<520?12:0),oy=H*.6;
-  const R=(X,Y,Z)=>{const x1=X*cy+Z*sy,z1=-X*sy+Z*cy;return[x1,Y*cp-z1*sp,Y*sp+z1*cp]};
-  const P=(X,Y,Z)=>{const r=R(X,Y,Z),k=D/(r[2]+D);return[ox+r[0]*S*k,oy-r[1]*S*k,r[2]]};
-  const Xi=i=>-A+i*dx;
-  // floor glow
-  const f0=P(0,0,0),gl=x.createRadialGradient(f0[0],f0[1],10,f0[0],f0[1],W*.5);gl.addColorStop(0,"rgba(139,92,246,.22)");gl.addColorStop(1,"rgba(139,92,246,0)");x.fillStyle=gl;x.fillRect(0,0,W,H);
-  // floor plate
-  const fl=[[-A-.1,-ZB-.1],[A+.1,-ZB-.1],[A+.1,ZB+.1],[-A-.1,ZB+.1]].map(q=>P(q[0],0,q[1]));
-  x.beginPath();fl.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.closePath();x.fillStyle="rgba(120,100,255,.07)";x.fill();x.strokeStyle="rgba(170,150,255,.35)";x.lineWidth=1;x.stroke();
-  // floor grid + back wall
-  x.lineWidth=1;x.strokeStyle="rgba(170,150,255,.13)";
-  for(let i=2;i<=23;i+=3){const a=P(Xi(i),0,-ZB-.1),c=P(Xi(i),0,ZB+.1);x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(c[0],c[1]);x.stroke()}
-  x.font="11.5px ui-sans-serif,system-ui,sans-serif";x.fillStyle="#8a86aa";
-  x.textAlign="right";
-  for(let k=0;k<=4;k++){const y=k*st/top*HY,a=P(-A-.1,y,ZB+.1),c=P(A+.1,y,ZB+.1);x.strokeStyle=k?"rgba(170,150,255,.16)":"rgba(170,150,255,.3)";x.setLineDash(k?[4,5]:[]);x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(c[0],c[1]);x.stroke();x.fillText(int(k*st),a[0]-8,a[1]+4)}
-  x.setLineDash([]);x.textAlign="center";
-  for(let i=2;i<=23;i+=3){const q=P(Xi(i),0,-ZB-.2);x.fillText(i===23?"Now":"-"+(23-i)+"h",q[0],q[1]+10)}
-  // bars
-  const bars=[];vis.forEach(s=>{const zc=s[0]==="frozen"?-.2:.2;b.forEach((r,i)=>bars.push({s,i,zc,v:r[s[0]],c:R(Xi(i),0,zc)[2]}))});
-  bars.sort((a,c)=>c.c-a.c);C3.polys=[];
-  const elapsed=t-C3.t0;
-  for(const q of bars){const gI=stillM?1:Math.max(0,Math.min(1,(elapsed-q.i*28)/900)),g=1-Math.pow(1-gI,3),h=q.v/top*HY*g;if(h<=0.0005)continue;
-    const x0=Xi(q.i)-BW,x1=Xi(q.i)+BW,z0=q.zc-BD,z1=q.zc+BD,c=q.s[2],hov=q.i===C3.hov;
-    const fc=[["t",[0,1,0],[[x0,h,z0],[x1,h,z0],[x1,h,z1],[x0,h,z1]],1.0],["f",[0,0,-1],[[x0,0,z0],[x1,0,z0],[x1,h,z0],[x0,h,z0]],.78],["k",[0,0,1],[[x1,0,z1],[x0,0,z1],[x0,h,z1],[x1,h,z1]],.5],["l",[-1,0,0],[[x0,0,z1],[x0,0,z0],[x0,h,z0],[x0,h,z1]],.6],["r",[1,0,0],[[x1,0,z0],[x1,0,z1],[x1,h,z1],[x1,h,z0]],.62]];
-    const cc=R(Xi(q.i),h/2,q.zc);
-    for(const[nm,n,pts,sh]of fc){const rn=R(n[0],n[1],n[2]),fcn=R(Xi(q.i)+n[0]*BW,h/2+n[1]*h/2,q.zc+n[2]*BD),cam=[-fcn[0],-fcn[1],-D-fcn[2]];
-      if(rn[0]*cam[0]+rn[1]*cam[1]+rn[2]*cam[2]<=0)continue;
-      const poly=pts.map(p=>P(p[0],p[1],p[2]));x.beginPath();poly.forEach((p,k)=>k?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.closePath();
-      const boost=hov?1.35:1,mix=nm==="t"?.35:0,col=c.map(v=>Math.min(255,(v*sh*boost)*(1-mix)+255*mix));
-      if(nm==="t")x.fillStyle=`rgb(${col[0]|0},${col[1]|0},${col[2]|0})`;
-      else{const ys=poly.map(p=>p[1]),gr=x.createLinearGradient(0,Math.min(...ys),0,Math.max(...ys));gr.addColorStop(0,`rgba(${col[0]|0},${col[1]|0},${col[2]|0},.96)`);gr.addColorStop(1,`rgba(${(col[0]*.45)|0},${(col[1]*.4)|0},${(col[2]*.7)|0},.7)`);x.fillStyle=gr}
-      x.fill();x.strokeStyle=nm==="t"?"rgba(255,255,255,.55)":"rgba(255,255,255,.16)";x.lineWidth=nm==="t"?1.2:.8;x.stroke();C3.polys.push({i:q.i,p:poly})}}
-  C3.polys.reverse();
-}
-function loop3d(t){requestAnimationFrame(loop3d);if(!C3.el||!document.body.contains(C3.el))return;const r=C3.cv.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight||t-C3.last<30)return;C3.last=t;draw3d(t)}
-requestAnimationFrame(loop3d);
-document.addEventListener("pointermove",e=>{const el=C3.el;if(!el||!C3.cv)return;const r=C3.cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,inside=x>=0&&y>=0&&x<=r.width&&y<=r.height,tip=el.querySelector(".tip");
-  if(!inside){C3.tx=0;C3.ty=0;C3.hov=-1;tip.style.opacity=0;return}
-  C3.tx=(x/r.width-.5)*.8;C3.ty=y/r.height-.5;let h=-1;for(const q of C3.polys)if(inPoly(q.p,x,y)){h=q.i;break}
-  C3.hov=h;if(h<0){tip.style.opacity=0;return}
-  const b=hist()[h];tip.innerHTML=`<b>${h===23?"Now":(23-h)+"h ago"}</b>`+SER.filter(s=>SHOW[s[0]]).map(s=>`<div><span><i style="background:rgb(${s[2]})"></i>${s[1]}</span><b style="color:#fff;margin:0">${int(b[s[0]])}</b></div>`).join("");
-  tip.style.left=Math.min(Math.max(0,x+16),r.width-140)+"px";tip.style.top=(C3.cv.offsetTop+Math.max(0,y-40))+"px";tip.style.opacity=1},{passive:true});
-addEventListener("resize",()=>{clearTimeout(C3.rt);C3.rt=setTimeout(size3d,120)});
-loadDock();setInterval(()=>{if(!document.hidden)loadDock()},6000);
+const CH={W:640,H:250,L:42,B:28,T:10};
+function chartHtml(){const b=hist(),{W,H,L,B,T}=CH,cw=(W-L-6)/24,sh=SER.filter(s=>SHOW[s[0]]),mx=nice(Math.max(1,...b.flatMap(x=>sh.map(s=>x[s[0]])))),y=v=>T+(H-T-B)*(1-v/mx),lbl=i=>i===23?"Now":(23-i)+"h ago",pts=[];let g="",bars="",hit="";
+  for(let i=0;i<=4;i++){const yy=y(mx*i/4);g+=`<line x1="${L}" x2="${W-6}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.08)"/><text x="${L-6}" y="${yy+4}" text-anchor="end">${int(mx*i/4)}</text>`}
+  b.forEach((x,i)=>{const cx=L+cw*i+cw/2;if(SHOW.finds)bars+=`<rect x="${cx-cw*.33}" y="${y(x.finds)}" width="${cw*.66}" height="${Math.max(0,H-B-y(x.finds))}" rx="3" fill="rgb(${SER[0][2]})"/>`;if(SHOW.frozen)pts.push([cx,y(x.frozen)]);hit+=`<rect class="hit" data-i="${i}" x="${L+cw*i}" y="${T}" width="${cw}" height="${H-T-B}" fill="transparent"/>`});
+  const col=`rgb(${SER[1][2]})`,line=pts.length?`<path d="${pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join("")}" fill="none" stroke="${col}" stroke-width="2"/>`+pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${col}"/>`).join(""):"",xl=[0,6,12,18,23].map(i=>`<text x="${L+cw*i+cw/2}" y="${H-8}" text-anchor="middle">${lbl(i)}</text>`).join("");
+  return`<div class="lg">${SER.map(s=>`<button class="${SHOW[s[0]]?"":"off"}" data-act="ser" data-k="${s[0]}"><i style="background:rgb(${s[2]})"></i>${s[1]}</button>`).join("")}</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Finds and frozen sessions per hour, last 24 hours">${g}${bars}${line}${xl}${hit}</svg><div class="tip"></div><p class="dim" style="margin:8px 0 0;font-size:12px">${DK.upd?`Based on the latest ${DK.recent.length} finds, updated ${ago(DK.upd)}.`:"Loading data..."}</p>`}
+const paintCharts=()=>{const e=$("#ch");if(e)e.innerHTML=chartHtml()};
+document.addEventListener("pointerover",e=>{const c=$("#ch"),t=c&&c.querySelector(".tip");if(!t)return;const h=e.target.closest&&e.target.closest(".hit");if(!h){t.style.opacity=0;return}const i=+h.dataset.i,x=hist()[i],r=h.getBoundingClientRect(),cr=c.getBoundingClientRect();
+  t.innerHTML=`<b>${i===23?"Now":(23-i)+"h ago"}</b>`+SER.filter(s=>SHOW[s[0]]).map(s=>`<div><span><i style="background:rgb(${s[2]})"></i>${s[1]}</span><b style="color:#fff;margin:0">${int(x[s[0]])}</b></div>`).join("");t.style.left=Math.min(Math.max(0,r.left-cr.left+r.width/2-64),cr.width-140)+"px";t.style.top="44px";t.style.opacity=1});
+setInterval(()=>{if(!document.hidden&&S.tab==="stats")loadDock()},10000);
 /* ===== Scroll reveal ===== */
 const io="IntersectionObserver"in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.1}):null;
 function reveal(){document.querySelectorAll(".rv").forEach(el=>io?io.observe(el):el.classList.add("in"))}
