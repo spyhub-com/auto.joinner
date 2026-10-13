@@ -1,98 +1,113 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SpyHub AJ</title>
 <style>
-:root{--bg:#050505;--tx:#f5f5f5;--dim:#8d8d8d;--ln:rgba(255,255,255,.12);--bad:#ff6b76;color-scheme:dark}
+:root{--ln:rgba(255,255,255,.3);--dim:#8a8a8a;--bad:#ff6b76;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;min-height:100vh;overflow-x:hidden;background:var(--bg) radial-gradient(ellipse 70% 38% at 50% -8%,rgba(255,255,255,.13),transparent 70%) no-repeat;color:var(--tx);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-#app{max-width:540px;margin:0 auto;padding:14px 16px 60px}
-/* Verre dépoli */
-.glass,.box,header,nav{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--ln);border-radius:20px;-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 14px 44px rgba(0,0,0,.5)}
-@supports not (backdrop-filter:blur(1px)){.glass,.box,header,nav{background:#111}}
-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;margin-bottom:12px;position:sticky;top:env(safe-area-inset-top);z-index:5}
-.brand{display:flex;align-items:center;gap:8px;font-weight:750;font-size:17px;letter-spacing:-.03em}
-.hd{display:flex;align-items:center;gap:10px}.live{font-size:12px;color:var(--dim)}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;margin-right:6px;animation:pl 2.2s ease-in-out infinite}
-@keyframes pl{50%{opacity:.35;box-shadow:0 0 2px #fff}}
-.chip{border:1px solid var(--ln);border-radius:999px;padding:4px 12px;font-weight:600;background:rgba(255,255,255,.06)}
-.dc{color:var(--tx);display:grid}
-nav{display:flex;gap:2px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px;margin-bottom:14px;border-radius:16px}
-nav button{flex:0 0 auto;scroll-snap-align:start;background:none;border:0;color:var(--dim);padding:9px 14px;border-radius:12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;transition:.3s ease}
-nav button:hover{color:var(--tx)}nav button[aria-current=page]{background:#fff;color:#000;font-weight:650}
-.box{padding:18px;margin-bottom:12px}
-h1{font-size:clamp(32px,9vw,46px);line-height:1.05;letter-spacing:-.035em;font-weight:750;margin:0 0 14px}
-h2{font-size:17px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}p{margin:.3em 0}
+body{margin:0;background:radial-gradient(ellipse 90% 55% at 50% -12%,rgba(45,85,255,.30),transparent 70%),radial-gradient(ellipse 70% 45% at 100% 100%,rgba(15,35,140,.30),transparent 70%),radial-gradient(ellipse 60% 40% at 0 60%,rgba(30,60,200,.12),transparent 70%),#000;background-attachment:fixed;color:#fff;font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;overflow-x:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#app{max-width:1040px;min-height:100vh;margin:0 auto;padding:0 18px 28px;position:relative;z-index:1;display:flex;flex-direction:column}
+main{flex:1;padding-top:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid var(--ln)}
+.brand{background:none;border:0;color:#fff;font:inherit;font-weight:800;font-size:20px;letter-spacing:-.03em;cursor:pointer;padding:0}
+.hd{display:flex;align-items:center;gap:10px}
+.chip{border:1px solid var(--ln);border-radius:999px;padding:5px 14px;font-weight:650}
+nav{display:flex;gap:6px;overflow-x:auto;padding:14px 0 4px;scroll-snap-type:x proximity}
+nav button{flex:0 0 auto;scroll-snap-align:start;background:none;border:1px solid var(--ln);color:var(--dim);border-radius:999px;padding:8px 18px;font:inherit;font-size:15px;cursor:pointer;transition:.3s ease}
+nav button:hover{color:#fff;border-color:#fff}nav button[aria-current=page]{background:#fff;color:#000;border-color:#fff;font-weight:650}
+h1{font-size:clamp(36px,10vw,84px);line-height:1;letter-spacing:-.045em;font-weight:800;margin:0 0 18px}
+h1.sm{font-size:clamp(26px,6vw,44px);margin:14px 0 16px}
+h2{font-size:19px;font-weight:750;letter-spacing:-.02em;margin:0 0 8px}p{margin:.4em 0}
 .dim{color:var(--dim)}.bad{color:var(--bad)}a{color:#fff}
-.hero{text-align:center;padding:13vh 0 4vh}.hero .lead{color:var(--dim);font-size:16px;max-width:34ch;margin:0 auto}
-.cta{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.hero{padding:7vh 0 3vh;max-width:820px}.lead{font-size:clamp(16px,2.6vw,21px);line-height:1.45;color:var(--dim);max-width:40ch;margin:0}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
 button{font:inherit}
-.pri,.sec{border-radius:14px;padding:14px 22px;font-weight:650;cursor:pointer;text-decoration:none;text-align:center;display:inline-block;transition:.3s ease}
-.pri{background:#fff;color:#000;border:0;box-shadow:0 8px 30px rgba(255,255,255,.18)}
-.sec{background:rgba(255,255,255,.06);border:1px solid var(--ln);color:var(--tx)}
-button:hover:not(:disabled){filter:brightness(.9)}.sec:hover:not(:disabled){filter:brightness(1.25)}button:active:not(:disabled){transform:scale(.98)}
-button:disabled{opacity:.4;cursor:not-allowed}
-header .sec{padding:7px 14px;font-size:13px}.box .pri{width:100%}
-:focus-visible{outline:2px solid #fff;outline-offset:2px}
-input[type=text]{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--ln);color:var(--tx);border-radius:12px;padding:12px;font:inherit;margin:8px 0}
+.b{display:inline-block;background:none;color:#fff;border:1px solid #fff;border-radius:999px;padding:12px 24px;font-weight:650;cursor:pointer;text-align:center;text-decoration:none;transition:.3s ease}
+.b:hover:not(:disabled){background:#fff;color:#000}.b.s{background:#fff;color:#000}.b.s:hover:not(:disabled){background:none;color:#fff}
+.b.sm{padding:8px 18px;font-size:15px}.b.w{width:100%}.b.out{color:var(--bad);border-color:rgba(255,107,118,.5);width:100%}.b.out:hover:not(:disabled){background:var(--bad);color:#000}
+.b:active:not(:disabled){transform:scale(.98)}.b:disabled{opacity:.35;cursor:not-allowed}
+:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.box{border:1px solid var(--ln);border-radius:16px;padding:18px;margin-bottom:16px}
+input[type=text]{width:100%;background:#000;border:1px solid var(--ln);color:#fff;border-radius:12px;padding:14px;font:inherit;margin:10px 0}
 input[type=range]{width:100%;accent-color:#fff}
-code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
-.line{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0}
-.big{font-size:34px;font-weight:750;letter-spacing:-.03em}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.grid .box{margin:0;padding:14px}
-.sx{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 8px;border-top:1px solid var(--ln);white-space:nowrap}th{color:var(--dim);font-weight:500;font-size:12px;border:0}
-.av{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff;color:#000;font-weight:750;vertical-align:middle;flex:none}.av.xl{width:64px;height:64px;font-size:26px}
-.fl{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}.fl .sec{padding:8px 14px;font-size:13px;white-space:nowrap}.fl .on{background:#fff;color:#000}
-.pod{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end;margin-bottom:12px}.pc{padding:14px 6px;text-align:center;overflow:hidden;font-size:13px}.pc.p0{padding:26px 6px}.pc .av{display:grid;margin:0 auto 6px}
+code{border:1px solid var(--ln);padding:2px 8px;border-radius:8px}
+.line{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0}
+.big{font-size:32px;font-weight:800;letter-spacing:-.04em;line-height:1.1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.grid .box{margin:0}
+@media(min-width:800px){.grid.g4{grid-template-columns:repeat(4,1fr)}}
+.sx{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px 10px;border-top:1px solid var(--ln);white-space:nowrap}th{color:var(--dim);font-weight:500;font-size:14px;border:0}
+.av{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1px solid #fff;font-weight:800;vertical-align:middle;flex:none}.av.xl{width:72px;height:72px;font-size:30px}
+.fl{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto}.fl .on{background:#fff;color:#000}
+.pod{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:end;margin-bottom:16px}.pc{padding:16px 8px;text-align:center;overflow:hidden;font-size:15px}.pc.p0{padding:34px 8px}.pc .av{display:grid;margin:0 auto 8px}
 .me{background:rgba(255,255,255,.1)}
-.pk{padding:16px;display:flex;flex-direction:column;gap:4px;position:relative}.pk h2{margin:0}.pk .sec,.pk .pri{margin-top:auto;width:100%}
-.badge{position:absolute;top:12px;right:12px;font-size:11px;font-weight:650;background:#fff;color:#000;border-radius:999px;padding:1px 9px}
-.bar{height:6px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:#fff;transition:width .5s ease}
-.tl{display:flex;gap:3px;overflow-x:auto;padding:6px 2px 10px;scroll-snap-type:x proximity}
-.cell{flex:0 0 30px;display:flex;flex-direction:column-reverse;align-items:center;gap:3px;background:none;border:1px solid transparent;border-radius:10px;padding:4px 0;cursor:pointer;scroll-snap-align:start;color:var(--dim);font-size:11px}
-.cell .lb{height:14px;order:9}.cell i{display:block;width:16px;height:7px;border-radius:3px;border:1px solid #fff}.cell i.on{background:rgba(255,255,255,.18);border-color:transparent}
-.cell.full{cursor:not-allowed;opacity:.5}.cell.sel{background:rgba(255,255,255,.16);border-color:#fff;color:#fff}
-.tg{width:48px;height:28px;border-radius:999px;border:1px solid var(--ln);background:rgba(255,255,255,.08);padding:2px;cursor:pointer;text-align:left}.tg i{display:block;width:22px;height:22px;border-radius:50%;background:var(--dim);transition:transform .3s ease}.tg.on{background:rgba(255,255,255,.3)}.tg.on i{background:#fff;transform:translateX(20px)}
-.out{color:var(--bad);border-color:rgba(255,107,118,.35);width:100%}
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:14px;font-weight:650;max-width:90%;z-index:9}
-.flash{animation:fl 1.2s ease}@keyframes fl{20%{box-shadow:0 0 0 2px #fff,0 0 50px rgba(255,255,255,.5)}}
-@media(min-width:560px){.cta{flex-direction:row;justify-content:center}}
-@media(prefers-reduced-motion:reduce){.dot,.flash{animation:none}*{transition:none!important}html{scroll-behavior:auto}}
+.pk{display:flex;flex-direction:column;gap:6px;position:relative}.pk h2{margin:0}.pk .b{margin-top:auto}
+.badge{position:absolute;top:16px;right:16px;font-size:12px;font-weight:700;background:#fff;color:#000;border-radius:999px;padding:1px 10px}
+.bar{height:8px;border-radius:9px;border:1px solid var(--ln);overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:#fff;transition:width .5s ease}
+.tl{display:flex;gap:4px;overflow-x:auto;padding:8px 2px 12px;scroll-snap-type:x proximity}
+.cell{flex:0 0 34px;display:flex;flex-direction:column-reverse;align-items:center;gap:3px;background:none;border:1px solid transparent;border-radius:10px;padding:5px 0;cursor:pointer;scroll-snap-align:start;color:var(--dim);font-size:12px}
+.cell .lb{height:16px;order:9}.cell i{display:block;width:18px;height:8px;border-radius:3px;border:1px solid #fff}.cell i.on{background:rgba(255,255,255,.2);border-color:transparent}
+.cell.full{cursor:not-allowed;opacity:.45}.cell.sel{border-color:#fff;color:#fff;background:rgba(255,255,255,.1)}
+.tg{width:52px;height:30px;border-radius:999px;border:1px solid var(--ln);background:none;padding:2px;cursor:pointer;text-align:left}.tg i{display:block;width:24px;height:24px;border-radius:50%;background:var(--dim);transition:transform .3s ease}.tg.on i{background:#fff;transform:translateX(22px)}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:#000;padding:12px 20px;border-radius:999px;font-weight:650;max-width:90%;z-index:9}
+.flash{animation:fl 1.2s ease}@keyframes fl{20%{box-shadow:0 0 0 2px #fff}}
+.back{margin-top:8px}.legal h2{margin-top:22px}
+footer{border-top:1px solid var(--ln);margin-top:40px;padding-top:18px;display:flex;flex-wrap:wrap;gap:8px 22px;font-size:14px;color:var(--dim)}
+footer button{background:none;border:0;color:var(--dim);cursor:pointer;padding:0;font-size:14px}footer button:hover{color:#fff}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.gt,h1,.big,.brand{background:linear-gradient(110deg,#fff 0%,#a9c8ff 30%,#4f7bff 65%,#1d3fb8 100%);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gs 10s ease-in-out infinite alternate}
+@keyframes gs{to{background-position:100% 50%}}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}.rv.in{opacity:1;transform:none}
+.pill{display:inline-block;border:1px solid rgba(120,160,255,.45);color:#a9c8ff;border-radius:999px;padding:5px 14px;font-size:13px;margin-bottom:18px}
+.sec{margin-top:52px}.sh{font-size:clamp(24px,5vw,38px);letter-spacing:-.035em;margin:0 0 18px}
+.fg{display:grid;gap:14px;grid-template-columns:1fr}.fc{margin:0;transition:border-color .3s ease,transform .3s ease}.fc:hover{border-color:rgba(120,160,255,.6);transform:translateY(-3px)}.fc h3{margin:0 0 6px;font-size:17px}
+.num{display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid rgba(120,160,255,.6);border-radius:50%;margin-bottom:10px;font-weight:700}
+.pr{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+details.box{margin-bottom:10px;padding:14px 18px}summary{cursor:pointer;font-weight:650}
+.cta2{text-align:center;padding:34px 18px}.cta2 .cta{justify-content:center}
+@media(min-width:640px){.fg{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.fg{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.cta .b{flex:1}}
+@media(prefers-reduced-motion:reduce){.gt,h1,.big,.brand{animation:none}.rv{opacity:1;transform:none}}
 </style>
 </head>
 <body>
+<canvas id="fx" aria-hidden="true"></canvas>
 <div id="app"></div>
 <script>
-/* ===== Réglages : renseigne API_BASE avec l'adresse de ton Worker ===== */
-const CONFIG={API_BASE:"",LOGIN_PATH:"/api/site/auth/discord",DISCORD_URL:"https://discord.com",SEATS:4,STEP:30,MAX_MIN:120,HORIZON_H:24,PRICE_PER_HOUR:1};
+/* ===== Settings: put your Worker URL in API_BASE and fill in the legal details ===== */
+const CONFIG={API_BASE:"",LOGIN_PATH:"/api/site/auth/discord",SEATS:4,STEP:30,MAX_MIN:120,HORIZON_H:24,PRICE_PER_HOUR:1,
+  LEGAL:{publisher:"",country:"",email:""}};
 const CELL=CONFIG.STEP*60000,A="/api/site",$=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money=n=>"$"+(+n||0).toFixed(2),hm=ms=>new Date(ms).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-const day=ms=>new Date(ms).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+const money=n=>"$"+(+n||0).toFixed(2),hm=ms=>new Date(ms).toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+const day=ms=>new Date(ms).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
 const dur=m=>m>=60?(m%60?Math.floor(m/60)+" h "+m%60:m/60+" h"):m+" min";
 const fmt=n=>{n=+n||0;for(const[u,v]of[["B",1e9],["M",1e6],["K",1e3]])if(n>=v)return"$"+(n/v).toFixed(1)+u+"/s";return"$"+Math.round(n)+"/s"};
-const ago=t=>{const s=Math.max(1,Math.round((Date.now()-t)/1e3));return s<60?s+" s":s<3600?Math.round(s/60)+" min":Math.round(s/3600)+" h"};
-const S={me:null,tab:"home",start:null,dur:60,taken:{},busy:false,f:"a",notif:true,end:0,stats:null,list:null,lb:null};
+const ago=t=>{const s=Math.max(1,Math.round((Date.now()-t)/1e3));return(s<60?s+"s":s<3600?Math.round(s/60)+"m":Math.round(s/3600)+"h")+" ago"};
+const S={me:null,tab:"home",start:null,dur:60,taken:{},busy:false,f:"a",notif:true,end:0,stats:null,list:null,lb:null,err:""};
 
-/* ===== Réseau : jeton Bearer + cookies ===== */
+/* ===== Network (Bearer token on /api/site routes) ===== */
 const tok=()=>{try{return localStorage.getItem("spyaj_t")||""}catch{return""}},setTok=t=>{try{t?localStorage.setItem("spyaj_t",t):localStorage.removeItem("spyaj_t")}catch{}};
 {const m=location.hash.match(/[#&]t=([\w.-]+)/);if(m){setTok(m[1]);history.replaceState(null,"",location.pathname)}}
 async function api(path,body){
-  try{const r=await fetch(CONFIG.API_BASE+path,{method:body?"POST":"GET",credentials:"include",headers:{...(body?{"Content-Type":"application/json"}:{}),...(tok()?{Authorization:"Bearer "+tok()}:{})},body:body?JSON.stringify(body):undefined});
-    let d={};try{d=await r.json()}catch{}return{ok:r.ok,status:r.status,data:d}}catch{return{ok:false,status:0,data:{error:"Serveur injoignable"}}}
+  if(!CONFIG.API_BASE)return{ok:false,status:0,data:{error:"API not configured: set CONFIG.API_BASE"}};
+  try{const r=await fetch(CONFIG.API_BASE+path,{method:body?"POST":"GET",credentials:"include",headers:{...(body?{"Content-Type":"application/json"}:{}),...(tok()&&path.startsWith(A)?{Authorization:"Bearer "+tok()}:{})},body:body?JSON.stringify(body):undefined});
+    let d={};try{d=await r.json()}catch{}if(!r.ok&&!d.error)d.error=r.status===404?"API not found (404), check CONFIG.API_BASE":"Error "+r.status;return{ok:r.ok,status:r.status,data:d}}
+  catch{return{ok:false,status:0,data:{error:"Server unreachable (wrong URL or CORS)"}}}
 }
 function toast(t){document.querySelector(".toast")?.remove();const e=document.createElement("div");e.className="toast";e.setAttribute("role","status");e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
 
-/* ===== Données réelles ===== */
+/* ===== Data ===== */
 const first=()=>Math.floor(Date.now()/CELL)+1,count=()=>CONFIG.HORIZON_H*60/CONFIG.STEP;
 const win=()=>S.start==null?[]:Array.from({length:S.dur/CONFIG.STEP},(_,i)=>S.start+i);
 const winOk=()=>{const w=win();return w.length>0&&w.every(c=>c in S.taken&&S.taken[c]<CONFIG.SEATS)};
 async function loadAvail(){if(!S.me)return;const f=first(),r=await api(`${A}/availability?from=${f}&to=${f+count()-1}`);if(r.ok)S.taken=r.data.taken||{}}
 async function loadStats(){
   const[a,b]=await Promise.all([api("/api/stats"),api("/api/brainrots?limit=10&sort=mps")]);
-  S.stats=a.ok?a.data:null;const d=b.data;S.list=b.ok?(Array.isArray(d)?d:d.brainrots||d.items||[]):null;
+  S.err=a.ok?"":(a.data.error||"");S.stats=a.ok?a.data:null;const d=b.data;S.list=b.ok?(Array.isArray(d)?d:d.brainrots||d.items||[]):null;
   if(S.tab==="stats")paintStats()}
 async function loadBoard(){const r=await api(`${A}/leaderboard?range=${S.f}`);S.lb=r.ok?(r.data.rows||[]):null;if(S.tab==="board")render()}
 async function load(){
@@ -100,103 +115,130 @@ async function load(){
   S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],stats:r.data.stats,license:r.data.license||{key:"",hwidResetAt:0},reservations:r.data.reservations||[]}:null;
   if(S.me)await loadAvail();render()}
 
-/* ===== Vues ===== */
-const home=()=>`<section class="hero"><h1>Rejoins le bon serveur avant tout le monde.</h1><p class="lead">SpyHub AJ repère les meilleurs brainrots en direct et te place dessus.</p><div class="cta"><button class="pri" data-act="dash">Get Dashboard</button><button class="sec" data-act="tab" data-t="stats">Live Stats</button></div></section>`;
+/* ===== Views ===== */
+const FEAT=[["Real-time detection","Scanners watch the servers around the clock and push every new brainrot the moment it appears."],["Instant auto-join","The script moves you to the best server as soon as it is spotted. No refreshing."],["Booked slots","Reserve from 30 minutes to 2 hours. 4 seats per slot keeps things fast."],["Gift cards and balance","Top up with a gift card and pay only for the time you use."],["Device protection","Your license is bound to your device. Reset it yourself once a day."],["Discord sign-in","One click with your Discord account. Nothing else to create."]];
+const STEPS=[["Sign in","Log in with your Discord account."],["Book a slot","Pick a start time and a duration."],["Run the script","Paste your key and let the auto-join work."]];
+const FAQ=[["What if I don't connect during my slot?","The slot keeps running, you just don't use it."],["How many people at once?","4 users maximum per slot."],["How do I pay?","With your balance, topped up by gift card. There is no subscription."],["I changed device, what now?","Reset your HWID from Settings, once per day."],["Is it affiliated with Roblox?","No. SpyHub AJ is independent. See the Legal Notice."]];
+const ctas=`<div class="cta"><button class="b s" data-act="dash">Get Dashboard</button><button class="b" data-act="tab" data-t="stats">Live Stats</button></div>`;
+const home=()=>`<section class="hero rv"><span class="pill">Auto join · Real-time · 4 seats per slot</span><h1>SpyHub Auto Joinner</h1><p class="lead">Spots the best brainrots live and joins the right server for you. Book a slot, run the script, that's it.</p>${ctas}</section>
+<section class="sec rv"><h2 class="gt sh">Everything you need</h2><div class="fg">${FEAT.map(([t,d])=>`<div class="box fc"><h3>${t}</h3><p class="dim">${d}</p></div>`).join("")}</div></section>
+<section class="sec rv"><h2 class="gt sh">How it works</h2><div class="fg">${STEPS.map(([t,d],i)=>`<div class="box fc"><span class="num">${i+1}</span><h3>${t}</h3><p class="dim">${d}</p></div>`).join("")}</div></section>
+<section class="sec rv"><div class="box pr"><div><h2 class="gt sh" style="margin:0">Simple pricing</h2><p class="dim">Pay with your balance. No subscription, no commitment.</p></div><div><span class="big">${money(CONFIG.PRICE_PER_HOUR)}</span><span class="dim"> / hour</span></div></div></section>
+<section class="sec rv"><h2 class="gt sh">FAQ</h2>${FAQ.map(([q,a])=>`<details class="box"><summary>${q}</summary><p class="dim">${a}</p></details>`).join("")}</section>
+<section class="sec rv box cta2"><h2 class="gt sh">Join the right server first.</h2>${ctas}</section>`;
 const none=t=>`<p class="dim">${t}</p>`;
 function statsHtml(){
   const s=S.stats,l=S.list;
-  if(!s&&!l)return`<div class="box"><h2>Live Stats</h2>${none("Données indisponibles pour le moment.")}</div>`;
+  if(!s&&!l)return`<div class="box"><h2>Live Stats</h2>${none("Data unavailable."+(S.err?" "+esc(S.err)+".":""))}</div>`;
   const c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`;
-  return(s?`<div class="grid">${c("En base",s.total??"—")}${c("Aujourd'hui",s.activeToday??"—")}${c("Scanners actifs",s.scanners??"—")}${c("Meilleure valeur",s.topMps!=null?fmt(s.topMps):"—")}</div>`:"")
-  +`<div class="box"><h2>Meilleurs brainrots</h2>${l&&l.length?`<div class="sx"><table><thead><tr><th>Nom</th><th>Valeur</th><th>Il y a</th></tr></thead><tbody>${l.map(b=>`<tr><td>${esc(b.name)}</td><td>${fmt(b.mps)}</td><td class="dim">${b.timestamp?ago(b.timestamp):"—"}</td></tr>`).join("")}</tbody></table></div>`:none("Aucun brainrot pour le moment.")}</div>`}
-const stats=()=>`<div id="st" aria-live="polite">${statsHtml()}</div>`;
+  return(s?`<div class="grid g4">${c("In database",s.total??"—")}${c("Today",s.activeToday??"—")}${c("Active scanners",s.scanners??"—")}${c("Top value",s.topMps!=null?fmt(s.topMps):"—")}</div>`:"")
+  +`<div class="box"><h2>Top brainrots</h2>${l&&l.length?`<div class="sx"><table><thead><tr><th>Name</th><th>Value</th><th>Found</th></tr></thead><tbody>${l.map(b=>`<tr><td>${esc(b.name)}</td><td>${fmt(b.mps)}</td><td class="dim">${b.timestamp?ago(b.timestamp):"—"}</td></tr>`).join("")}</tbody></table></div>`:none("No brainrots yet.")}</div>`}
+const stats=()=>`<h1 class="sm">Live Stats</h1><div id="st" aria-live="polite">${statsHtml()}</div>`;
 const paintStats=()=>{const e=$("#st");if(e)e.innerHTML=statsHtml()};
 const PACKS=[[1,1],[5,.9],[10,.8],[24,.7]],price=(h,d)=>+(CONFIG.PRICE_PER_HOUR*h*d).toFixed(2);
 function buy(){
-  let live=none("Connecte-toi pour voir les places en direct.");
+  let live=none("Sign in to see live availability.");
   if(S.me){const now=Math.floor(Date.now()/CELL),o=S.taken[now],nx=Object.keys(S.taken).map(Number).sort((a,b)=>a-b).find(c=>c>=now&&S.taken[c]<CONFIG.SEATS);
-    live=o==null?none("Disponibilité indisponible."):`<p><b>${o} / ${CONFIG.SEATS}</b> slots occupés maintenant</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Prochaine place libre : "+(nx==null?"aucune dans les 24 h":nx===now?"maintenant":hm(nx*CELL)))}`}
-  return`<div class="grid">${PACKS.map(([h,d])=>{const p=price(h,d),sv=CONFIG.PRICE_PER_HOUR*h-p;return`<div class="box pk">${h===10?'<span class="badge">Populaire</span>':""}<h2>${h} h</h2><div class="big">${money(p)}</div>${none(sv>0?"Économie : "+money(sv):"Tarif horaire")}<button class="${h===10?"pri":"sec"}" data-act="buy" data-h="${h}">Précommander</button></div>`}).join("")}</div>
-  <div class="box" aria-live="polite"><h2>Disponibilité en direct</h2>${live}</div>`}
+    live=o==null?none("Availability unavailable."):`<p><b>${o} / ${CONFIG.SEATS}</b> slots in use right now</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Next free slot: "+(nx==null?"none in the next 24 h":nx===now?"now":hm(nx*CELL)))}`}
+  return`<h1 class="sm">Buy</h1><div class="grid g4">${PACKS.map(([h,d])=>{const p=price(h,d),sv=CONFIG.PRICE_PER_HOUR*h-p;return`<div class="box pk">${h===10?'<span class="badge">Popular</span>':""}<h2>${h} h</h2><div class="big">${money(p)}</div>${none(sv>0?"You save "+money(sv):"Hourly rate")}<button class="b${h===10?" s":""}" data-act="buy" data-h="${h}">Pre-order</button></div>`}).join("")}</div>
+  <div class="box" aria-live="polite"><h2>Live availability</h2>${live}</div>`}
 function board(){
   const L=S.lb,me=S.me?.user?.name,ini=n=>esc(String(n||"?")[0].toUpperCase());
-  const flt=`<div class="fl">${[["d","Aujourd'hui"],["w","Cette semaine"],["a","Tout le temps"]].map(([k,n])=>`<button class="sec${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
-  if(!L)return flt+`<div class="box">${none("Classement indisponible pour le moment.")}</div>`;
-  if(!L.length)return flt+`<div class="box">${none("Aucun joueur classé pour le moment.")}</div>`;
-  const pc=(r,i)=>`<div class="glass pc p${i}${r.name===me?" me":""}"><span class="av">${ini(r.name)}</span><b>#${i+1} ${esc(r.name)}</b><p class="dim">${+r.count||0} capturés</p><b>${fmt(r.value)}</b></div>`;
+  const flt=`<h1 class="sm">Leaderboard</h1><div class="fl">${[["d","Today"],["w","This week"],["a","All time"]].map(([k,n])=>`<button class="b sm${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
+  if(!L)return flt+`<div class="box">${none("Leaderboard unavailable right now.")}</div>`;
+  if(!L.length)return flt+`<div class="box">${none("No ranked players yet.")}</div>`;
+  const pc=(r,i)=>`<div class="box pc p${i}${r.name===me?" me":""}"><span class="av">${ini(r.name)}</span><b>#${i+1} ${esc(r.name)}</b><p class="dim">${+r.count||0} caught</p><b>${fmt(r.value)}</b></div>`;
   return flt+(L.length>=3?`<div class="pod">${[1,0,2].map(i=>pc(L[i],i)).join("")}</div>`:"")
-  +`<div class="box sx"><table><thead><tr><th>#</th><th>Pseudo</th><th>Capturés</th><th>Valeur</th></tr></thead><tbody>${L.slice(0,10).map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+1}</td><td><span class="av">${ini(r.name)}</span> ${esc(r.name)}</td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`}
+  +`<div class="box sx"><table><thead><tr><th>#</th><th>Player</th><th>Caught</th><th>Total value</th></tr></thead><tbody>${L.slice(0,10).map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+1}</td><td><span class="av">${ini(r.name)}</span> ${esc(r.name)}</td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`}
 function slots(){
   let cells="";const f=first();
-  for(let i=0;i<count();i++){const c=f+i,t=S.taken[c]??0,ms=c*CELL,full=t>=CONFIG.SEATS;
-    cells+=`<button class="cell${full?" full":""}" data-act="cell" data-c="${c}" ${full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} places libres"><span class="lb">${new Date(ms).getMinutes()===0?new Date(ms).getHours()+"h":""}</span>${Array.from({length:CONFIG.SEATS},(_,k)=>`<i class="${k<t?"on":""}"></i>`).join("")}</button>`}
-  return`<div class="box"><h2>Quand ?</h2>${none("Chaque colonne dure "+CONFIG.STEP+" min. Les barres vides sont des places libres sur "+CONFIG.SEATS+".")}<div class="tl">${cells}</div>
-  <div class="line"><label for="dur">Durée</label><b id="dl"></b></div><input id="dur" type="range" min="${CONFIG.STEP}" max="${CONFIG.MAX_MIN}" step="${CONFIG.STEP}" value="${S.dur}"></div>
-  <div class="box"><div id="sum" aria-live="polite"></div></div><button class="pri" id="go" data-act="reserve" disabled>Réserver ce créneau</button>`}
+  for(let i=0;i<count();i++){const c=f+i,t=S.taken[c]??0,ms=c*CELL,d=new Date(ms),full=t>=CONFIG.SEATS;
+    cells+=`<button class="cell${full?" full":""}" data-act="cell" data-c="${c}" ${full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} seats free"><span class="lb">${d.getMinutes()===0?d.getHours()+"h":""}</span>${Array.from({length:CONFIG.SEATS},(_,k)=>`<i class="${k<t?"on":""}"></i>`).join("")}</button>`}
+  return`<h1 class="sm">Slots</h1><div class="box"><h2>When?</h2>${none("Each column is "+CONFIG.STEP+" min. Empty bars are free seats out of "+CONFIG.SEATS+".")}<div class="tl">${cells}</div>
+  <div class="line"><label for="dur">Duration</label><b id="dl"></b></div><input id="dur" type="range" min="${CONFIG.STEP}" max="${CONFIG.MAX_MIN}" step="${CONFIG.STEP}" value="${S.dur}"></div>
+  <div class="box"><div id="sum" aria-live="polite"></div></div><button class="b s w" id="go" data-act="reserve" disabled>Book this slot</button>`}
 function upd(){
   const w=new Set(win());document.querySelectorAll(".cell").forEach(b=>b.classList.toggle("sel",w.has(+b.dataset.c)));
   $("#dl").textContent=dur(S.dur);const el=$("#sum"),btn=$("#go");
-  if(S.start==null){el.innerHTML='<span class="dim">Touche une heure de départ dans la frise.</span>';btn.disabled=true;return}
+  if(S.start==null){el.innerHTML='<span class="dim">Tap a start time on the timeline.</span>';btn.disabled=true;return}
   const ok=winOk(),p=CONFIG.PRICE_PER_HOUR*S.dur/60,after=S.me.balance-p,s=S.start*CELL,e=s+S.dur*60000;
-  el.innerHTML=`<b>${day(s)}, de ${hm(s)} à ${hm(e)}</b><p>Prix : ${money(p)}. Solde après achat : ${money(Math.max(after,0))}.</p>`+(!ok?`<p class="bad">Il n'y a plus de place libre sur toute cette durée.</p>`:after<0?`<p class="bad">Solde insuffisant. <a href="#" data-act="tab" data-t="gift">Recharger</a></p>`:"");
+  el.innerHTML=`<b>${day(s)}, ${hm(s)} to ${hm(e)}</b><p>Price: ${money(p)}. Balance after purchase: ${money(Math.max(after,0))}.</p>`+(!ok?`<p class="bad">No free seat for the whole duration.</p>`:after<0?`<p class="bad">Not enough balance. <a href="#" data-act="tab" data-t="gift">Top up</a></p>`:"");
   btn.disabled=!ok||after<0||S.busy}
-const gift=()=>`<div class="box" id="gb"><h2>Utiliser un gift card</h2>${none("Le montant est ajouté à ton solde. Un code ne marche qu'une fois.")}<label for="code" class="dim">Code</label><input id="code" type="text" placeholder="SPY.AJ_XXXXXXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="pri" data-act="redeem">Utiliser le code</button></div>
-<div class="box"><h2>Historique</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Montant</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("fr-FR")}</td></tr>`).join("")}</tbody></table></div>`:none("Aucun code utilisé.")}</div>`;
+const gift=()=>`<h1 class="sm">Giftcard</h1><div class="box" id="gb"><h2>Redeem a gift card</h2>${none("The amount is added to your balance. Each code works once.")}<label for="code" class="dim">Code</label><input id="code" type="text" placeholder="SPY.AJ_XXXXXXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="b s w" data-act="redeem">Redeem code</button></div>
+<div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
 function settings(){
   const l=S.me.license,left=l.hwidResetAt+864e5-Date.now(),can=left<=0;
-  return`<div class="box"><h2>Ta licence</h2>${none("Colle cette clé dans le script.")}<div class="line"><code id="key">${l.key?"spy_****"+esc(l.key.slice(-4)):"—"}</code><span><button class="sec" data-act="show">Afficher</button> <button class="sec" data-act="copy">Copier</button></span></div></div>
-  <div class="box"><h2>Appareil (HWID)</h2>${none((l.hwidBound?"Ta licence est liée à un appareil.":"Aucun appareil lié.")+" Réinitialisation possible une fois par jour.")}<button class="sec" data-act="hwid" ${can?"":"disabled"} style="margin-top:8px">Réinitialiser le HWID</button>${can?"":none("Disponible dans "+Math.ceil(left/36e5)+" h.")}</div>
-  <div class="box"><h2>Préférences</h2><div class="line"><span>Thème</span><span class="dim">Dark uniquement</span></div><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div>
-  <button class="sec out" data-act="logout">Se déconnecter</button>`}
+  return`<h1 class="sm">Settings</h1><div class="box"><h2>Your license</h2>${none("Paste this key into the script.")}<div class="line"><code id="key">${l.key?"spy_****"+esc(l.key.slice(-4)):"—"}</code><span><button class="b sm" data-act="show">Show</button> <button class="b sm" data-act="copy">Copy</button></span></div></div>
+  <div class="box"><h2>Device (HWID)</h2>${none((l.hwidBound?"Your license is bound to a device.":"No device bound.")+" You can reset it once a day.")}<button class="b sm" data-act="hwid" ${can?"":"disabled"} style="margin-top:8px">Reset HWID</button>${can?"":none("Available in "+Math.ceil(left/36e5)+" h.")}</div>
+  <div class="box"><h2>Preferences</h2><div class="line"><span>Theme</span><span class="dim">Dark only</span></div><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div>
+  <button class="b out" data-act="logout">Log out</button>`}
 function dash(){
-  const m=S.me,now=Date.now(),R=[...m.reservations].sort((a,b)=>b.start-a.start),cur=R.find(r=>now>=r.start&&now<r.end),mn=R.reduce((a,r)=>a+(r.end-r.start)/6e4,0),sp=R.reduce((a,r)=>a+r.price,0),nm=esc(m.user?.name||"Joueur");
+  const m=S.me,now=Date.now(),R=[...m.reservations].sort((a,b)=>b.start-a.start),cur=R.find(r=>now>=r.start&&now<r.end),mn=R.reduce((a,r)=>a+(r.end-r.start)/6e4,0),sp=R.reduce((a,r)=>a+r.price,0),nm=esc(m.user?.name||"Player");
   S.end=cur?cur.end:0;
-  return`<div class="box"><div class="line" style="justify-content:flex-start;gap:14px"><span class="av xl">${nm[0]?.toUpperCase()||"?"}</span><div><h2>${nm}</h2>${none("ID "+esc(m.user?.id||"—"))}</div></div></div>
-  <div class="grid"><div class="box"><span class="dim">Solde</span><div class="big">${money(m.balance)}</div><button class="sec" data-act="tab" data-t="gift" style="margin-top:8px;width:100%">Recharger</button></div>
-  <div class="box"><span class="dim">Créneau en cours</span>${cur?`<div class="big" id="cd">--:--:--</div>${none(hm(cur.start)+" → "+hm(cur.end))}`:`${none("Aucun")}<button class="sec" data-act="tab" data-t="slots" style="margin-top:8px;width:100%">Réserver</button>`}</div></div>
-  <div class="box"><h2>Mes stats</h2><div class="line"><span class="dim">Brainrots capturés</span><b>${m.stats?.captured??"—"}</b></div><div class="line"><span class="dim">Temps d'auto-join</span><b>${dur(mn)}</b></div><div class="line"><span class="dim">Solde dépensé</span><b>${money(sp)}</b></div></div>
-  <div class="box"><h2>Historique</h2>${R.length?`<div class="sx"><table><thead><tr><th>Date</th><th>Durée</th><th>Prix</th><th>Statut</th></tr></thead><tbody>${R.slice(0,5).map(r=>`<tr><td>${new Date(r.start).toLocaleDateString("fr-FR")} ${hm(r.start)}</td><td>${dur((r.end-r.start)/6e4)}</td><td>${money(r.price)}</td><td>${now<r.start?"À venir":now<r.end?"En cours":"Terminé"}</td></tr>`).join("")}</tbody></table></div>`:none("Aucune réservation.")}</div>`}
+  return`<h1 class="sm">Dashboard</h1><div class="box"><div class="line" style="justify-content:flex-start;gap:16px"><span class="av xl">${nm[0]?.toUpperCase()||"?"}</span><div><h2>${nm}</h2>${none("ID "+esc(m.user?.id||"—"))}</div></div></div>
+  <div class="grid"><div class="box"><span class="dim">Balance</span><div class="big">${money(m.balance)}</div><button class="b sm" data-act="tab" data-t="gift" style="margin-top:10px">Top up</button></div>
+  <div class="box"><span class="dim">Current slot</span>${cur?`<div class="big" id="cd">--:--:--</div>${none(hm(cur.start)+" to "+hm(cur.end))}`:`${none("None")}<button class="b sm" data-act="tab" data-t="slots" style="margin-top:10px">Book a slot</button>`}</div></div>
+  <div class="box"><h2>My stats</h2><div class="line"><span class="dim">Brainrots caught</span><b>${m.stats?.captured??"—"}</b></div><div class="line"><span class="dim">Auto-join time</span><b>${dur(mn)}</b></div><div class="line"><span class="dim">Balance spent</span><b>${money(sp)}</b></div></div>
+  <div class="box"><h2>History</h2>${R.length?`<div class="sx"><table><thead><tr><th>Date</th><th>Duration</th><th>Price</th><th>Status</th></tr></thead><tbody>${R.slice(0,5).map(r=>`<tr><td>${new Date(r.start).toLocaleDateString("en-US")} ${hm(r.start)}</td><td>${dur((r.end-r.start)/6e4)}</td><td>${money(r.price)}</td><td>${now<r.start?"Upcoming":now<r.end?"Active":"Done"}</td></tr>`).join("")}</tbody></table></div>`:none("No bookings yet.")}</div>`}
 
-/* ===== Rendu ===== */
-const PUB=[["home","Home"],["stats","Stats"],["buy","Buy"],["board","Leaderboard"]],PRIV=[["slots","Slots"],["gift","Giftcard"],["settings","Settings"],["dash","Dashboard"]];
-const LOGO=`<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 16C6 9 11 6 16 6s10 3 14 10c-4 7-9 10-14 10S6 23 2 16Z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="5" fill="#fff"/><circle cx="16" cy="16" r="2" fill="#050505"/></svg>`;
-const DISC=`<svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M19.3 5.3A17 17 0 0 0 15.1 4l-.5 1.1a15.8 15.8 0 0 0-5.2 0L8.9 4A17 17 0 0 0 4.7 5.3C2 9.3 1.3 13.2 1.7 17a17 17 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12 12 0 0 0 10.2 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.8a17 17 0 0 0 5.2-2.6c.5-4.4-.8-8.3-3-11.7ZM8.7 14.7c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg>`;
+/* ===== Legal pages (fill in CONFIG.LEGAL and have them reviewed) ===== */
+const tbc=v=>v?esc(v):"[to be completed]",LG=CONFIG.LEGAL;
+const LEGAL={
+ legal:["Legal Notice",[["Publisher",`SpyHub AJ is published by ${tbc(LG.publisher)} (${tbc(LG.country)}). Contact: ${tbc(LG.email)}.`],["Hosting","The website is hosted on GitHub Pages. The API runs on Cloudflare Workers."],["Intellectual property","All content on this site belongs to its publisher. SpyHub AJ is an independent product, not affiliated with, endorsed by or sponsored by Roblox Corporation."]]],
+ terms:["Terms of Service",[["Service","SpyHub AJ is an auto-join tool that detects brainrots and joins servers. It is sold as time slots, with a maximum of 4 users per slot."],["Account and license","You sign in with Discord. Your license key and device (HWID) are personal. Sharing them is forbidden and may lead to a ban without refund."],["Balance","Your balance is topped up with gift cards. It is not transferable and has no cash value."],["Use at your own risk","Third-party scripts may break the rules of the games you play. You are solely responsible for how you use the service, which is provided as is, without warranty."],["Termination","Access may be suspended for abuse or breach of these terms."],["Changes","These terms may change. Continuing to use the site means you accept them."]]],
+ privacy:["Privacy Policy",[["Data we collect","Your Discord ID and username, license key, device identifier (HWID), balance, gift card history and bookings."],["Why","To run your account, enforce the 4-user limit and prevent license sharing. Your data is never sold."],["Processors","Discord (sign-in) and Cloudflare (API hosting)."],["Browser storage","A session token is stored in your browser (localStorage) to keep you signed in."],["Your rights","You can request access, correction or deletion of your data at "+tbc(LG.email)+"."]]],
+ refund:["Refund Policy",[["Digital goods","Balance, gift cards and purchased time are digital and non-refundable once used or started."],["Booked slots","A booked slot runs from its start time to its end time whether or not you connect."],["Problems","If a technical fault on our side prevents you from using a paid slot, contact "+tbc(LG.email)+" and your request will be reviewed."]]]};
+const legal=()=>{const[t,sec]=LEGAL[S.tab];return`<h1 class="sm">${t}</h1><div class="legal">${sec.map(([h,p])=>`<h2>${h}</h2><p class="dim">${p}</p>`).join("")}</div>`};
+
+/* ===== Rendering ===== */
+const TABS=[["dash","Dashboard"],["slots","Slots"],["buy","Buy"],["gift","Giftcard"],["stats","Stats"],["board","Leaderboard"],["settings","Settings"]];
 function render(){
-  const tabs=S.me?[...PUB,...PRIV]:PUB;if(!tabs.some(t=>t[0]===S.tab))S.tab="home";
-  const V={home,stats,buy,board,slots,gift,settings,dash};
-  $("#app").innerHTML=`<header><span class="brand">${LOGO}SpyHub AJ</span><span class="hd"><span class="live"><i class="dot"></i>En direct</span>${S.me?`<span class="chip" aria-label="Solde">${money(S.me.balance)}</span>`:""}<a class="dc" href="${esc(CONFIG.DISCORD_URL)}" target="_blank" rel="noopener" aria-label="Discord">${DISC}</a>${S.me?'<button class="sec" data-act="tab" data-t="settings">Compte</button>':'<button class="sec" data-act="login">Login</button>'}</span></header>
-  <nav aria-label="Navigation">${tabs.map(([id,n])=>`<button data-act="tab" data-t="${id}" ${S.tab===id?'aria-current="page"':""}>${n}</button>`).join("")}</nav><main>${V[S.tab]()}</main>`;
-  if(S.tab==="slots")upd()}
+  const V={home,stats,buy,board,slots,gift,settings,dash,legal,terms:legal,privacy:legal,refund:legal};
+  if(!S.me&&["buy","board","slots","gift","settings","dash"].includes(S.tab))S.tab="home";
+  $("#app").innerHTML=`<header><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span><button class="b sm" data-act="tab" data-t="settings">Account</button>`:'<button class="b sm" data-act="login">Login</button>'}</span></header>
+  ${S.me?`<nav aria-label="Navigation">${TABS.map(([id,n])=>`<button data-act="tab" data-t="${id}" ${S.tab===id?'aria-current="page"':""}>${n}</button>`).join("")}</nav>`:""}
+  <main>${S.tab!=="home"&&!S.me?'<button class="b sm back" data-act="tab" data-t="home">← Back</button>':""}${V[S.tab]()}</main>
+  <footer><span>© SpyHub AJ</span>${[["legal","Legal Notice"],["terms","Terms of Service"],["privacy","Privacy Policy"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
+  if(S.tab==="slots")upd();reveal()}
 
 /* ===== Actions ===== */
 document.addEventListener("click",async e=>{
   const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;if(a==="tab")e.preventDefault();
-  const login=()=>{location.href=CONFIG.API_BASE+CONFIG.LOGIN_PATH+"?return="+encodeURIComponent(location.origin+location.pathname)};
+  const login=()=>{if(!CONFIG.API_BASE)return toast("API not configured: set CONFIG.API_BASE");location.href=CONFIG.API_BASE+CONFIG.LOGIN_PATH+"?return="+encodeURIComponent(location.origin+location.pathname)};
   if(a==="login")login();
   else if(a==="dash"){if(!S.me)login();else{S.tab="dash";render()}}
   else if(a==="tab"){S.tab=b.dataset.t;render();scrollTo(0,0);
     if(S.tab==="stats")loadStats();else if(S.tab==="board")loadBoard();else if(S.tab==="buy"||S.tab==="slots"){await loadAvail();render()}}
   else if(a==="cell"){S.start=+b.dataset.c;upd()}
   else if(a==="reserve"){S.busy=true;upd();const r=await api(A+"/reserve",{start:S.start*CELL,minutes:S.dur});S.busy=false;
-    if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);S.start=null;toast("Créneau réservé");S.tab="dash";await loadAvail();render()}
-    else{toast(r.data.error||"Réservation impossible");await loadAvail();render()}}
-  else if(a==="buy"){if(!S.me)return toast("Connecte-toi pour acheter");const h=+b.dataset.h,r=await api(A+"/buy",{hours:h});
-    if(r.ok){S.me.balance=r.data.balance;toast("Pack "+h+" h acheté");render()}else toast(r.data.error||"Achat impossible")}
-  else if(a==="redeem"){const c=$("#code").value.trim();if(!c)return toast("Entre un code");const r=await api(A+"/giftcard",{code:c});
-    if(r.ok){toast(money(r.data.added)+" ajoutés à ton solde");await load();$("#gb")?.classList.add("flash")}else toast(r.data.error||"Code refusé")}
+    if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);S.start=null;toast("Slot booked");S.tab="dash";await loadAvail();render()}
+    else{toast(r.data.error||"Booking failed");await loadAvail();render()}}
+  else if(a==="buy"){if(!S.me)return toast("Log in to buy");const h=+b.dataset.h,r=await api(A+"/buy",{hours:h});
+    if(r.ok){S.me.balance=r.data.balance;toast(h+" h pack purchased");render()}else toast(r.data.error||"Purchase failed")}
+  else if(a==="redeem"){const c=$("#code").value.trim();if(!c)return toast("Enter a code");const r=await api(A+"/giftcard",{code:c});
+    if(r.ok){toast(money(r.data.added)+" added to your balance");await load();$("#gb")?.classList.add("flash")}else toast(r.data.error||"Code refused")}
   else if(a==="show"){$("#key").textContent=S.me.license.key||"—"}
-  else if(a==="copy"){try{await navigator.clipboard.writeText(S.me.license.key);toast("Clé copiée")}catch{toast("Copie impossible, touche Afficher")}}
-  else if(a==="hwid"){const r=await api(A+"/hwid/reset",{});if(r.ok){S.me.license.hwidResetAt=r.data.hwidResetAt;S.me.license.hwidBound=false;toast("HWID réinitialisé");render()}else toast(r.data.error||"Reset impossible")}
+  else if(a==="copy"){try{await navigator.clipboard.writeText(S.me.license.key);toast("Key copied")}catch{toast("Copy failed, tap Show")}}
+  else if(a==="hwid"){const r=await api(A+"/hwid/reset",{});if(r.ok){S.me.license.hwidResetAt=r.data.hwidResetAt;S.me.license.hwidBound=false;toast("HWID reset");render()}else toast(r.data.error||"Reset failed")}
   else if(a==="filt"){S.f=b.dataset.f;S.lb=null;render();loadBoard()}
   else if(a==="notif"){S.notif=!S.notif;render()}
   else if(a==="logout"){await api(A+"/logout",{});setTok("");S.me=null;S.tab="home";S.start=null;render()}
 });
 document.addEventListener("input",e=>{if(e.target.id==="dur"){S.dur=+e.target.value;upd()}});
 
-/* ===== Rafraîchissements : chrono 1 s, historique 30 s, stats 5 s ===== */
+/* ===== Refresh: countdown 1 s, history 30 s, stats 5 s ===== */
 setInterval(()=>{const c=$("#cd");if(!c)return;const l=Math.max(0,S.end-Date.now()),p=n=>String(n).padStart(2,"0");c.textContent=p(l/36e5|0)+":"+p(l/6e4%60|0)+":"+p(l/1e3%60|0);if(!l)render()},1000);
 setInterval(()=>{if(S.me&&S.tab==="dash")render()},30000);
 setInterval(()=>{if(S.tab==="stats")loadStats()},5000);
+/* ===== Falling dots background ===== */
+(()=>{const cv=$("#fx"),cx=cv.getContext("2d"),still=matchMedia("(prefers-reduced-motion:reduce)").matches,dpr=Math.min(devicePixelRatio||1,2);let W,H,D=[];
+  const mk=top=>({x:Math.random()*W,y:top?-10:Math.random()*H,r:Math.random()*1.7+.4,v:Math.random()*.5+.15,d:Math.random()*.4-.2,a:Math.random()*.6+.2,b:Math.random()<.45});
+  function size(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);const n=Math.round(Math.min(110,W*H/14000));while(D.length<n)D.push(mk());D.length=n}
+  function tick(){cx.clearRect(0,0,W,H);for(const p of D){p.y+=p.v;p.x+=p.d;if(p.y>H+5||p.x<-5||p.x>W+5)Object.assign(p,mk(true));cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fillStyle=p.b?`rgba(110,160,255,${p.a})`:`rgba(255,255,255,${p.a*.7})`;cx.fill()}if(!still)requestAnimationFrame(tick)}
+  addEventListener("resize",size);size();tick()})();
+/* ===== Scroll reveal ===== */
+const io="IntersectionObserver"in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.1}):null;
+function reveal(){document.querySelectorAll(".rv").forEach(el=>io?io.observe(el):el.classList.add("in"))}
 load();
 </script>
 </body>
