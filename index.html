@@ -145,7 +145,7 @@ main{padding-top:0}
 <div id="app"></div>
 <script>
 /* ===== Settings: put your Worker URL in API_BASE and fill in the legal details ===== */
-const CONFIG={API_BASE:"",LOGIN_PATH:"/api/site/auth/discord",SEATS:4,STEP:30,MAX_MIN:120,HORIZON_H:24,PRICE_PER_HOUR:1,
+const CONFIG={API_BASE:"https://spyhub-finder.spyuhq.workers.dev",LOGIN_PATH:"/api/site/auth/discord",SEATS:4,STEP:30,MAX_MIN:120,HORIZON_H:24,PRICE_PER_HOUR:1,
   LEGAL:{publisher:"",country:"",email:""}};
 const CELL=CONFIG.STEP*60000,A="/api/site",$=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
