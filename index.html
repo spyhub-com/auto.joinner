@@ -4,6 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SpyHub AJ</title>
+<meta name="description" content="SpyHub AJ spots the best brainrots live and joins the right server for you. Book a slot, run the script, and let the auto-join do the work. Sign in with Discord.">
+<meta name="theme-color" content="#05030f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SpyHub AJ">
+<meta property="og:title" content="SpyHub AJ - Live brainrot finder and auto-join">
+<meta property="og:description" content="SpyHub AJ spots the best brainrots live and joins the right server for you. Book a slot, run the script, and let the auto-join do the work. Sign in with Discord.">
+<meta property="og:url" content="https://spy-aj.kdns.fr/">
+<meta property="og:image" content="https://i.postimg.cc/rpv14ZQw/file-000000007f2081f4953cf83a6ef8c035.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SpyHub AJ - Live brainrot finder and auto-join">
+<meta name="twitter:description" content="SpyHub AJ spots the best brainrots live and joins the right server for you. Book a slot, run the script, and let the auto-join do the work. Sign in with Discord.">
+<meta name="twitter:image" content="https://i.postimg.cc/rpv14ZQw/file-000000007f2081f4953cf83a6ef8c035.png">
 <style>
 :root{--ln:rgba(255,255,255,.3);--dim:#8a8a8a;--bad:#ff6b76;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -141,6 +153,8 @@ main{padding-top:0}
 .prof{display:flex;align-items:center;gap:16px}.pp{width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid #fff;flex:none}.pi{min-width:0}.pi h2{margin:0 0 4px;font-size:20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pi p{margin:2px 0;overflow-wrap:anywhere}
 .ow{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 9px;border-radius:999px;background:linear-gradient(90deg,#8b5cf6,#ec4899);color:#fff}
 .tl{gap:6px}.cell{flex-basis:44px}.cell i{width:28px;height:10px;border-radius:4px;border-color:rgba(255,255,255,.5)}.cell i.on{background:#8b5cf6;border-color:#8b5cf6}.cell.sel{border-color:#a78bfa;background:rgba(139,92,246,.2)}
+.ann{margin:12px 0 0;padding:10px 16px;border:1px solid rgba(190,170,255,.4);border-radius:14px;background:rgba(124,58,237,.18);font-size:13px;text-align:center}
+#ow label{display:block;margin-top:6px}#ow input:not([type=checkbox]){width:100%;background:rgba(255,255,255,.06);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;color:#fff;font:inherit;margin:4px 0 10px}#ow input[type=checkbox]{margin-right:8px}#ow code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}#ow table{width:100%}#ow td,#ow th{padding:6px 8px;text-align:left;vertical-align:top}
 </style>
 </head>
 <body>
@@ -181,6 +195,7 @@ async function loadStats(){
   if(S.tab==="stats")paintStats()}
 async function loadBoard(){const r=await api(`${A}/leaderboard?range=${S.f}`);S.lb=r.ok?(r.data.rows||[]):null;if(S.tab==="board")render()}
 async function load(){
+  const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance}
   const r=await api(A+"/me");
   S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],stats:r.data.stats,license:r.data.license||{key:"",hwidResetAt:0},reservations:r.data.reservations||[]}:null;
   if(S.me)await loadAvail();render()}
@@ -258,15 +273,15 @@ const legal=()=>{const[t,sec]=LEGAL[S.tab];return`<h1 class="sm">${t}</h1><div c
 /* ===== Rendering ===== */
 const TABS=[["dash","Dashboard"],["slots","Slots"],["buy","Buy"],["gift","Giftcard"],["stats","Stats"],["board","Leaderboard"],["settings","Settings"]];
 function render(){
-  const V={home,stats,buy,board,slots,gift,settings,dash,legal,terms:legal,privacy:legal,refund:legal};
-  if(!S.me&&["buy","board","slots","gift","settings","dash"].includes(S.tab))S.tab="home";
-  $("#app").innerHTML=`<header><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span><button class="b sm" data-act="tab" data-t="settings">Account</button>`:'<button class="b sm" data-act="login">Login</button>'}</span></header>
-  ${S.me?`<nav aria-label="Navigation">${TABS.map(([id,n])=>`<button data-act="tab" data-t="${id}" ${S.tab===id?'aria-current="page"':""}>${n}</button>`).join("")}</nav>`:""}
+  const V={home,stats,buy,board,slots,gift,settings,dash,owner:()=>S.me?.user?.owner?owner():home(),legal,terms:legal,privacy:legal,refund:legal};
+  if(!S.me&&["buy","board","slots","gift","settings","dash","owner"].includes(S.tab))S.tab="home";
+  $("#app").innerHTML=`${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span><button class="b sm" data-act="tab" data-t="settings">Account</button>`:'<button class="b sm" data-act="login">Login</button>'}</span></header>
+  ${S.me?`<nav aria-label="Navigation">${[...TABS,...(S.me?.user?.owner?[["owner","Owner"]]:[])].map(([id,n])=>`<button data-act="tab" data-t="${id}" ${S.tab===id?'aria-current="page"':""}>${n}</button>`).join("")}</nav>`:""}
   <main>${S.tab!=="home"&&!S.me?'<button class="b sm back" data-act="tab" data-t="home">← Back</button>':""}${V[S.tab]()}</main>
   <footer><span>© SpyHub AJ</span>${[["legal","Legal Notice"],["terms","Terms of Service"],["privacy","Privacy Policy"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
   if(S.tab==="slots")upd();document.body.classList.toggle("home",S.tab==="home");
   if(S._t!==S.tab){S._t=S.tab;$("main").classList.add("pg")}
-  document.querySelectorAll(".fc,.pk,.pc,.grid>.box").forEach(e=>e.classList.add("tilt"));paintCharts();reveal()}
+  document.querySelectorAll(".fc,.pk,.pc,.grid>.box").forEach(e=>e.classList.add("tilt"));paintCharts();reveal();if(S.tab==="owner")ownerPaint()}
 
 /* ===== Actions ===== */
 document.addEventListener("click",async e=>{
@@ -424,6 +439,41 @@ loadDock();setInterval(()=>{if(!document.hidden)loadDock()},6000);
 const io="IntersectionObserver"in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.1}):null;
 function reveal(){document.querySelectorAll(".rv").forEach(el=>io?io.observe(el):el.classList.add("in"))}
 load();
+
+/* ===== Owner panel (server checks the owner ID on every call) ===== */
+const OW={s:"over"},OA=A+"/owner/";
+const owner=()=>`<h1 class="sm">Owner</h1><div class="fl">${[["over","Overview"],["users","Users"],["gifts","Gift cards"],["slots","Slots"],["set","Settings"],["log","Log"]].map(([k,n])=>`<button class="b sm${OW.s===k?" on":""}" data-oa="sec" data-k="${k}">${n}</button>`).join("")}</div><div id="ow">${none("Loading...")}</div>`;
+async function userView(put){const r=await api(OA+"user?id="+encodeURIComponent(OW.u));if(!r.ok){OW.u=null;return put(none(esc(r.data.error||"Error")))}const x=r.data.u,n=Date.now();
+ put(`<button class="b sm" data-oa="back">&larr; Users</button><div class="box prof" style="margin-top:12px">${x.avatar?`<img class="pp" src="${esc(x.avatar)}" alt="">`:""}<div class="pi"><h2>${esc(x.name)}${x.active?"":' <span class="bad">banned</span>'}</h2><p class="dim">${esc(x.email)}</p><p class="dim">ID ${esc(x.id)}</p></div></div>
+ <div class="grid"><div class="box"><span class="dim">Balance</span><div class="big">${money(x.balance)}</div></div><div class="box"><span class="dim">Hours</span><div class="big">${x.hours}</div></div></div>
+ <div class="box"><h2>Add or remove credit</h2><label class="dim" for="oam">Balance in $ (negative removes)</label><input id="oam" type="number" step="0.01" value="0"><label class="dim" for="oho">Hours</label><input id="oho" type="number" step="0.5" value="0"><button class="b sm" data-oa="credit">Apply</button></div>
+ <div class="box"><h2>Actions</h2><div class="cta" style="margin:0"><button class="b sm" data-oa="hwid">Reset HWID${x.hwid?"":" (none bound)"}</button><button class="b sm" data-oa="ban" data-v="${x.active?0:1}">${x.active?"Ban":"Unban"}</button></div></div>
+ <div class="box"><h2>Bookings</h2>${x.res.length?x.res.map(y=>`<div class="line"><span>${new Date(y.start).toLocaleString("en-US")} / ${dur((y.end-y.start)/6e4)} / ${money(y.price)}</span>${y.end>n?`<button class="b sm" data-oa="cancel" data-s="${y.start}">Cancel</button>`:""}</div>`).join(""):none("None")}</div>`)}
+async function ownerPaint(){if(!$("#ow"))return;const s=OW.s,put=h=>{if($("#ow")&&OW.s===s)$("#ow").innerHTML=h},bad=r=>put(none(esc(r.data.error||"Error")));
+ if(s==="over"){const[r,f]=await Promise.all([api(OA+"stats"),api("/api/stats")]);if(!r.ok)return bad(r);const d=r.data,c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`,fs=f.ok?f.data:{};
+  put(`<div class="grid">${c("Users",d.users)}${c("Users' balance",money(d.bal))}${c("Redeemed today",money(d.day))}${c("Redeemed this month",money(d.month))}${c("Redeemed all time",money(d.all))}${c("Gift cards used",d.gu+" / "+d.gc)}${c("Scanners online",fs.scanners??"-")}${c("Brainrots today",fs.activeToday??"-")}</div>${d.cfg.maintenance?'<p class="bad">Maintenance mode is ON.</p>':""}`)}
+ else if(s==="users"){if(OW.u)return userView(put);const r=await api(OA+"users?q="+encodeURIComponent(OW.q||""));if(!r.ok)return bad(r);
+  put(`<div class="box"><input id="oq" placeholder="Search name or ID" value="${esc(OW.q||"")}"><button class="b sm" data-oa="search">Search</button></div><div class="box sx"><table><thead><tr><th>User</th><th>Balance</th><th>Hours</th><th></th></tr></thead><tbody>${r.data.users.map(x=>`<tr><td>${esc(x.n||x.id)}${x.a===false?' <span class="bad">banned</span>':""}<br><span class="dim">${esc(x.id)}</span></td><td>${money(x.b)}</td><td>${x.h||0}</td><td><button class="b sm" data-oa="user" data-id="${esc(x.id)}">Open</button></td></tr>`).join("")}</tbody></table></div>`)}
+ else if(s==="gifts"){const r=await api(OA+"gifts");if(!r.ok)return bad(r);
+  put(`<div class="box"><h2>Create gift cards</h2><label class="dim" for="gam">Amount in $</label><input id="gam" type="number" min="1" step="0.5" value="5"><label class="dim" for="gco">How many (1 to 20)</label><input id="gco" type="number" min="1" max="20" value="1"><button class="b sm" data-oa="gnew">Create</button>${OW.codes?`<p>${OW.codes.map(c=>`<code>${esc(c)}</code> <button class="b sm" data-oa="copy" data-c="${esc(c)}">Copy</button>`).join("<br>")}</p>`:""}</div><div class="box sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Status</th></tr></thead><tbody>${r.data.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.a)}</td><td>${g.u?"Used":`Unused <button class="b sm" data-oa="gdel" data-c="${esc(g.code)}">Delete</button>`}</td></tr>`).join("")}</tbody></table></div>`)}
+ else if(s==="slots"){await loadAvail();const e=Object.entries(S.taken).filter(([,t])=>t>0).sort((a,b)=>a[0]-b[0]);put(`<div class="box"><h2>Next 24 hours</h2>${e.length?e.map(([c,t])=>`<div class="line"><span>${day(c*CELL)} ${hm(c*CELL)}</span><b>${t} / ${CONFIG.SEATS}</b></div>`).join(""):none("No bookings yet.")}</div>`)}
+ else if(s==="set"){const r=await api(OA+"stats");if(!r.ok)return bad(r);const c=r.data.cfg;
+  put(`<div class="box"><h2>Settings</h2><label class="dim" for="spr">Price per hour ($)</label><input id="spr" type="number" step="0.05" value="${c.price}"><label class="dim" for="sse">Seats per slot</label><input id="sse" type="number" min="1" value="${c.seats}"><label class="dim" for="sba">Banner shown on top of the site (empty = none)</label><input id="sba" maxlength="200" value="${esc(c.banner)}"><label class="dim" for="smi">Minimum brainrot value saved by the scanner (MPS)</label><input id="smi" type="number" min="0" value="${r.data.minMps}"><label><input id="sma" type="checkbox" ${c.maintenance?"checked":""}>Maintenance mode (blocks bookings and purchases)</label><button class="b sm" data-oa="save">Save</button></div>`)}
+ else if(s==="log"){const r=await api(OA+"log");if(!r.ok)return bad(r);put(`<div class="box">${r.data.log.length?r.data.log.map(l=>`<div class="line"><span>${esc(l.m)}</span><span class="dim">${ago(l.t)}</span></div>`).join(""):none("Nothing yet.")}</div>`)}}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-oa]");if(!b)return;const a=b.dataset.oa,v=id=>$("#"+id)?.value,run=async(p,d,ok)=>{const r=await api(OA+p,d);toast(r.ok?(ok||"Done"):(r.data.error||"Error"));return r};
+ if(a==="sec"){OW.s=b.dataset.k;OW.u=null;render()}
+ else if(a==="search"){OW.q=v("oq");ownerPaint()}
+ else if(a==="user"){OW.u=b.dataset.id;ownerPaint()}
+ else if(a==="back"){OW.u=null;ownerPaint()}
+ else if(a==="credit"){await run("credit",{id:OW.u,amount:v("oam"),hours:v("oho")});ownerPaint()}
+ else if(a==="ban"){await run("active",{id:OW.u,active:b.dataset.v==="1"});ownerPaint()}
+ else if(a==="hwid"){await run("hwid",{id:OW.u});ownerPaint()}
+ else if(a==="cancel"){if(confirm("Cancel this booking and refund it?")){await run("cancel",{id:OW.u,start:+b.dataset.s});ownerPaint()}}
+ else if(a==="gnew"){const r=await run("gifts/create",{amount:v("gam"),count:v("gco")});if(r.ok){OW.codes=r.data.codes;ownerPaint()}}
+ else if(a==="gdel"){await run("gifts/delete",{code:b.dataset.c});ownerPaint()}
+ else if(a==="copy"){try{await navigator.clipboard.writeText(b.dataset.c);toast("Copied")}catch{toast("Copy failed")}}
+ else if(a==="save"){const r=await run("settings",{price:v("spr"),seats:v("sse"),banner:v("sba"),maintenance:$("#sma").checked,minMps:v("smi")},"Saved");if(r.ok){CONFIG.PRICE_PER_HOUR=+r.data.cfg.price;CONFIG.SEATS=+r.data.cfg.seats;S.banner=r.data.cfg.banner;S.maint=r.data.cfg.maintenance}}
+});
 </script>
 </body>
 </html>
