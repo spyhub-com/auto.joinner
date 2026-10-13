@@ -3,144 +3,200 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SpyHub</title>
+<title>SpyHub AJ</title>
 <style>
-:root{--bg:#0f1318;--pn:#171c23;--ln:#262d37;--tx:#e8ecf1;--dim:#8a94a3;--ac:#60d68c;--bad:#ff5f69;color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-#app{max-width:560px;margin:0 auto;padding:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
-.brand{font-size:20px;font-weight:700;letter-spacing:-.01em}
-.chip{background:var(--pn);border:1px solid var(--ln);border-radius:999px;padding:5px 12px;font-weight:600;font-variant-numeric:tabular-nums}
-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:4px;margin-bottom:14px}
-nav button{background:none;border:0;color:var(--dim);padding:9px 2px;border-radius:9px;font:inherit;font-size:13px;cursor:pointer}
-nav button[aria-current=page]{background:var(--ln);color:var(--tx);font-weight:600}
-.box{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:14px;margin-bottom:12px}
-h2{font-size:16px;margin:0 0 4px}
-p{margin:.3em 0}.dim{color:var(--dim)}.bad{color:var(--bad)}.ok{color:var(--ac)}
-a{color:var(--ac)}
-button.pri{width:100%;background:var(--ac);color:#08140d;border:0;border-radius:10px;padding:12px;font:inherit;font-weight:700;cursor:pointer}
-button.sec{background:none;border:1px solid var(--ln);color:var(--tx);border-radius:10px;padding:9px 12px;font:inherit;cursor:pointer}
-button:disabled{opacity:.45;cursor:not-allowed}
-button:focus-visible,input:focus-visible,.cell:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-input[type=text]{width:100%;background:var(--bg);border:1px solid var(--ln);color:var(--tx);border-radius:10px;padding:11px;font:inherit;margin:8px 0}
-input[type=range]{width:100%;accent-color:var(--ac)}
-.line{display:flex;justify-content:space-between;gap:10px;align-items:center}
+:root{--bg:#050505;--tx:#f5f5f5;--dim:#8d8d8d;--ln:rgba(255,255,255,.12);--bad:#ff6b76;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;overflow-x:hidden;background:var(--bg) radial-gradient(ellipse 70% 38% at 50% -8%,rgba(255,255,255,.13),transparent 70%) no-repeat;color:var(--tx);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#app{max-width:540px;margin:0 auto;padding:14px 16px 60px}
+/* Verre dépoli */
+.glass,.box,header,nav{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--ln);border-radius:20px;-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 14px 44px rgba(0,0,0,.5)}
+@supports not (backdrop-filter:blur(1px)){.glass,.box,header,nav{background:#111}}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;margin-bottom:12px;position:sticky;top:env(safe-area-inset-top);z-index:5}
+.brand{display:flex;align-items:center;gap:8px;font-weight:750;font-size:17px;letter-spacing:-.03em}
+.hd{display:flex;align-items:center;gap:10px}.live{font-size:12px;color:var(--dim)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;margin-right:6px;animation:pl 2.2s ease-in-out infinite}
+@keyframes pl{50%{opacity:.35;box-shadow:0 0 2px #fff}}
+.chip{border:1px solid var(--ln);border-radius:999px;padding:4px 12px;font-weight:600;background:rgba(255,255,255,.06)}
+.dc{color:var(--tx);display:grid}
+nav{display:flex;gap:2px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px;margin-bottom:14px;border-radius:16px}
+nav button{flex:0 0 auto;scroll-snap-align:start;background:none;border:0;color:var(--dim);padding:9px 14px;border-radius:12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;transition:.3s ease}
+nav button:hover{color:var(--tx)}nav button[aria-current=page]{background:#fff;color:#000;font-weight:650}
+.box{padding:18px;margin-bottom:12px}
+h1{font-size:clamp(32px,9vw,46px);line-height:1.05;letter-spacing:-.035em;font-weight:750;margin:0 0 14px}
+h2{font-size:17px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}p{margin:.3em 0}
+.dim{color:var(--dim)}.bad{color:var(--bad)}a{color:#fff}
+.hero{text-align:center;padding:13vh 0 4vh}.hero .lead{color:var(--dim);font-size:16px;max-width:34ch;margin:0 auto}
+.cta{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+button{font:inherit}
+.pri,.sec{border-radius:14px;padding:14px 22px;font-weight:650;cursor:pointer;text-decoration:none;text-align:center;display:inline-block;transition:.3s ease}
+.pri{background:#fff;color:#000;border:0;box-shadow:0 8px 30px rgba(255,255,255,.18)}
+.sec{background:rgba(255,255,255,.06);border:1px solid var(--ln);color:var(--tx)}
+button:hover:not(:disabled){filter:brightness(.9)}.sec:hover:not(:disabled){filter:brightness(1.25)}button:active:not(:disabled){transform:scale(.98)}
+button:disabled{opacity:.4;cursor:not-allowed}
+header .sec{padding:7px 14px;font-size:13px}.box .pri{width:100%}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+input[type=text]{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--ln);color:var(--tx);border-radius:12px;padding:12px;font:inherit;margin:8px 0}
+input[type=range]{width:100%;accent-color:#fff}
+code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
+.line{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0}
+.big{font-size:34px;font-weight:750;letter-spacing:-.03em}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.grid .box{margin:0;padding:14px}
+.sx{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 8px;border-top:1px solid var(--ln);white-space:nowrap}th{color:var(--dim);font-weight:500;font-size:12px;border:0}
+.av{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff;color:#000;font-weight:750;vertical-align:middle;flex:none}.av.xl{width:64px;height:64px;font-size:26px}
+.fl{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}.fl .sec{padding:8px 14px;font-size:13px;white-space:nowrap}.fl .on{background:#fff;color:#000}
+.pod{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end;margin-bottom:12px}.pc{padding:14px 6px;text-align:center;overflow:hidden;font-size:13px}.pc.p0{padding:26px 6px}.pc .av{display:grid;margin:0 auto 6px}
+.me{background:rgba(255,255,255,.1)}
+.pk{padding:16px;display:flex;flex-direction:column;gap:4px;position:relative}.pk h2{margin:0}.pk .sec,.pk .pri{margin-top:auto;width:100%}
+.badge{position:absolute;top:12px;right:12px;font-size:11px;font-weight:650;background:#fff;color:#000;border-radius:999px;padding:1px 9px}
+.bar{height:6px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:#fff;transition:width .5s ease}
 .tl{display:flex;gap:3px;overflow-x:auto;padding:6px 2px 10px;scroll-snap-type:x proximity}
-.cell{flex:0 0 30px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:1px solid transparent;border-radius:8px;padding:4px 0;cursor:pointer;scroll-snap-align:start;color:var(--dim);font:inherit;font-size:11px}
-.cell .lb{height:14px}
-.cell i{display:block;width:16px;height:7px;border-radius:3px;border:1px solid var(--ac)}
-.cell{flex-direction:column-reverse}
-.cell .lb{order:9}
-.cell i.on{background:var(--ln);border-color:var(--ln)}
-.cell.full{cursor:not-allowed;opacity:.55}
-.cell.sel{background:rgba(96,214,140,.16);border-color:var(--ac);color:var(--tx)}
-.res{border-top:1px solid var(--ln);padding:10px 0}.res:first-child{border-top:0}
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:#0f1318;padding:10px 16px;border-radius:10px;font-weight:600;max-width:90%;z-index:9}
-.demo{font-size:13px;color:var(--dim);border:1px dashed var(--ln);border-radius:10px;padding:8px 10px;margin-bottom:12px}
-code{background:var(--bg);padding:2px 6px;border-radius:6px}
-@media (prefers-reduced-motion:no-preference){.cell,button{transition:background .15s,border-color .15s}}
+.cell{flex:0 0 30px;display:flex;flex-direction:column-reverse;align-items:center;gap:3px;background:none;border:1px solid transparent;border-radius:10px;padding:4px 0;cursor:pointer;scroll-snap-align:start;color:var(--dim);font-size:11px}
+.cell .lb{height:14px;order:9}.cell i{display:block;width:16px;height:7px;border-radius:3px;border:1px solid #fff}.cell i.on{background:rgba(255,255,255,.18);border-color:transparent}
+.cell.full{cursor:not-allowed;opacity:.5}.cell.sel{background:rgba(255,255,255,.16);border-color:#fff;color:#fff}
+.tg{width:48px;height:28px;border-radius:999px;border:1px solid var(--ln);background:rgba(255,255,255,.08);padding:2px;cursor:pointer;text-align:left}.tg i{display:block;width:22px;height:22px;border-radius:50%;background:var(--dim);transition:transform .3s ease}.tg.on{background:rgba(255,255,255,.3)}.tg.on i{background:#fff;transform:translateX(20px)}
+.out{color:var(--bad);border-color:rgba(255,107,118,.35);width:100%}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:14px;font-weight:650;max-width:90%;z-index:9}
+.flash{animation:fl 1.2s ease}@keyframes fl{20%{box-shadow:0 0 0 2px #fff,0 0 50px rgba(255,255,255,.5)}}
+@media(min-width:560px){.cta{flex-direction:row;justify-content:center}}
+@media(prefers-reduced-motion:reduce){.dot,.flash{animation:none}*{transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
-/* ===== Réglages =====
-   DEMO=true : données fictives, aucun serveur nécessaire.
-   Pour brancher la vraie API : DEMO=false et API_BASE="https://ton-worker.workers.dev" (routes /api/site/*, cookies de session). */
-const CONFIG={DEMO:true,API_BASE:"",LOGIN_PATH:"/api/site/auth/discord",SEATS:4,STEP:30,MAX_MIN:120,HORIZON_H:24,PRICE_PER_HOUR:1/* tarif provisoire */};
-const CELL=CONFIG.STEP*60000,$=s=>document.querySelector(s);
+/* ===== Réglages : renseigne API_BASE avec l'adresse de ton Worker ===== */
+const CONFIG={API_BASE:"",LOGIN_PATH:"/api/site/auth/discord",DISCORD_URL:"https://discord.com",SEATS:4,STEP:30,MAX_MIN:120,HORIZON_H:24,PRICE_PER_HOUR:1};
+const CELL=CONFIG.STEP*60000,A="/api/site",$=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money=n=>"$"+n.toFixed(2),hm=ms=>new Date(ms).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+const money=n=>"$"+(+n||0).toFixed(2),hm=ms=>new Date(ms).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 const day=ms=>new Date(ms).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
 const dur=m=>m>=60?(m%60?Math.floor(m/60)+" h "+m%60:m/60+" h"):m+" min";
-const S={me:null,tab:"book",start:null,dur:60,taken:{},busy:false};
+const fmt=n=>{n=+n||0;for(const[u,v]of[["B",1e9],["M",1e6],["K",1e3]])if(n>=v)return"$"+(n/v).toFixed(1)+u+"/s";return"$"+Math.round(n)+"/s"};
+const ago=t=>{const s=Math.max(1,Math.round((Date.now()-t)/1e3));return s<60?s+" s":s<3600?Math.round(s/60)+" min":Math.round(s/3600)+" h"};
+const S={me:null,tab:"home",start:null,dur:60,taken:{},busy:false,f:"a",notif:true,end:0,stats:null,list:null,lb:null};
 
-/* ===== Mode démo ===== */
-const M={in:false,balance:0,key:"spy_demo_"+Math.random().toString(16).slice(2,18),reset:0,res:[],codes:{"SPY.AJ_DEMO5":5,"SPY.AJ_DEMO10":10}};
-const base=c=>(c*7+3)%5,own=c=>M.res.filter(r=>c>=r.start/CELL&&c<r.end/CELL).length;
-function mock(path,body){
-  const E=(status,error)=>({ok:false,status,data:{error}}),O=d=>({ok:true,status:200,data:d});
-  if(path==="/me")return M.in?O({user:{name:"Démo"},balance:M.balance,license:{key:M.key,hwidBound:true,hwidResetAt:M.reset},reservations:M.res}):E(401,"Non connecté");
-  if(!M.in)return E(401,"Non connecté");
-  if(path.startsWith("/availability")){const q=new URLSearchParams(path.split("?")[1]),t={};for(let c=+q.get("from");c<=+q.get("to");c++)t[c]=Math.min(CONFIG.SEATS,base(c)+own(c));return O({taken:t})}
-  if(path==="/reserve"){const{start,minutes}=body,a=start/CELL,n=minutes/CONFIG.STEP,price=CONFIG.PRICE_PER_HOUR*minutes/60;
-    if(!(minutes>=CONFIG.STEP&&minutes<=CONFIG.MAX_MIN&&Number.isInteger(n)&&start>Date.now()))return E(400,"Créneau invalide");
-    for(let i=0;i<n;i++)if(Math.min(CONFIG.SEATS,base(a+i)+own(a+i))>=CONFIG.SEATS)return E(409,"Ce créneau vient d'être pris");
-    if(M.balance<price)return E(402,"Solde insuffisant");
-    M.balance-=price;const r={id:Date.now(),start,end:start+minutes*60000,price};M.res.push(r);return O({balance:M.balance,reservation:r})}
-  if(path==="/giftcard"){const c=String(body.code||"").trim().toUpperCase();if(!(c in M.codes))return E(404,"Code invalide ou déjà utilisé");M.balance+=M.codes[c];const v=M.codes[c];delete M.codes[c];return O({added:v,balance:M.balance})}
-  if(path==="/hwid/reset"){const left=M.reset+864e5-Date.now();if(left>0)return E(429,"Prochain reset dans "+Math.ceil(left/36e5)+" h");M.reset=Date.now();return O({hwidResetAt:M.reset})}
-  if(path==="/logout"){M.in=false;return O({})}
-  return E(404,"Route inconnue");
-}
+/* ===== Réseau : jeton Bearer + cookies ===== */
+const tok=()=>{try{return localStorage.getItem("spyaj_t")||""}catch{return""}},setTok=t=>{try{t?localStorage.setItem("spyaj_t",t):localStorage.removeItem("spyaj_t")}catch{}};
+{const m=location.hash.match(/[#&]t=([\w.-]+)/);if(m){setTok(m[1]);history.replaceState(null,"",location.pathname)}}
 async function api(path,body){
-  if(CONFIG.DEMO)return mock(path,body);
-  try{const r=await fetch(CONFIG.API_BASE+"/api/site"+path,{method:body?"POST":"GET",credentials:"include",headers:body?{"Content-Type":"application/json"}:{},body:body?JSON.stringify(body):undefined});
+  try{const r=await fetch(CONFIG.API_BASE+path,{method:body?"POST":"GET",credentials:"include",headers:{...(body?{"Content-Type":"application/json"}:{}),...(tok()?{Authorization:"Bearer "+tok()}:{})},body:body?JSON.stringify(body):undefined});
     let d={};try{d=await r.json()}catch{}return{ok:r.ok,status:r.status,data:d}}catch{return{ok:false,status:0,data:{error:"Serveur injoignable"}}}
 }
 function toast(t){document.querySelector(".toast")?.remove();const e=document.createElement("div");e.className="toast";e.setAttribute("role","status");e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
 
-/* ===== Créneaux ===== */
+/* ===== Données réelles ===== */
 const first=()=>Math.floor(Date.now()/CELL)+1,count=()=>CONFIG.HORIZON_H*60/CONFIG.STEP;
 const win=()=>S.start==null?[]:Array.from({length:S.dur/CONFIG.STEP},(_,i)=>S.start+i);
 const winOk=()=>{const w=win();return w.length>0&&w.every(c=>c in S.taken&&S.taken[c]<CONFIG.SEATS)};
-async function loadAvail(){const f=first(),r=await api(`/availability?from=${f}&to=${f+count()-1}`);if(r.ok)S.taken=r.data.taken}
+async function loadAvail(){if(!S.me)return;const f=first(),r=await api(`${A}/availability?from=${f}&to=${f+count()-1}`);if(r.ok)S.taken=r.data.taken||{}}
+async function loadStats(){
+  const[a,b]=await Promise.all([api("/api/stats"),api("/api/brainrots?limit=10&sort=mps")]);
+  S.stats=a.ok?a.data:null;const d=b.data;S.list=b.ok?(Array.isArray(d)?d:d.brainrots||d.items||[]):null;
+  if(S.tab==="stats")paintStats()}
+async function loadBoard(){const r=await api(`${A}/leaderboard?range=${S.f}`);S.lb=r.ok?(r.data.rows||[]):null;if(S.tab==="board")render()}
+async function load(){
+  const r=await api(A+"/me");
+  S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],stats:r.data.stats,license:r.data.license||{key:"",hwidResetAt:0},reservations:r.data.reservations||[]}:null;
+  if(S.me)await loadAvail();render()}
 
 /* ===== Vues ===== */
-function gate(){return`<div class="box"><h2>Réserve ton créneau d'auto-join</h2><p class="dim">Connecte-toi avec Discord, choisis une heure et une durée (2 h maximum), paie avec ton solde.</p><button class="pri" data-act="login" style="margin-top:10px">Se connecter avec Discord</button></div>`+(CONFIG.DEMO?`<p class="demo">Mode démo : données fictives. Après connexion, utilise le code <code>SPY.AJ_DEMO5</code> dans l'onglet Gift card pour ajouter 5 $.</p>`:"")}
-function book(){
+const home=()=>`<section class="hero"><h1>Rejoins le bon serveur avant tout le monde.</h1><p class="lead">SpyHub AJ repère les meilleurs brainrots en direct et te place dessus.</p><div class="cta"><button class="pri" data-act="dash">Get Dashboard</button><button class="sec" data-act="tab" data-t="stats">Live Stats</button></div></section>`;
+const none=t=>`<p class="dim">${t}</p>`;
+function statsHtml(){
+  const s=S.stats,l=S.list;
+  if(!s&&!l)return`<div class="box"><h2>Live Stats</h2>${none("Données indisponibles pour le moment.")}</div>`;
+  const c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`;
+  return(s?`<div class="grid">${c("En base",s.total??"—")}${c("Aujourd'hui",s.activeToday??"—")}${c("Scanners actifs",s.scanners??"—")}${c("Meilleure valeur",s.topMps!=null?fmt(s.topMps):"—")}</div>`:"")
+  +`<div class="box"><h2>Meilleurs brainrots</h2>${l&&l.length?`<div class="sx"><table><thead><tr><th>Nom</th><th>Valeur</th><th>Il y a</th></tr></thead><tbody>${l.map(b=>`<tr><td>${esc(b.name)}</td><td>${fmt(b.mps)}</td><td class="dim">${b.timestamp?ago(b.timestamp):"—"}</td></tr>`).join("")}</tbody></table></div>`:none("Aucun brainrot pour le moment.")}</div>`}
+const stats=()=>`<div id="st" aria-live="polite">${statsHtml()}</div>`;
+const paintStats=()=>{const e=$("#st");if(e)e.innerHTML=statsHtml()};
+const PACKS=[[1,1],[5,.9],[10,.8],[24,.7]],price=(h,d)=>+(CONFIG.PRICE_PER_HOUR*h*d).toFixed(2);
+function buy(){
+  let live=none("Connecte-toi pour voir les places en direct.");
+  if(S.me){const now=Math.floor(Date.now()/CELL),o=S.taken[now],nx=Object.keys(S.taken).map(Number).sort((a,b)=>a-b).find(c=>c>=now&&S.taken[c]<CONFIG.SEATS);
+    live=o==null?none("Disponibilité indisponible."):`<p><b>${o} / ${CONFIG.SEATS}</b> slots occupés maintenant</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Prochaine place libre : "+(nx==null?"aucune dans les 24 h":nx===now?"maintenant":hm(nx*CELL)))}`}
+  return`<div class="grid">${PACKS.map(([h,d])=>{const p=price(h,d),sv=CONFIG.PRICE_PER_HOUR*h-p;return`<div class="box pk">${h===10?'<span class="badge">Populaire</span>':""}<h2>${h} h</h2><div class="big">${money(p)}</div>${none(sv>0?"Économie : "+money(sv):"Tarif horaire")}<button class="${h===10?"pri":"sec"}" data-act="buy" data-h="${h}">Précommander</button></div>`}).join("")}</div>
+  <div class="box" aria-live="polite"><h2>Disponibilité en direct</h2>${live}</div>`}
+function board(){
+  const L=S.lb,me=S.me?.user?.name,ini=n=>esc(String(n||"?")[0].toUpperCase());
+  const flt=`<div class="fl">${[["d","Aujourd'hui"],["w","Cette semaine"],["a","Tout le temps"]].map(([k,n])=>`<button class="sec${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
+  if(!L)return flt+`<div class="box">${none("Classement indisponible pour le moment.")}</div>`;
+  if(!L.length)return flt+`<div class="box">${none("Aucun joueur classé pour le moment.")}</div>`;
+  const pc=(r,i)=>`<div class="glass pc p${i}${r.name===me?" me":""}"><span class="av">${ini(r.name)}</span><b>#${i+1} ${esc(r.name)}</b><p class="dim">${+r.count||0} capturés</p><b>${fmt(r.value)}</b></div>`;
+  return flt+(L.length>=3?`<div class="pod">${[1,0,2].map(i=>pc(L[i],i)).join("")}</div>`:"")
+  +`<div class="box sx"><table><thead><tr><th>#</th><th>Pseudo</th><th>Capturés</th><th>Valeur</th></tr></thead><tbody>${L.slice(0,10).map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+1}</td><td><span class="av">${ini(r.name)}</span> ${esc(r.name)}</td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`}
+function slots(){
   let cells="";const f=first();
-  for(let i=0;i<count();i++){const c=f+i,t=S.taken[c]??0,ms=c*CELL,d=new Date(ms),full=t>=CONFIG.SEATS;
-    cells+=`<button class="cell${full?" full":""}" data-act="cell" data-c="${c}" ${full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} places libres"><span class="lb">${d.getMinutes()===0?d.getHours()+"h":""}</span>${Array.from({length:CONFIG.SEATS},(_,k)=>`<i class="${k<t?"on":""}"></i>`).join("")}</button>`}
-  return`<div class="box"><h2>Quand ?</h2><p class="dim">Chaque colonne dure ${CONFIG.STEP} min. Les cases vertes sont des places libres sur ${CONFIG.SEATS}.</p><div class="tl" id="tl">${cells}</div>
+  for(let i=0;i<count();i++){const c=f+i,t=S.taken[c]??0,ms=c*CELL,full=t>=CONFIG.SEATS;
+    cells+=`<button class="cell${full?" full":""}" data-act="cell" data-c="${c}" ${full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} places libres"><span class="lb">${new Date(ms).getMinutes()===0?new Date(ms).getHours()+"h":""}</span>${Array.from({length:CONFIG.SEATS},(_,k)=>`<i class="${k<t?"on":""}"></i>`).join("")}</button>`}
+  return`<div class="box"><h2>Quand ?</h2>${none("Chaque colonne dure "+CONFIG.STEP+" min. Les barres vides sont des places libres sur "+CONFIG.SEATS+".")}<div class="tl">${cells}</div>
   <div class="line"><label for="dur">Durée</label><b id="dl"></b></div><input id="dur" type="range" min="${CONFIG.STEP}" max="${CONFIG.MAX_MIN}" step="${CONFIG.STEP}" value="${S.dur}"></div>
-  <div class="box"><div id="sum" aria-live="polite"></div></div><button class="pri" id="go" data-act="reserve" disabled>Réserver ce créneau</button>
-  <p class="dim" style="margin-top:10px;font-size:13px">Le chrono court de l'heure de début à l'heure de fin, que tu sois connecté ou non.</p>`}
+  <div class="box"><div id="sum" aria-live="polite"></div></div><button class="pri" id="go" data-act="reserve" disabled>Réserver ce créneau</button>`}
 function upd(){
   const w=new Set(win());document.querySelectorAll(".cell").forEach(b=>b.classList.toggle("sel",w.has(+b.dataset.c)));
   $("#dl").textContent=dur(S.dur);const el=$("#sum"),btn=$("#go");
   if(S.start==null){el.innerHTML='<span class="dim">Touche une heure de départ dans la frise.</span>';btn.disabled=true;return}
-  const ok=winOk(),price=CONFIG.PRICE_PER_HOUR*S.dur/60,after=S.me.balance-price,s=S.start*CELL,e=s+S.dur*60000;
-  el.innerHTML=`<b>${day(s)}, de ${hm(s)} à ${hm(e)}</b><p>Prix : ${money(price)}. Solde après achat : ${money(Math.max(after,0))}.</p>`+(!ok?`<p class="bad">Il n'y a plus de place libre sur toute cette durée. Raccourcis-la ou change l'heure.</p>`:after<0?`<p class="bad">Solde insuffisant. <a href="#" data-act="tab" data-t="gift">Ajouter un gift card</a></p>`:"");
+  const ok=winOk(),p=CONFIG.PRICE_PER_HOUR*S.dur/60,after=S.me.balance-p,s=S.start*CELL,e=s+S.dur*60000;
+  el.innerHTML=`<b>${day(s)}, de ${hm(s)} à ${hm(e)}</b><p>Prix : ${money(p)}. Solde après achat : ${money(Math.max(after,0))}.</p>`+(!ok?`<p class="bad">Il n'y a plus de place libre sur toute cette durée.</p>`:after<0?`<p class="bad">Solde insuffisant. <a href="#" data-act="tab" data-t="gift">Recharger</a></p>`:"");
   btn.disabled=!ok||after<0||S.busy}
-function mine(){
-  const now=Date.now(),l=[...S.me.reservations].sort((a,b)=>a.start-b.start);
-  if(!l.length)return`<div class="box"><h2>Aucun créneau</h2><p class="dim">Réserve ton premier créneau dans l'onglet Réserver.</p></div>`;
-  return`<div class="box">`+l.map(r=>{const st=now<r.start?`<span class="dim">Commence dans ${dur(Math.max(1,Math.round((r.start-now)/6e4)))}</span>`:now<r.end?`<span class="ok">En cours, reste ${dur(Math.max(1,Math.round((r.end-now)/6e4)))}</span>`:`<span class="dim">Terminé</span>`;
-    return`<div class="res"><b>${day(r.start)}</b><div class="line"><span>${hm(r.start)} à ${hm(r.end)}</span>${st}</div></div>`}).join("")+`</div>`}
-const gift=()=>`<div class="box"><h2>Utiliser un gift card</h2><p class="dim">Le montant est ajouté à ton solde. Un code ne marche qu'une fois.</p><label for="code" class="dim">Code</label><input id="code" type="text" placeholder="SPY.AJ_XXXXXXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="pri" data-act="redeem">Utiliser le code</button></div>`;
-function account(){
+const gift=()=>`<div class="box" id="gb"><h2>Utiliser un gift card</h2>${none("Le montant est ajouté à ton solde. Un code ne marche qu'une fois.")}<label for="code" class="dim">Code</label><input id="code" type="text" placeholder="SPY.AJ_XXXXXXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="pri" data-act="redeem">Utiliser le code</button></div>
+<div class="box"><h2>Historique</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Montant</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("fr-FR")}</td></tr>`).join("")}</tbody></table></div>`:none("Aucun code utilisé.")}</div>`;
+function settings(){
   const l=S.me.license,left=l.hwidResetAt+864e5-Date.now(),can=left<=0;
-  return`<div class="box"><h2>Ta licence</h2><p class="dim">Colle cette clé dans le script.</p><div class="line"><code id="key">spy_****${esc(l.key.slice(-4))}</code><span><button class="sec" data-act="show">Afficher</button> <button class="sec" data-act="copy">Copier</button></span></div></div>
-  <div class="box"><h2>Appareil (HWID)</h2><p class="dim">${l.hwidBound?"Ta licence est liée à un appareil.":"Aucun appareil lié."} Tu peux le réinitialiser une fois par jour.</p><button class="sec" data-act="hwid" ${can?"":"disabled"} style="margin-top:8px">Réinitialiser le HWID</button>${can?"":`<p class="dim">Disponible dans ${Math.ceil(left/36e5)} h.</p>`}</div>
-  <button class="sec" data-act="logout">Se déconnecter</button>`}
+  return`<div class="box"><h2>Ta licence</h2>${none("Colle cette clé dans le script.")}<div class="line"><code id="key">${l.key?"spy_****"+esc(l.key.slice(-4)):"—"}</code><span><button class="sec" data-act="show">Afficher</button> <button class="sec" data-act="copy">Copier</button></span></div></div>
+  <div class="box"><h2>Appareil (HWID)</h2>${none((l.hwidBound?"Ta licence est liée à un appareil.":"Aucun appareil lié.")+" Réinitialisation possible une fois par jour.")}<button class="sec" data-act="hwid" ${can?"":"disabled"} style="margin-top:8px">Réinitialiser le HWID</button>${can?"":none("Disponible dans "+Math.ceil(left/36e5)+" h.")}</div>
+  <div class="box"><h2>Préférences</h2><div class="line"><span>Thème</span><span class="dim">Dark uniquement</span></div><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div>
+  <button class="sec out" data-act="logout">Se déconnecter</button>`}
+function dash(){
+  const m=S.me,now=Date.now(),R=[...m.reservations].sort((a,b)=>b.start-a.start),cur=R.find(r=>now>=r.start&&now<r.end),mn=R.reduce((a,r)=>a+(r.end-r.start)/6e4,0),sp=R.reduce((a,r)=>a+r.price,0),nm=esc(m.user?.name||"Joueur");
+  S.end=cur?cur.end:0;
+  return`<div class="box"><div class="line" style="justify-content:flex-start;gap:14px"><span class="av xl">${nm[0]?.toUpperCase()||"?"}</span><div><h2>${nm}</h2>${none("ID "+esc(m.user?.id||"—"))}</div></div></div>
+  <div class="grid"><div class="box"><span class="dim">Solde</span><div class="big">${money(m.balance)}</div><button class="sec" data-act="tab" data-t="gift" style="margin-top:8px;width:100%">Recharger</button></div>
+  <div class="box"><span class="dim">Créneau en cours</span>${cur?`<div class="big" id="cd">--:--:--</div>${none(hm(cur.start)+" → "+hm(cur.end))}`:`${none("Aucun")}<button class="sec" data-act="tab" data-t="slots" style="margin-top:8px;width:100%">Réserver</button>`}</div></div>
+  <div class="box"><h2>Mes stats</h2><div class="line"><span class="dim">Brainrots capturés</span><b>${m.stats?.captured??"—"}</b></div><div class="line"><span class="dim">Temps d'auto-join</span><b>${dur(mn)}</b></div><div class="line"><span class="dim">Solde dépensé</span><b>${money(sp)}</b></div></div>
+  <div class="box"><h2>Historique</h2>${R.length?`<div class="sx"><table><thead><tr><th>Date</th><th>Durée</th><th>Prix</th><th>Statut</th></tr></thead><tbody>${R.slice(0,5).map(r=>`<tr><td>${new Date(r.start).toLocaleDateString("fr-FR")} ${hm(r.start)}</td><td>${dur((r.end-r.start)/6e4)}</td><td>${money(r.price)}</td><td>${now<r.start?"À venir":now<r.end?"En cours":"Terminé"}</td></tr>`).join("")}</tbody></table></div>`:none("Aucune réservation.")}</div>`}
 
-const TABS=[["book","Réserver"],["mine","Mes créneaux"],["gift","Gift card"],["account","Compte"]];
+/* ===== Rendu ===== */
+const PUB=[["home","Home"],["stats","Stats"],["buy","Buy"],["board","Leaderboard"]],PRIV=[["slots","Slots"],["gift","Giftcard"],["settings","Settings"],["dash","Dashboard"]];
+const LOGO=`<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 16C6 9 11 6 16 6s10 3 14 10c-4 7-9 10-14 10S6 23 2 16Z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="5" fill="#fff"/><circle cx="16" cy="16" r="2" fill="#050505"/></svg>`;
+const DISC=`<svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M19.3 5.3A17 17 0 0 0 15.1 4l-.5 1.1a15.8 15.8 0 0 0-5.2 0L8.9 4A17 17 0 0 0 4.7 5.3C2 9.3 1.3 13.2 1.7 17a17 17 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12 12 0 0 0 10.2 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.8a17 17 0 0 0 5.2-2.6c.5-4.4-.8-8.3-3-11.7ZM8.7 14.7c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg>`;
 function render(){
-  const app=$("#app"),bal=S.me?`<span class="chip" aria-label="Solde">${money(S.me.balance)}</span>`:"";
-  app.innerHTML=`<header><span class="brand">SpyHub</span>${bal}</header>`+(S.me?`<nav>${TABS.map(([id,n])=>`<button data-act="tab" data-t="${id}" ${S.tab===id?'aria-current="page"':""}>${n}</button>`).join("")}</nav>`+({book,mine,gift,account}[S.tab])():gate());
-  if(S.me&&S.tab==="book")upd()}
-async function load(){const r=await api("/me");S.me=r.ok?{...r.data.user&&{user:r.data.user},balance:r.data.balance,license:r.data.license,reservations:r.data.reservations}:null;if(S.me)await loadAvail();render()}
+  const tabs=S.me?[...PUB,...PRIV]:PUB;if(!tabs.some(t=>t[0]===S.tab))S.tab="home";
+  const V={home,stats,buy,board,slots,gift,settings,dash};
+  $("#app").innerHTML=`<header><span class="brand">${LOGO}SpyHub AJ</span><span class="hd"><span class="live"><i class="dot"></i>En direct</span>${S.me?`<span class="chip" aria-label="Solde">${money(S.me.balance)}</span>`:""}<a class="dc" href="${esc(CONFIG.DISCORD_URL)}" target="_blank" rel="noopener" aria-label="Discord">${DISC}</a>${S.me?'<button class="sec" data-act="tab" data-t="settings">Compte</button>':'<button class="sec" data-act="login">Login</button>'}</span></header>
+  <nav aria-label="Navigation">${tabs.map(([id,n])=>`<button data-act="tab" data-t="${id}" ${S.tab===id?'aria-current="page"':""}>${n}</button>`).join("")}</nav><main>${V[S.tab]()}</main>`;
+  if(S.tab==="slots")upd()}
 
 /* ===== Actions ===== */
 document.addEventListener("click",async e=>{
   const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;if(a==="tab")e.preventDefault();
-  if(a==="login"){if(CONFIG.DEMO){M.in=true;return load()}location.href=CONFIG.API_BASE+CONFIG.LOGIN_PATH}
-  else if(a==="tab"){S.tab=b.dataset.t;if(S.tab==="book")await loadAvail();render()}
+  const login=()=>{location.href=CONFIG.API_BASE+CONFIG.LOGIN_PATH+"?return="+encodeURIComponent(location.origin+location.pathname)};
+  if(a==="login")login();
+  else if(a==="dash"){if(!S.me)login();else{S.tab="dash";render()}}
+  else if(a==="tab"){S.tab=b.dataset.t;render();scrollTo(0,0);
+    if(S.tab==="stats")loadStats();else if(S.tab==="board")loadBoard();else if(S.tab==="buy"||S.tab==="slots"){await loadAvail();render()}}
   else if(a==="cell"){S.start=+b.dataset.c;upd()}
-  else if(a==="reserve"){S.busy=true;upd();const r=await api("/reserve",{start:S.start*CELL,minutes:S.dur});S.busy=false;
-    if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);S.start=null;toast("Créneau réservé");await loadAvail();S.tab="mine";render()}
+  else if(a==="reserve"){S.busy=true;upd();const r=await api(A+"/reserve",{start:S.start*CELL,minutes:S.dur});S.busy=false;
+    if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);S.start=null;toast("Créneau réservé");S.tab="dash";await loadAvail();render()}
     else{toast(r.data.error||"Réservation impossible");await loadAvail();render()}}
-  else if(a==="redeem"){const c=$("#code").value.trim();if(!c)return toast("Entre un code");const r=await api("/giftcard",{code:c});
-    if(r.ok){S.me.balance=r.data.balance;toast(money(r.data.added)+" ajoutés à ton solde");render()}else toast(r.data.error||"Code refusé")}
-  else if(a==="show"){$("#key").textContent=S.me.license.key}
+  else if(a==="buy"){if(!S.me)return toast("Connecte-toi pour acheter");const h=+b.dataset.h,r=await api(A+"/buy",{hours:h});
+    if(r.ok){S.me.balance=r.data.balance;toast("Pack "+h+" h acheté");render()}else toast(r.data.error||"Achat impossible")}
+  else if(a==="redeem"){const c=$("#code").value.trim();if(!c)return toast("Entre un code");const r=await api(A+"/giftcard",{code:c});
+    if(r.ok){toast(money(r.data.added)+" ajoutés à ton solde");await load();$("#gb")?.classList.add("flash")}else toast(r.data.error||"Code refusé")}
+  else if(a==="show"){$("#key").textContent=S.me.license.key||"—"}
   else if(a==="copy"){try{await navigator.clipboard.writeText(S.me.license.key);toast("Clé copiée")}catch{toast("Copie impossible, touche Afficher")}}
-  else if(a==="hwid"){const r=await api("/hwid/reset",{});if(r.ok){S.me.license.hwidResetAt=r.data.hwidResetAt;S.me.license.hwidBound=false;toast("HWID réinitialisé");render()}else toast(r.data.error||"Reset impossible")}
-  else if(a==="logout"){await api("/logout",{});S.me=null;S.tab="book";S.start=null;render()}
+  else if(a==="hwid"){const r=await api(A+"/hwid/reset",{});if(r.ok){S.me.license.hwidResetAt=r.data.hwidResetAt;S.me.license.hwidBound=false;toast("HWID réinitialisé");render()}else toast(r.data.error||"Reset impossible")}
+  else if(a==="filt"){S.f=b.dataset.f;S.lb=null;render();loadBoard()}
+  else if(a==="notif"){S.notif=!S.notif;render()}
+  else if(a==="logout"){await api(A+"/logout",{});setTok("");S.me=null;S.tab="home";S.start=null;render()}
 });
 document.addEventListener("input",e=>{if(e.target.id==="dur"){S.dur=+e.target.value;upd()}});
-setInterval(()=>{if(S.me&&S.tab==="mine")render()},30000);
+
+/* ===== Rafraîchissements : chrono 1 s, historique 30 s, stats 5 s ===== */
+setInterval(()=>{const c=$("#cd");if(!c)return;const l=Math.max(0,S.end-Date.now()),p=n=>String(n).padStart(2,"0");c.textContent=p(l/36e5|0)+":"+p(l/6e4%60|0)+":"+p(l/1e3%60|0);if(!l)render()},1000);
+setInterval(()=>{if(S.me&&S.tab==="dash")render()},30000);
+setInterval(()=>{if(S.tab==="stats")loadStats()},5000);
 load();
 </script>
 </body>
