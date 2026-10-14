@@ -245,6 +245,17 @@ input[type=number]{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(2
 #app .fl .b{flex:1 0 auto;border:0;background:none;box-shadow:none;border-radius:10px;color:var(--dim)}#app .fl .b:hover:not(:disabled){color:#fff;background:rgba(255,255,255,.08);transform:none;box-shadow:none}
 #app .fl .b.on,#app .fl .b.on:hover{background:#8b5cf6;color:#fff}
 .lgn{max-width:420px;margin:8vh auto;text-align:center;padding:30px 20px}
+
+/* ===== Effets PC ===== */
+#sp{position:fixed;left:0;top:0;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#6d28d9,#a78bfa,#6366f1);z-index:9998;box-shadow:0 0 12px #8b5cf6;pointer-events:none}
+.b.s{animation:glowp 3s ease-in-out infinite}@keyframes glowp{50%{box-shadow:0 0 44px -4px rgba(139,92,246,.75)}}
+@media(hover:hover) and (pointer:fine){
+#cd,#cr{position:fixed;left:0;top:0;pointer-events:none;z-index:9999;border-radius:50%}
+#cd{width:6px;height:6px;margin:-3px 0 0 -3px;background:#c4b5fd;box-shadow:0 0 10px #a78bfa}
+#cr{width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid rgba(167,139,250,.7);transition:width .25s,height .25s,margin .25s,background .25s,border-color .25s}
+#cr.h{width:58px;height:58px;margin:-29px 0 0 -29px;background:rgba(139,92,246,.14);border-color:#a78bfa}
+#cr.d{width:22px;height:22px;margin:-11px 0 0 -11px}
+.b,nav button,.ic{transition:translate .2s ease-out,transform .25s,background .25s,box-shadow .25s}}
 </style>
 </head>
 <body>
@@ -568,6 +579,74 @@ settings=function(){const m=S.me,u=m.user||{},l=m.license,r=(a,b)=>`<div class="
  return`<h1 class="sm">Settings</h1><div class="box prof">${av2(u.avatar,u.name)}<div class="pi"><h2>Discord account</h2></div></div><div class="box">${r("Username",u.name)}${r("Display name",u.globalName||u.name)}${r("Discord ID",u.id)}${r("Email",u.email)}${r("Account created",dts(snow(u.id)))}${r("Role",u.owner?"Owner":"Member")}</div>
  <div class="box"><h2>Your license key</h2>${none("Only you can see it. Paste it into the script.")}<div class="line"><code id="key">${l.key?"spy_****"+esc(l.key.slice(-4)):"—"}</code><span><button class="b sm" data-act="show">Show</button> <button class="b sm" data-act="copy">Copy</button></span></div></div>
  <div class="box"><h2>Preferences</h2><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div><button class="b out" data-act="logout">Log out</button>`};
+</script>
+<script>
+/* ===== Fond galaxie (WebGL) ===== */
+(()=>{const cv=document.getElementById("gl");if(!cv)return;const gl=cv.getContext("webgl",{antialias:false,alpha:false});if(!gl)return;
+const still=matchMedia("(prefers-reduced-motion:reduce)").matches,Q=innerWidth<760?.85:1;
+const fs=`precision highp float;uniform vec2 R,M;uniform float T,S;
+mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*vn(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}
+vec3 stars(vec2 uv,float sc,float dens,float tw){vec2 u=uv*sc,g=floor(u),f=fract(u)-.5;float h=h21(g);
+vec2 o=(vec2(h21(g+1.3),h21(g+2.7))-.5)*.7;float m=step(1.-dens,h)*smoothstep(.16*(.35+h21(g+4.)),0.,length(f-o));
+vec3 col=mix(vec3(1.,.8,.6),vec3(.6,.75,1.),h21(g+5.));return col*m*(.65+.35*sin(T*tw+h*60.));}
+void main(){vec2 p=(gl_FragCoord.xy-.5*R)/R.y;p*=max(1.,.9*R.y/R.x);vec2 m=M-.5;vec3 c=vec3(0.);
+float n1=fbm(p*1.6+m*.1+T*.01),n2=fbm(p*2.8-m*.15+7.+T*.015);
+c+=vec3(.07,.02,.16)*n1*1.7+vec3(.0,.06,.14)*n2+vec3(.07,.02,.16)*pow(fbm(p*1.1+20.),2.)*1.2;
+c+=stars(p+m*.02,40.,.10,2.)+stars(p+m*.05,80.,.05,3.)*.8+stars(p+m*.09,22.,.04,1.5)*1.5;
+vec2 q=(p-vec2(.14*step(1.,R.x/R.y),.03)-m*.06)*1.1;q*=rot(.55);q.y*=1.9;
+float r=length(q),a=atan(q.y,q.x);
+float ph=2.*a-5.5*log(r+.03)+T*.12+(fbm(q*5.)-.5)*2.4;float arms=pow(.5+.5*cos(ph),2.2);
+float disk=exp(-r*3.0),core=exp(-r*13.);
+float d=disk*(.25+1.15*arms)+core*2.4;d*=.55+fbm(q*9.+3.)*.95;
+float dust=smoothstep(.5,.78,fbm(q*7.-T*.01))*(1.-arms)*disk;d*=1.-dust*.75;
+vec3 armCol=mix(vec3(.28,.4,1.),vec3(.62,.3,1.),clamp(fbm(q*3.+1.)*1.4,0.,1.));
+vec3 g=mix(armCol,vec3(1.,.8,.5),clamp(core*1.5+exp(-r*6.)*.55,0.,1.))*d*1.6;
+c+=g+stars(q,100.,.28,2.5)*disk*(.3+arms)*2.;
+c=1.-exp(-c*1.7);c=pow(c,vec3(.95));c*=1.-.3*dot(p,p);gl_FragColor=vec4(c,1.);}
+`;
+function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o}
+const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,"attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);
+if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return;gl.useProgram(pr);
+const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+const al=gl.getAttribLocation(pr,"a");gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
+const uR=gl.getUniformLocation(pr,"R"),uM=gl.getUniformLocation(pr,"M"),uT=gl.getUniformLocation(pr,"T");
+let mx=.5,my=.5,sx=.5,sy=.5,t0=performance.now(),run=true;
+function size(){const d=Math.min(devicePixelRatio||1,2)*Q;cv.width=Math.round(innerWidth*d);cv.height=Math.round(innerHeight*d);gl.viewport(0,0,cv.width,cv.height)}
+function draw(n){sx+=(mx-sx)*.05;sy+=(my-sy)*.05;gl.uniform2f(uR,cv.width,cv.height);gl.uniform2f(uM,sx,1-sy);gl.uniform1f(uT,(n-t0)/1000+20);gl.drawArrays(gl.TRIANGLE_STRIP,0,4)}
+function loop(n){if(run)draw(n);requestAnimationFrame(loop)}
+addEventListener("resize",()=>{size();if(still)draw(performance.now())});
+addEventListener("pointermove",e=>{mx=e.clientX/innerWidth;my=e.clientY/innerHeight},{passive:true});
+document.addEventListener("visibilitychange",()=>{run=!document.hidden});
+size();still?draw(performance.now()):requestAnimationFrame(loop)})();
+
+/* ===== Effets PC : barre de scroll, curseur, traînée, boutons magnétiques ===== */
+(()=>{const pc=matchMedia("(hover:hover) and (pointer:fine)").matches,rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const sp=document.createElement("div");sp.id="sp";document.body.appendChild(sp);
+const sc=()=>{const h=document.documentElement.scrollHeight-innerHeight;sp.style.transform="scaleX("+(h>0?scrollY/h:0)+")"};
+addEventListener("scroll",sc,{passive:true});addEventListener("resize",sc);sc();
+if(!pc||rm)return;
+const cd=document.createElement("div"),cr=document.createElement("div"),tc=document.createElement("canvas"),c=tc.getContext("2d");
+cd.id="cd";cr.id="cr";tc.style.cssText="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997";
+document.body.append(tc,cr,cd);
+let x=-100,y=-100,rx=-100,ry=-100,P=[],mag=null;
+const rs=()=>{tc.width=innerWidth;tc.height=innerHeight};rs();addEventListener("resize",rs);
+const HOV="a,button,.b,.fc,.tilt,input,summary,[data-act]",MG=".b,nav button,.ic";
+addEventListener("pointermove",e=>{x=e.clientX;y=e.clientY;cd.style.transform="translate("+x+"px,"+y+"px)";
+for(let i=0;i<2;i++)P.push({x,y,vx:(Math.random()-.5)*1.2,vy:(Math.random()-.5)*1.2,l:1,h:255+Math.random()*40});if(P.length>90)P.splice(0,P.length-90);
+const m=e.target.closest&&e.target.closest(MG);
+if(mag&&mag!==m)mag.style.translate="";
+mag=m;if(m){const r=m.getBoundingClientRect();m.style.translate=((x-r.left-r.width/2)*.18)+"px "+((y-r.top-r.height/2)*.28)+"px"}},{passive:true});
+document.addEventListener("pointerover",e=>cr.classList.toggle("h",!!(e.target.closest&&e.target.closest(HOV))));
+document.addEventListener("pointerleave",()=>{if(mag)mag.style.translate=""});
+addEventListener("pointerdown",()=>cr.classList.add("d"));addEventListener("pointerup",()=>cr.classList.remove("d"));
+(function f(){rx+=(x-rx)*.18;ry+=(y-ry)*.18;cr.style.transform="translate("+rx+"px,"+ry+"px)";
+c.clearRect(0,0,tc.width,tc.height);c.globalCompositeOperation="lighter";
+for(let i=P.length-1;i>=0;i--){const p=P[i];p.x+=p.vx;p.y+=p.vy;p.l-=.03;if(p.l<=0){P.splice(i,1);continue}
+c.beginPath();c.fillStyle="hsla("+p.h+",90%,68%,"+p.l*.55+")";c.arc(p.x,p.y,2+p.l*3,0,6.283);c.fill()}
+requestAnimationFrame(f)})()})();
 </script>
 </body>
 </html>
