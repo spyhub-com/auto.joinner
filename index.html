@@ -256,6 +256,61 @@ input[type=number]{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(2
 #cr.h{width:58px;height:58px;margin:-29px 0 0 -29px;background:rgba(139,92,246,.14);border-color:#a78bfa}
 #cr.d{width:22px;height:22px;margin:-11px 0 0 -11px}
 .b,nav button,.ic{transition:translate .2s ease-out,transform .25s,background .25s,box-shadow .25s}}
+
+/* ===== v5 : nav PC, planète, buy, giftcard, podium, statut ===== */
+#gl{background:radial-gradient(120% 90% at 70% 20%,#16102e,#06050d 60%,#000)}
+footer img,footer::before,footer::after{display:none!important;background-image:none!important;content:none!important}
+.tn{display:none}
+@media(min-width:1000px){#app{max-width:1180px}.tn{display:flex;gap:2px;align-items:center;justify-content:center;flex:1;min-width:0;flex-wrap:nowrap}
+.tn button{background:none;border:0;color:#b4b4c2;font:inherit;font-size:14px;padding:8px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s,box-shadow .25s}
+.tn button:hover{color:#fff;background:rgba(255,255,255,.08)}.tn button.lk{opacity:.55}
+.tn button[aria-current=page]{color:#fff;background:rgba(139,92,246,.28);box-shadow:inset 0 0 0 1px rgba(167,139,250,.55),0 0 18px -4px rgba(139,92,246,.7)}
+header .ic[data-act=menu]{display:none}}
+#pln{position:fixed;right:-7vmin;top:12vh;width:min(48vmin,540px);aspect-ratio:1;z-index:0;pointer-events:none;animation:plf 14s ease-in-out infinite}
+@keyframes plf{50%{transform:translateY(-14px)}}
+#pln .pt{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:#2a1b5e;box-shadow:0 0 90px 8px rgba(139,92,246,.35),inset -46px -34px 90px rgba(0,0,0,.88),inset 14px 10px 44px rgba(196,181,253,.28)}
+#pln .pt i{position:absolute;top:0;left:0;width:200%;height:100%;background:radial-gradient(40% 16% at 25% 32%,rgba(255,255,255,.2),transparent),radial-gradient(32% 12% at 70% 58%,rgba(167,139,250,.38),transparent),repeating-linear-gradient(180deg,#3b2a86 0 9%,#5b3fc4 9% 14%,#2a1b5e 14% 24%,#7c5ce0 24% 27%,#33237a 27% 38%);background-size:50% 100%,50% 100%,100% 100%;background-repeat:repeat-x,repeat-x,no-repeat;animation:pls 80s linear infinite;will-change:transform}
+@keyframes pls{to{transform:translateX(-50%)}}
+#pln .pr{position:absolute;left:-30%;right:-30%;top:40%;height:22%;border-radius:50%;border:5px solid rgba(196,181,253,.38);box-shadow:0 0 22px rgba(139,92,246,.45),inset 0 0 22px rgba(139,92,246,.3);transform:rotate(-16deg);opacity:.75}
+#pln .pm{position:absolute;left:50%;top:50%;width:9%;aspect-ratio:1;margin:-4.5%;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ece8ff,#7c6bd6 60%,#2a1b5e);animation:plo 24s linear infinite}
+@keyframes plo{from{transform:rotate(0) translateX(calc(min(48vmin,540px)*.85)) rotate(0)}to{transform:rotate(360deg) translateX(calc(min(48vmin,540px)*.85)) rotate(-360deg)}}
+@media(max-width:760px){#pln{right:-18vmin;top:auto;bottom:4vh;width:72vmin;opacity:.85}}
+.pcard{max-width:430px;margin:22px auto;padding:14px;border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.2);box-shadow:var(--spec),0 40px 80px -30px rgba(139,92,246,.5);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.pc-in{position:relative;padding:28px 24px 24px;border-radius:20px;background:linear-gradient(160deg,rgba(139,92,246,.24),rgba(20,16,40,.6));overflow:hidden}
+.pc-price{position:absolute;top:0;right:0;padding:16px 24px 18px 34px;border-radius:0 0 0 44px;font-size:28px;font-weight:700;background:rgba(139,92,246,.38);color:#fff}
+.pc-price small{font-size:15px;color:#d4c8ff;margin-left:6px;font-weight:600}
+.pc-in h2{margin:48px 0 10px;font-size:26px}.pc-d{color:var(--dim);line-height:1.65;margin:0}
+.pc-l{list-style:none;padding:0;margin:20px 0 22px;display:grid;gap:13px}.pc-l li{display:flex;align-items:center;gap:12px;color:#c9c9d6}
+.pc-l i{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#22d3c5;color:#04332f;font-style:normal;font-size:14px;font-weight:800;flex:none}
+.pc-more{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.gv{display:grid;gap:18px;max-width:480px;margin:18px auto}
+.gv-card{position:relative;aspect-ratio:1.7;border-radius:22px;padding:20px;overflow:hidden;background:linear-gradient(135deg,#2b1a63,#5b3fc4 55%,#1a1240);border:1px solid rgba(255,255,255,.25);box-shadow:0 30px 60px -20px rgba(139,92,246,.6),inset 0 1px 0 rgba(255,255,255,.4);display:flex;flex-direction:column;justify-content:space-between;animation:gvf 6s ease-in-out infinite}
+.gv-card::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%);transform:translateX(-120%);animation:gvs 4s ease-in-out infinite}
+@keyframes gvs{60%,100%{transform:translateX(120%)}}@keyframes gvf{50%{transform:translateY(-6px) rotate(.4deg)}}
+.gv-top{display:flex;justify-content:space-between;letter-spacing:.14em;font-size:12px}.gv-chip{width:46px;height:34px;border-radius:8px;background:linear-gradient(135deg,#f5d98a,#b98f2e)}
+.gv-code{font:600 clamp(15px,4.4vw,22px) ui-monospace,Menlo,monospace;letter-spacing:.12em;word-break:break-all}.gv-ft{display:flex;justify-content:space-between;font-size:11px;opacity:.7}
+.gv-form{display:grid;gap:10px;padding:18px;border-radius:20px;border:1px solid rgba(255,255,255,.14);background:var(--glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pdm{display:flex;align-items:flex-end;justify-content:center;gap:14px;margin:18px 0 24px}
+.pd{flex:1;max-width:220px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;min-width:0}.pd b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd .av{width:56px;height:56px;font-size:22px;display:grid;place-items:center}.pd1 .av{width:74px;height:74px;font-size:28px;box-shadow:0 0 34px rgba(245,196,81,.65)}.pd .pv{color:#c4b5fd}
+.crn{width:34px;height:34px;filter:drop-shadow(0 0 10px rgba(245,196,81,.8));animation:plf 3s ease-in-out infinite}
+.pd .st{width:100%;margin-top:8px;border-radius:16px 16px 6px 6px;display:grid;place-items:center;font-size:44px;font-weight:800;transform-origin:bottom;animation:rise .9s cubic-bezier(.2,.9,.2,1) both;border:1px solid rgba(255,255,255,.25);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pd1 .st{height:170px;background:linear-gradient(180deg,rgba(245,196,81,.55),rgba(245,196,81,.1));color:#ffe9a8;animation-delay:.25s;box-shadow:0 0 50px -10px rgba(245,196,81,.55)}
+.pd2 .st{height:125px;background:linear-gradient(180deg,rgba(207,211,220,.5),rgba(207,211,220,.1));color:#eef0f5;animation-delay:.1s}
+.pd3 .st{height:95px;background:linear-gradient(180deg,rgba(205,138,90,.5),rgba(205,138,90,.1));color:#ffd2b3;animation-delay:.4s}
+@keyframes rise{from{transform:scaleY(0);opacity:0}}
+.stl{display:flex;align-items:center;gap:14px}.stl b{font-size:22px}.stl p{margin:2px 0 0}
+.stl .dot{width:14px;height:14px;border-radius:50%;flex:none;background:#a78bfa;animation:pu 1.8s infinite}.stl.fz .dot{background:#f87171;animation:none}
+@keyframes pu{0%{box-shadow:0 0 0 0 rgba(167,139,250,.7)}70%,100%{box-shadow:0 0 0 14px rgba(167,139,250,0)}}
+.rcl{display:flex;flex-wrap:wrap;gap:10px}.rcp{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 7px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.rcp img,.rcp .pp,.rcp .av{width:32px;height:32px;border-radius:50%;flex:none}
+#ow .grid .box .big{background:linear-gradient(180deg,#fff,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ow-act{display:flex;gap:10px;flex-wrap:wrap}
+
+#pln.gl3d .pt,#pln.gl3d .pr{display:none}
+#pln .p3{position:absolute;left:-35%;top:-35%;width:170%;height:170%;pointer-events:none}
+.dnp{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px;position:relative;z-index:1}.dnp .box{max-width:460px;display:grid;gap:12px;justify-items:center}.dn-i{font-size:46px}
+.dn-r{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08)}.dn-r p{margin:2px 0 0}.box.dn{border-color:rgba(248,113,113,.35)}
 </style>
 </head>
 <body>
@@ -296,7 +351,7 @@ async function loadStats(){
   if(S.tab==="stats")paintStats()}
 async function loadBoard(){const r=await api(`${A}/leaderboard?range=${S.f}`);S.lb=r.ok?(r.data.rows||[]):null;if(S.tab==="board")render()}
 async function load(){
-  const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance}
+  const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance;S.downWeb=!!cg.data.downWeb;S.downAll=!!cg.data.downAll}
   const r=await api(A+"/me");
   S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],stats:r.data.stats,license:r.data.license||{key:"",hwidResetAt:0},reservations:r.data.reservations||[]}:null;
   if(S.me)await loadAvail();render()}
@@ -371,12 +426,14 @@ const LEGAL={
 const legal=()=>{const[t,sec]=LEGAL[S.tab];return`<h1 class="sm">${t}</h1><div class="legal">${sec.map(([h,p])=>`<h2>${h}</h2><p class="dim">${p}</p>`).join("")}</div>`};
 
 /* ===== Rendering ===== */
-const TABS=[["dash","Dashboard"],["slots","Slots"],["buy","Buy"],["gift","Giftcard"],["stats","Stats"],["board","Leaderboard"],["settings","Settings"]];
+const TABS=[["dash","Dashboard"],["buy","Buy"],["gift","Giftcard"],["stats","Stats"],["board","Leaderboard"],["settings","Settings"]];
+const tnHtml=()=>[["home","Home"],...TABS,...(S.me?.user?.owner?[["owner","Owner"]]:[])].map(([id,n])=>{const lk=!S.me&&!["home","stats"].includes(id);return`<button data-act="mtab" data-t="${id}"${S.tab===id?' aria-current="page"':""}${lk?' class="lk"':""}>${n}</button>`}).join("");
 const menuHtml=()=>{const all=[["home","Home"],...TABS,...(S.me?.user?.owner?[["owner","Owner"]]:[])];return`<div class="mn" id="mn" role="menu" hidden>`+all.map(([id,n])=>{const lk=!S.me&&!["home","stats"].includes(id);return`<button role="menuitem" data-act="mtab" data-t="${id}"${S.tab===id?' aria-current="page"':""}${lk?' class="lk"':""}>${n}${lk?'<span class="dim">Login</span>':""}</button>`}).join("")+`<hr>`+(S.me?`<button data-act="logout">Log out</button>`:`<button data-act="login">Log in with Discord</button>`)+`</div>`};
 function render(){
+  if((S.downWeb||S.downAll)&&!S.me?.user?.owner){$("#app").innerHTML=`<div class="dnp"><div class="box"><div class="dn-i">${S.downAll?"⏻":"🔧"}</div><h1 class="sm">${S.downAll?"Everything is down":"Site is down"}</h1><p class="dim">${S.downAll?"All SpyHub services are stopped for now.":"The website is closed for now."} Please come back later.</p><button class="b sm" data-act="login">Owner login</button></div></div>`;return}
   const V={home,stats,buy,board,slots,gift:gift2,settings,dash,login:loginView,owner:()=>S.me?.user?.owner?owner():home(),legal,terms:legal,privacy:legal,refund:legal};
   if(!S.me&&["buy","board","slots","gift","settings","dash","owner"].includes(S.tab))S.tab="home";
-  $("#app").innerHTML=`${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><span class="hl"><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button></span><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span>`:'<button class="b sm" data-act="login">Login</button>'}<button class="ic" data-act="menu" aria-label="Menu" aria-expanded="false" aria-haspopup="true"><svg class="bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></span>${menuHtml()}</header>
+  $("#app").innerHTML=`${(S.downWeb||S.downAll)?`<div class="ann">${S.downAll?"ALL DOWN":"WEB DOWN"}: only you (owner) can use the site.</div>`:""}${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><span class="hl"><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button></span><div class="tn">${tnHtml()}</div><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span>`:'<button class="b sm" data-act="login">Login</button>'}<button class="ic" data-act="menu" aria-label="Menu" aria-expanded="false" aria-haspopup="true"><svg class="bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></span>${menuHtml()}</header>
   <main>${S.tab!=="home"&&!S.me?'<button class="b sm back" data-act="tab" data-t="home">← Back</button>':""}${V[S.tab]()}</main>
   <footer><span>© SpyHub AJ</span>${[["terms","Terms of Service"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
   if(S.tab==="slots")upd();document.body.classList.toggle("home",S.tab==="home");
@@ -401,7 +458,7 @@ document.addEventListener("click",async e=>{
     if(r.ok){S.me.balance=r.data.balance;toast(h+" h pack purchased");render()}else toast(r.data.error||"Purchase failed")}
   else if(a==="redeem"){const c=$("#code").value.trim();if(!c)return toast("Enter a code");const r=await api(A+"/giftcard",{code:c});
     if(r.ok){toast(money(r.data.added)+" added to your balance");await load();$("#gb")?.classList.add("flash")}else toast(r.data.error||"Code refused")}
-  else if(a==="show"){$("#key").textContent=S.me.license.key||"—"}
+  else if(a==="show"){const k=$("#key");if(!k)return;if(k.dataset.s){k.textContent=S.me.license.key?"spy_****"+S.me.license.key.slice(-4):"—";delete k.dataset.s;b.textContent="Show"}else{k.textContent=S.me.license.key||"—";k.dataset.s="1";b.textContent="Hide";clearTimeout(window._kt);window._kt=setTimeout(()=>{const x=$("#key");if(x&&x.dataset.s)b.click()},10000)}}
   else if(a==="copy"){try{await navigator.clipboard.writeText(S.me.license.key);toast("Key copied")}catch{toast("Copy failed, tap Show")}}
   else if(a==="hwid"){const r=await api(A+"/hwid/reset",{});if(r.ok){S.me.license.hwidResetAt=r.data.hwidResetAt;S.me.license.hwidBound=false;toast("HWID reset");render()}else toast(r.data.error||"Reset failed")}
   else if(a==="filt"){S.f=b.dataset.f;S.lb=null;render();loadBoard()}
@@ -463,7 +520,7 @@ load();
 
 /* ===== Owner panel (server checks the owner ID on every call) ===== */
 const OW={s:"over"},OA=A+"/owner/";
-const owner=()=>`<h1 class="sm">Owner</h1><div class="fl">${[["over","Overview"],["users","Users"],["gifts","Gift cards"],["slots","Slots"],["set","Settings"],["log","Log"]].map(([k,n])=>`<button class="b sm${OW.s===k?" on":""}" data-oa="sec" data-k="${k}">${n}</button>`).join("")}</div><div id="ow">${none("Loading...")}</div>`;
+const owner=()=>`<h1 class="sm">Owner</h1><div class="fl">${[["over","Overview"],["users","Users"],["gifts","Gift cards"],["set","Settings"],["log","Log"]].map(([k,n])=>`<button class="b sm${OW.s===k?" on":""}" data-oa="sec" data-k="${k}">${n}</button>`).join("")}</div><div id="ow">${none("Loading...")}</div>`;
 async function userView(put){const r=await api(OA+"user?id="+encodeURIComponent(OW.u));if(!r.ok){OW.u=null;return put(none(esc(r.data.error||"Error")))}const x=r.data.u,n=Date.now();
  put(`<button class="b sm" data-oa="back">&larr; Users</button><div class="box prof" style="margin-top:12px">${x.avatar?`<img class="pp" src="${esc(x.avatar)}" alt="">`:""}<div class="pi"><h2>${esc(x.name)}${x.active?"":' <span class="bad">banned</span>'}</h2><p class="dim">${esc(x.email)}</p><p class="dim">ID ${esc(x.id)}</p></div></div>
  <div class="grid"><div class="box"><span class="dim">Balance</span><div class="big">${money(x.balance)}</div></div><div class="box"><span class="dim">Hours</span><div class="big">${x.hours}</div></div></div>
@@ -471,8 +528,8 @@ async function userView(put){const r=await api(OA+"user?id="+encodeURIComponent(
  <div class="box"><h2>Actions</h2><div class="cta" style="margin:0"><button class="b sm" data-oa="hwid">Reset HWID${x.hwid?"":" (none bound)"}</button><button class="b sm" data-oa="ban" data-v="${x.active?0:1}">${x.active?"Ban":"Unban"}</button></div></div>
  <div class="box"><h2>Bookings</h2>${x.res.length?x.res.map(y=>`<div class="line"><span>${new Date(y.start).toLocaleString("en-US")} / ${dur((y.end-y.start)/6e4)} / ${money(y.price)}</span>${y.end>n?`<button class="b sm" data-oa="cancel" data-s="${y.start}">Cancel</button>`:""}</div>`).join(""):none("None")}</div>`)}
 async function ownerPaint(){if(!$("#ow"))return;const s=OW.s,put=h=>{if($("#ow")&&OW.s===s)$("#ow").innerHTML=h},bad=r=>put(none(esc(r.data.error||"Error")));
- if(s==="over"){const[r,f]=await Promise.all([api(OA+"stats"),api("/api/stats")]);if(!r.ok)return bad(r);const d=r.data,c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`,fs=f.ok?f.data:{};
-  put(`<div class="grid">${c("Users",d.users)}${c("Users' balance",money(d.bal))}${c("Redeemed today",money(d.day))}${c("Redeemed this month",money(d.month))}${c("Redeemed all time",money(d.all))}${c("Gift cards used",d.gu+" / "+d.gc)}${c("Scanners online",fs.scanners??"-")}${c("Brainrots today",fs.activeToday??"-")}</div>${d.cfg.maintenance?'<p class="bad">Maintenance mode is ON.</p>':""}`)}
+ if(s==="over"){const[r,f,ru]=await Promise.all([api(OA+"stats"),api("/api/stats"),api(A+"/recent-users")]);if(!r.ok)return bad(r);const d=r.data,c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`,fs=f.ok?f.data:{};
+  put(`<div class="box dn"><h2>Emergency</h2><div class="dn-r"><div><b>Down web</b><p class="dim">Website closed to everyone except you.</p></div><button class="tg${d.cfg.downWeb?" on":""}" role="switch" aria-checked="${!!d.cfg.downWeb}" aria-label="Down web" data-oa="down" data-k="web"><i></i></button></div><div class="dn-r"><div><b>Down all</b><p class="dim">Website, scanners, hub and API all stop.</p></div><button class="tg${d.cfg.downAll?" on":""}" role="switch" aria-checked="${!!d.cfg.downAll}" aria-label="Down all" data-oa="down" data-k="all"><i></i></button></div></div><div class="grid">${c("Users",d.users)}${c("Users' balance",money(d.bal))}${c("Redeemed today",money(d.day))}${c("Redeemed this month",money(d.month))}${c("Redeemed all time",money(d.all))}${c("Gift cards used",d.gu+" / "+d.gc)}${c("Scanners online",fs.scanners??"-")}${c("Brainrots today",fs.activeToday??"-")}</div>${d.cfg.maintenance?'<p class="bad">Maintenance mode is ON.</p>':""}<div class="box stl ${fs.scanners>0?"ok":"fz"}"><span class="dot"></span><div><b>${fs.scanners>0?"Finds":"Frozen"}</b><p class="dim">${fs.scanners>0?fs.scanners+" scanner(s) online":"No scanner online"}</p></div></div><div class="box"><h2>Quick actions</h2><div class="ow-act"><button class="b s sm" data-oa="sec" data-k="gifts">Create gift card</button><button class="b sm" data-oa="sec" data-k="users">Manage users</button><button class="b sm" data-oa="sec" data-k="set">Settings</button><button class="b sm" data-oa="sec" data-k="log">Logs</button></div></div><div class="box"><h2>Recently connected</h2>${ru.ok&&ru.data.users.length?`<div class="rcl">${ru.data.users.map(x=>`<div class="rcp">${av2(x.avatar,x.name)}<b>${esc(x.name)}</b><span class="dim">${ago(x.t)}</span></div>`).join("")}</div>`:none("Nobody yet.")}</div>`)}
  else if(s==="users"){if(OW.u)return userView(put);const r=await api(OA+"users?q="+encodeURIComponent(OW.q||""));if(!r.ok)return bad(r);
   put(`<div class="box"><input id="oq" placeholder="Search name or ID" value="${esc(OW.q||"")}"><button class="b sm" data-oa="search">Search</button></div><div class="box sx"><table><thead><tr><th>User</th><th>Balance</th><th>Hours</th><th></th></tr></thead><tbody>${r.data.users.map(x=>`<tr><td>${esc(x.n||x.id)}${x.a===false?' <span class="bad">banned</span>':""}<br><span class="dim">${esc(x.id)}</span></td><td>${money(x.b)}</td><td>${x.h||0}</td><td><button class="b sm" data-oa="user" data-id="${esc(x.id)}">Open</button></td></tr>`).join("")}</tbody></table></div>`)}
  else if(s==="gifts"){const r=await api(OA+"gifts");if(!r.ok)return bad(r);
@@ -483,6 +540,7 @@ async function ownerPaint(){if(!$("#ow"))return;const s=OW.s,put=h=>{if($("#ow")
  else if(s==="log"){const r=await api(OA+"log");if(!r.ok)return bad(r);put(`<div class="box">${r.data.log.length?r.data.log.map(l=>`<div class="line"><span>${esc(l.m)}</span><span class="dim">${ago(l.t)}</span></div>`).join(""):none("Nothing yet.")}</div>`)}}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-oa]");if(!b)return;const a=b.dataset.oa,v=id=>$("#"+id)?.value,run=async(p,d,ok)=>{const r=await api(OA+p,d);toast(r.ok?(ok||"Done"):(r.data.error||"Error"));return r};
  if(a==="sec"){OW.s=b.dataset.k;OW.u=null;render()}
+ else if(a==="down"){const k=b.dataset.k,on=!b.classList.contains("on");if(on&&!confirm(k==="all"?"Stop EVERYTHING (site, scanners, hub, API)?":"Close the site to everyone except you?"))return;const r=await run("down",{[k]:on},on?"Down":"Back online");if(r.ok){S.downWeb=!!r.data.cfg.downWeb;S.downAll=!!r.data.cfg.downAll;render()}}
  else if(a==="search"){OW.q=v("oq");ownerPaint()}
  else if(a==="user"){OW.u=b.dataset.id;ownerPaint()}
  else if(a==="back"){OW.u=null;ownerPaint()}
@@ -566,12 +624,12 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-pl]"
  else if(a==="ok"){b.disabled=true;const r1=await api(A+"/buy",{hours:P.h});if(!r1.ok){b.disabled=false;return toast(r1.data.error||"Purchase failed")}
   const r=await api(A+"/reserve",{start:P.start*CELL,minutes:P.h*60});if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);toast("Slot booked");closePlan();S.tab="dash";await loadAvail();render()}else{toast(r.data.error||"Booking failed");await load();closePlan()}}});
 /* giftcard */
-const gift2=()=>`<h1 class="sm">Giftcard</h1><div class="gcard" id="gb"><div class="t"><span>SPYHUB AJ</span><span>GIFT CARD</span></div><div class="chip2"></div><input id="code" type="text" placeholder="SPY.AJ_XXXXXXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="b s w" data-act="redeem">Redeem code</button></div>
+const gift2=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="gv-card"><div class="gv-top"><span>SPYHUB AJ</span><b>GIFT CARD</b></div><div class="gv-chip"></div><div class="gv-code" id="gvc">SPY-XXXX-XXXX-XXXX</div><div class="gv-ft"><span>One use only</span><span>One holder</span></div></div><div class="gv-form"><label for="code" class="dim">Enter your code</label><input id="code" type="text" placeholder="SPY-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="b s w" data-act="redeem">Redeem code</button><p class="dim" style="margin:0;font-size:13px">A code works for one person only and expires as soon as it is redeemed.</p></div></div>
 <div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
 const _toast=toast;toast=function(t){_toast(t);const m=/^(\$[\d.]+) added/.exec(t);if(!m)return;const f=document.createElement("div");f.id="fx2";f.innerHTML=`<b>+${m[1]}</b>`+Array.from({length:36},()=>{const a=Math.random()*6.28,d=120+Math.random()*180;return`<i style="--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;--r:${Math.random()*720}deg;background:hsl(${255+Math.random()*35},90%,68%)"></i>`}).join("");document.body.appendChild(f);setTimeout(()=>f.remove(),1700)};
 /* stats */
-const _sh=statsHtml;statsHtml=function(){const s=S.stats,l=S.list;if(!s&&!l)return _sh();const last=Math.max(0,...(l||[]).map(b=>b.timestamp||0)),fz=s&&s.scanners===0&&(!last||Date.now()-last>12e5),c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`,bs=s&&s.bestScanner;
- return(s?`<div class="grid g4">${c("Finds today",s.activeToday??"—")}${c("Top value",s.topMps!=null?fmt(s.topMps):"—")}${c("Scanners",fz?'<span class="bad">Frozen</span>':"Online")}</div>`:"")
+const _sh=statsHtml;statsHtml=function(){const s=S.stats,l=S.list;if(!s&&!l)return _sh();const last=Math.max(0,...(l||[]).map(b=>b.timestamp||0)),fz=s&&!(s.scanners>0),c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`,bs=s&&s.bestScanner;
+ return(s?`<div class="box stl ${fz?"fz":"ok"}"><span class="dot"></span><div><b>${fz?"Frozen":"Finds"}</b><p class="dim">${fz?"No scanner online":s.scanners+" scanner"+(s.scanners>1?"s":"")+" online"}${last?" · last find "+ago(last):""}</p></div></div><div class="grid g4">${c("Finds today",s.activeToday??"—")}${c("Top value",s.topMps!=null?fmt(s.topMps):"—")}${c("Scanners",s.scanners??"—")}</div>`:"")
  +`<div class="box"><h2>Best Brainrot scanner today</h2>${bs?`<div class="line"><span>${esc(bs.name||bs.id)}</span><b>${bs.count??""} finds</b></div>`:none("No data yet.")}</div>`
  +`<div class="box"><h2>Top brainrots</h2>${l&&l.length?`<div class="sx"><table><thead><tr><th>Name</th><th>Value</th><th>Found</th></tr></thead><tbody>${l.map(b=>`<tr><td>${esc(b.name)}</td><td>${fmt(b.mps)}</td><td class="dim">${b.timestamp?ago(b.timestamp):"—"}</td></tr>`).join("")}</tbody></table></div>`:none("No brainrots yet.")}</div>`};
 /* settings */
@@ -581,46 +639,79 @@ settings=function(){const m=S.me,u=m.user||{},l=m.license,r=(a,b)=>`<div class="
  <div class="box"><h2>Preferences</h2><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div><button class="b out" data-act="logout">Log out</button>`};
 </script>
 <script>
-/* ===== Fond galaxie (WebGL) ===== */
-(()=>{const cv=document.getElementById("gl");if(!cv)return;const gl=cv.getContext("webgl",{antialias:false,alpha:false});if(!gl)return;
-const still=matchMedia("(prefers-reduced-motion:reduce)").matches,Q=innerWidth<760?.85:1;
-const fs=`precision highp float;uniform vec2 R,M;uniform float T,S;
-mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
-float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+vec2(1.,1.)),f.x),f.y);}
-float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*vn(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}
-vec3 stars(vec2 uv,float sc,float dens,float tw){vec2 u=uv*sc,g=floor(u),f=fract(u)-.5;float h=h21(g);
-vec2 o=(vec2(h21(g+1.3),h21(g+2.7))-.5)*.7;float m=step(1.-dens,h)*smoothstep(.16*(.35+h21(g+4.)),0.,length(f-o));
-vec3 col=mix(vec3(1.,.8,.6),vec3(.6,.75,1.),h21(g+5.));return col*m*(.65+.35*sin(T*tw+h*60.));}
-void main(){vec2 p=(gl_FragCoord.xy-.5*R)/R.y;p*=max(1.,.9*R.y/R.x);vec2 m=M-.5;vec3 c=vec3(0.);
-float n1=fbm(p*1.6+m*.1+T*.01),n2=fbm(p*2.8-m*.15+7.+T*.015);
-c+=vec3(.07,.02,.16)*n1*1.7+vec3(.0,.06,.14)*n2+vec3(.07,.02,.16)*pow(fbm(p*1.1+20.),2.)*1.2;
-c+=stars(p+m*.02,40.,.10,2.)+stars(p+m*.05,80.,.05,3.)*.8+stars(p+m*.09,22.,.04,1.5)*1.5;
-vec2 q=(p-vec2(.14*step(1.,R.x/R.y),.03)-m*.06)*1.1;q*=rot(.55);q.y*=1.9;
-float r=length(q),a=atan(q.y,q.x);
-float ph=2.*a-5.5*log(r+.03)+T*.12+(fbm(q*5.)-.5)*2.4;float arms=pow(.5+.5*cos(ph),2.2);
-float disk=exp(-r*3.0),core=exp(-r*13.);
-float d=disk*(.25+1.15*arms)+core*2.4;d*=.55+fbm(q*9.+3.)*.95;
-float dust=smoothstep(.5,.78,fbm(q*7.-T*.01))*(1.-arms)*disk;d*=1.-dust*.75;
-vec3 armCol=mix(vec3(.28,.4,1.),vec3(.62,.3,1.),clamp(fbm(q*3.+1.)*1.4,0.,1.));
-vec3 g=mix(armCol,vec3(1.,.8,.5),clamp(core*1.5+exp(-r*6.)*.55,0.,1.))*d*1.6;
-c+=g+stars(q,100.,.28,2.5)*disk*(.3+arms)*2.;
-c=1.-exp(-c*1.7);c=pow(c,vec3(.95));c*=1.-.3*dot(p,p);gl_FragColor=vec4(c,1.);}
-`;
-function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o}
-const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,"attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);
-if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return;gl.useProgram(pr);
-const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-const al=gl.getAttribLocation(pr,"a");gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
-const uR=gl.getUniformLocation(pr,"R"),uM=gl.getUniformLocation(pr,"M"),uT=gl.getUniformLocation(pr,"T");
-let mx=.5,my=.5,sx=.5,sy=.5,t0=performance.now(),run=true;
-function size(){const d=Math.min(devicePixelRatio||1,2)*Q;cv.width=Math.round(innerWidth*d);cv.height=Math.round(innerHeight*d);gl.viewport(0,0,cv.width,cv.height)}
-function draw(n){sx+=(mx-sx)*.05;sy+=(my-sy)*.05;gl.uniform2f(uR,cv.width,cv.height);gl.uniform2f(uM,sx,1-sy);gl.uniform1f(uT,(n-t0)/1000+20);gl.drawArrays(gl.TRIANGLE_STRIP,0,4)}
-function loop(n){if(run)draw(n);requestAnimationFrame(loop)}
-addEventListener("resize",()=>{size();if(still)draw(performance.now())});
-addEventListener("pointermove",e=>{mx=e.clientX/innerWidth;my=e.clientY/innerHeight},{passive:true});
+/* ===== Fond léger : étoiles (canvas 2D) + planète (CSS) ===== */
+(()=>{const cv=document.getElementById("gl");if(!cv)return;const pl=document.createElement("div");pl.id="pln";pl.innerHTML='<div class="pt"><i></i></div><b class="pr"></b><span class="pm"></span>';
+(()=>{try{const cv3=document.createElement("canvas");cv3.className="p3";const g=cv3.getContext("webgl",{alpha:true,premultipliedAlpha:true,antialias:false,powerPreference:"low-power"});if(!g)return;
+const fsrc=`#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 R;uniform float T;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
+void main(){vec2 p=(gl_FragCoord.xy/R-.5)*3.4;float d=length(p),e=smoothstep(1.,.99,d);
+float gl=exp(-(d-1.)*2.8)*.35*(1.-e);
+float c=cos(-.35),s=sin(-.35);vec2 rp=mat2(c,-s,s,c)*p;float rr=length(vec2(rp.x,rp.y/.32));
+float ring=smoothstep(1.22,1.27,rr)*(1.-smoothstep(1.52,1.58,rr))*(1.-.8*smoothstep(.02,0.,abs(rr-1.39)))*(.5+.4*sin(rr*70.));
+vec3 rc=mix(vec3(.45,.35,.85),vec3(.85,.78,1.),.5+.5*sin(rr*40.));
+vec3 col=vec3(0.);
+if(d<1.02){float z=sqrt(max(1.-d*d,0.));vec3 nn=vec3(p,z);float lon=atan(nn.x,nn.z)+T*.06,lat=nn.y;
+float nz=n(vec2(lon*2.,lat*5.)+n(vec2(lon*3.,lat*9.))*1.4);
+float band=.5+.5*sin(lat*16.+nz*4.);vec3 base=mix(vec3(.13,.08,.36),vec3(.62,.46,.98),band*.8+nz*.35);
+base=mix(base,vec3(.9,.85,1.),smoothstep(.62,.8,nz)*.35);
+float df=max(dot(nn,normalize(vec3(-.6,.5,.65))),0.);
+col=base*(.12+1.05*df)+pow(1.-z,3.)*vec3(.45,.35,.95)*.7+pow(df,24.)*.12;}
+vec4 b=vec4(col*e+vec3(.55,.4,1.)*gl,e+gl);
+float ra=ring*.9;
+if(rp.y<0.||e<.5)b=vec4(b.rgb*(1.-ra)+rc*ra,b.a*(1.-ra)+ra);
+gl_FragColor=b;}`;
+function sh(t,x){const o=g.createShader(t);g.shaderSource(o,x);g.compileShader(o);return o}
+const pr=g.createProgram();g.attachShader(pr,sh(g.VERTEX_SHADER,"attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));g.attachShader(pr,sh(g.FRAGMENT_SHADER,fsrc));g.linkProgram(pr);
+if(!g.getProgramParameter(pr,g.LINK_STATUS))return;g.useProgram(pr);
+const bf=g.createBuffer();g.bindBuffer(g.ARRAY_BUFFER,bf);g.bufferData(g.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),g.STATIC_DRAW);
+const al=g.getAttribLocation(pr,"a");g.enableVertexAttribArray(al);g.vertexAttribPointer(al,2,g.FLOAT,false,0,0);
+const uR=g.getUniformLocation(pr,"R"),uT=g.getUniformLocation(pr,"T");
+let on=true,last=0;const rm3=matchMedia("(prefers-reduced-motion:reduce)").matches;
+function fit(){const w=Math.round(Math.min(pl.clientWidth*1.7*.8,innerWidth<760?420:640))||400;cv3.width=cv3.height=w;g.viewport(0,0,w,w)}
+function dr(t){g.uniform2f(uR,cv3.width,cv3.height);g.uniform1f(uT,t/1000);g.clear(g.COLOR_BUFFER_BIT);g.drawArrays(g.TRIANGLE_STRIP,0,4)}
+function lp(t){requestAnimationFrame(lp);if(!on||t-last<33)return;last=t;dr(t)}
+pl.insertBefore(cv3,pl.firstChild);pl.classList.add("gl3d");fit();addEventListener("resize",()=>{fit();if(rm3)dr(0)});
+document.addEventListener("visibilitychange",()=>{on=!document.hidden});
+rm3?dr(0):requestAnimationFrame(lp)}catch(x){}})();document.body.insertBefore(pl,document.getElementById("app"));
+const c=cv.getContext("2d"),rm=matchMedia("(prefers-reduced-motion:reduce)").matches,N=innerWidth<760?70:130;let W,H,A=[],run=true,last=0,mx=0,my=0,sx=0,sy=0,sh=null,nx=2000;
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;A=Array.from({length:N},()=>({x:Math.random()*W,y:Math.random()*H,z:Math.random()*.9+.1,p:Math.random()*6.28,h:Math.random()}))}
+function draw(t){c.clearRect(0,0,W,H);sx+=(mx-sx)*.04;sy+=(my-sy)*.04;
+for(const s of A){s.x-=s.z*.05;if(s.x<-2)s.x=W+2;const x=s.x+sx*s.z*26,y=s.y+sy*s.z*16,a=.3+.7*(.5+.5*Math.sin(t/700*s.z+s.p));c.fillStyle=s.h<.18?"rgba(196,181,253,"+a+")":s.h<.3?"rgba(147,197,253,"+a+")":"rgba(255,255,255,"+a+")";const r=s.z*1.7;c.fillRect(x,y,r,r)}
+if(!sh&&t>nx){sh={x:Math.random()*W*.8+W*.2,y:Math.random()*H*.4,l:0};nx=t+5000+Math.random()*6000}
+if(sh){sh.l+=.03;const k=sh.l,x=sh.x-k*320,y=sh.y+k*140,g=c.createLinearGradient(x,y,x+90,y-39);g.addColorStop(0,"rgba(255,255,255,"+(1-k)+")");g.addColorStop(1,"rgba(255,255,255,0)");c.strokeStyle=g;c.lineWidth=1.6;c.beginPath();c.moveTo(x,y);c.lineTo(x+90,y-39);c.stroke();if(k>=1)sh=null}}
+function loop(t){requestAnimationFrame(loop);if(!run||t-last<33)return;last=t;draw(t)}
+addEventListener("resize",()=>{size();if(rm)draw(0)});
+addEventListener("pointermove",e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
 document.addEventListener("visibilitychange",()=>{run=!document.hidden});
-size();still?draw(performance.now()):requestAnimationFrame(loop)})();
+size();rm?draw(0):requestAnimationFrame(loop)})();
+
+/* ===== Accueil : utilisateurs connectés récemment ===== */
+(()=>{let cache=null,at=0;async function addRecent(){if(S.tab!=="home")return;const m=document.querySelector("main");if(!m||m.querySelector(".rcu"))return;
+if(!cache||Date.now()-at>3e4){const r=await api(A+"/recent-users");cache=r.ok?r.data.users||[]:[];at=Date.now()}
+if(S.tab!=="home"||!cache.length||m.querySelector(".rcu"))return;
+const d=document.createElement("section");d.className="box rcu rv";d.innerHTML='<h2>Recently connected</h2><div class="rcl">'+cache.map(u=>'<div class="rcp">'+av2(u.avatar,u.name)+'<b>'+esc(u.name)+'</b><span class="dim">'+ago(u.t)+'</span></div>').join("")+'</div>';m.appendChild(d)}
+const _r=render;render=function(){_r.apply(this,arguments);addRecent()};addRecent();
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="code"){const v=e.target.value.trim().toUpperCase(),el=document.getElementById("gvc");if(el)el.textContent=v||"SPY-XXXX-XXXX-XXXX"}})})();
+
+/* ===== Buy : carte unique + Leaderboard : vrai podium ===== */
+buy=function(){let live=none("Sign in to see live availability.");
+if(S.me){const now=Math.floor(Date.now()/CELL),o=S.taken[now],nx=Object.keys(S.taken).map(Number).sort((a,b)=>a-b).find(c=>c>=now&&S.taken[c]<CONFIG.SEATS);
+live=o==null?none("Availability unavailable."):`<p><b>${o} / ${CONFIG.SEATS}</b> slots in use right now</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Next free slot: "+(nx==null?"none in the next 24 h":nx===now?"now":hm(nx*CELL)))}`}
+const p1=CONFIG.PRICE_PER_HOUR;
+return`<h1 class="sm">Buy</h1><div class="pcard"><div class="pc-in"><div class="pc-price">${money(p1)}<small>/ h</small></div><h2>Auto Joiner slot</h2><p class="pc-d">Book a slot, run the script and SpyHub joins the best servers for you. 1 hour costs ${money(p1)}.</p><ul class="pc-l"><li><i>✓</i><span><b>1 h</b> = ${money(p1)}</span></li><li><i>✓</i><span>Live <b>auto join</b></span></li><li><i>✓</i><span>You pick the <b>start time</b></span></li></ul><button class="b s w" data-act="buy" data-h="1">Buy slot</button><div class="pc-more">${PACKS.filter(x=>x[0]>1).map(([h,d])=>`<button class="b sm" data-act="buy" data-h="${h}">${h} h · ${money(price(h,d))}</button>`).join("")}</div></div></div><div class="box" aria-live="polite"><h2>Live availability</h2>${live}</div>`};
+board=function(){const L=S.lb,me=S.me?.user?.name,ini=n=>esc(String(n||"?")[0].toUpperCase());
+const flt=`<h1 class="sm">Leaderboard</h1><div class="fl">${[["d","Today"],["w","This week"],["a","All time"]].map(([k,n])=>`<button class="b sm${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
+if(!L)return flt+`<div class="box">${none("Leaderboard unavailable right now.")}</div>`;if(!L.length)return flt+`<div class="box">${none("No ranked players yet.")}</div>`;
+const crown='<svg class="crn" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18l1-11-5 4-5-7-5 7-5-4z" fill="#f5c451"/></svg>';
+const col=i=>{const r=L[i];return r?`<div class="pd pd${i+1}${r.name===me?" me":""}">${i===0?crown:""}<span class="av">${ini(r.name)}</span><b>${esc(r.name)}</b><span class="dim">${+r.count||0} caught</span><b class="pv">${fmt(r.value)}</b><div class="st">${i+1}</div></div>`:""};
+const rest=L.slice(3,10);
+return flt+`<div class="pdm">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box sx"><table><thead><tr><th>#</th><th>Player</th><th>Caught</th><th>Total value</th></tr></thead><tbody>${rest.map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+4}</td><td><span class="av">${ini(r.name)}</span> ${esc(r.name)}</td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`:"")};
 
 /* ===== Effets PC : barre de scroll, curseur, traînée, boutons magnétiques ===== */
 (()=>{const pc=matchMedia("(hover:hover) and (pointer:fine)").matches,rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
