@@ -359,7 +359,7 @@ function toast(t){document.querySelector(".toast")?.remove();const e=document.cr
 /* ===== Data ===== */
 const first=()=>Math.floor(Date.now()/CELL)+1,count=()=>CONFIG.HORIZON_H*60/CONFIG.STEP;
 const win=()=>S.start==null?[]:Array.from({length:S.dur/CONFIG.STEP},(_,i)=>S.start+i);
-const winOk=()=>{const w=win();return w.length>0&&w.every(c=>c in S.taken&&S.taken[c]<CONFIG.SEATS)};
+const winOk=()=>{const w=win();return w.length>0&&w.every(c=>(S.taken[c]??0)<CONFIG.SEATS)};
 async function loadAvail(){if(!S.me)return;const f=first(),r=await api(`${A}/availability?from=${f}&to=${f+count()-1}`);if(r.ok)S.taken=r.data.taken||{}}
 async function loadStats(){
   const[a,b]=await Promise.all([api("/api/stats"),api("/api/brainrots?limit=10&sort=mps")]);
@@ -631,7 +631,7 @@ let P={};const closePlan=()=>$("#md")?.remove();
 async function openPlan(h){P={h,day:0,start:null};await loadAvail();drawPlan()}
 function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="md";document.body.appendChild(m)}
  const f=first(),need=P.h*2,base=new Date();base.setHours(0,0,0,0);const T=[];
- for(let i=0;i<count();i++){const c=f+i,ms=c*CELL,d=new Date(ms);d.setHours(0,0,0,0);if(Math.round((d-base)/864e5)!==P.day)continue;const ok=Array.from({length:need},(_,k)=>c+k).every(x=>x in S.taken&&S.taken[x]<CONFIG.SEATS);T.push(`<button class="tm${P.start===c?" sel":""}" data-pl="t" data-c="${c}" ${ok?"":"disabled"}>${hm(ms)}</button>`)}
+ for(let i=0;i<count();i++){const c=f+i,ms=c*CELL,d=new Date(ms);d.setHours(0,0,0,0);if(Math.round((d-base)/864e5)!==P.day)continue;const ok=Array.from({length:need},(_,k)=>c+k).every(x=>(S.taken[x]??0)<CONFIG.SEATS);T.push(`<button class="tm${P.start===c?" sel":""}" data-pl="t" data-c="${c}" ${ok?"":"disabled"}>${hm(ms)}</button>`)}
  const dys=[0,1].map(i=>`<button class="dy${P.day===i?" sel":""}" data-pl="d" data-d="${i}">${i?"Tomorrow":"Today"} · ${new Date(base.getTime()+i*864e5).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>`).join("");
  const s0=P.start*CELL,sum=P.start==null?none("Pick a start time."):`<p><b>${day(s0)}</b><br>${hm(s0)} → ${hm(s0+P.h*36e5)} (${P.h} h)</p><p>Price: <b>${money(price(P.h,(PACKS.find(x=>x[0]===P.h)||[0,1])[1]))}</b>. Balance: ${money(S.me.balance)}</p>`;
  m.innerHTML=`<div class="mp"><h2>Plan your ${P.h} h slot</h2><b>1. Day</b><div class="chips">${dys}</div><b>2. Start time</b><div class="tg2">${T.join("")||none("No time left today.")}</div><b>3. Summary</b>${sum}<div class="row2" style="margin-top:12px"><button class="b" data-pl="x">Cancel</button><button class="b s" data-pl="ok" ${P.start==null?"disabled":""}>Confirm and pay</button></div></div>`}
