@@ -345,6 +345,26 @@ body.home #pln{opacity:0!important;visibility:hidden}
 body.home #snd{display:inline-grid}
 #snd .x{display:none}#snd.off .x{display:inline}#snd.off .wv{display:none}
 @media(prefers-reduced-motion:reduce){.sph i,.wl .w1{animation:none}}
+
+/* ===== Home : 3D background, chrome title, compact buttons ===== */
+body.home #uni,body.home #au{opacity:0!important}
+#wp{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0;transition:opacity .9s ease}
+body.home #wp{opacity:1}
+.hero{max-width:420px;margin:0 auto;align-items:center;text-align:center}
+.hero h1.wl{margin:0 0 10px;font-size:clamp(30px,8vw,44px);line-height:1;letter-spacing:0;font-weight:800;text-align:center}
+.hero .lead{font-size:clamp(12px,3.2vw,14px);line-height:1.5;color:#cbd5e1;max-width:34ch;margin:0 auto;text-align:center}
+.hero .cta{flex-direction:column;flex-wrap:nowrap;align-items:center;gap:8px;margin:18px auto 0;width:100%;max-width:260px}
+.hero .cta .b{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:9px 14px;font-size:13px;font-weight:650;border-radius:999px;flex:none}
+.hero .cta .b svg{width:16px;height:16px}
+.hero .cta .b.s{background:#5865f2;color:#fff;border:1px solid #7480ff;box-shadow:0 0 26px -8px rgba(88,101,242,.8)}
+.hero .cta .b.s:hover:not(:disabled){background:#6b78ff;color:#fff;border-color:#8a94ff;box-shadow:0 0 36px -6px rgba(88,101,242,.95)}
+.hero .cta .b:not(.s){background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.22);color:#fff}
+.hero .cap{margin:0;text-align:center;font-size:11px;color:var(--dim)}
+body.home #planet,body.home #net,body.home .p3,body.home #pln{opacity:0!important;visibility:hidden}
+body.home #gl{background:radial-gradient(120% 90% at 50% 40%,#0d0d14,#030306 70%,#000)}
+.hero .sph i{background:none;-webkit-text-fill-color:#fff;color:#fff;animation:none;filter:none;text-shadow:0 0 18px rgba(255,255,255,.18)}
+.hero h1.wl{font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;font-weight:700;letter-spacing:.32em;text-transform:uppercase;font-size:clamp(24px,6.5vw,36px);margin:0}
+.hero .cta{margin-top:20px}
 </style>
 </head>
 <body>
@@ -393,8 +413,8 @@ async function load(){
 /* ===== Views ===== */
 const STEPS=[["Sign in","Log in with your Discord account."],["Book a slot","Pick a start time and a duration."],["Run the script","Paste your key and let the auto-join work."]];
 const FAQ=[["What if I don't connect during my slot?","The slot keeps running, you just don't use it."],["How many people at once?","4 users maximum per slot."],["How do I pay?","With your balance, topped up by gift card. There is no subscription."],["I changed device, what now?","Reset your HWID from Settings, once per day."],["Is it affiliated with Roblox?","No. SpyHub AJ is independent. See the Legal Notice."]];
-const ctas=`<div class="cta"><button class="b s" data-act="dash">Get Dashboard</button><button class="b" data-act="tab" data-t="stats">Live Stats</button></div>`;
-const home=()=>`<section class="hero rv"><h1 class="wl"><span class="w1">Welcome to</span><span class="sph">${[..."SpyHub"].map((ch,i)=>`<i style="--i:${i}">${ch}</i>`).join("")}</span></h1><p class="lead">The auto joiner that spots the best brainrots live and joins the right server for you. Book a slot, run the script, that's it.</p>${ctas}</section>`;
+const ctas=`<div class="cta"><button class="b s" data-act="dash"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.74 19.74 0 003.677 4.37a.07.07 0 00-.032.028C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.1 13.1 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 01.078-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.079.009c.12.1.246.198.373.293a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg><span>Open Dashboard</span></button><p class="cap">Access your personal dashboard</p><button class="b" data-act="tab" data-t="stats">Live Stats</button></div>`;
+const home=()=>`<section class="hero rv"><h1 class="wl"><span class="sph">${[..."SpyHub"].map((ch,i)=>`<i style="--i:${i}">${ch}</i>`).join("")}</span></h1>${ctas}</section>`;
 const none=t=>`<p class="dim">${t}</p>`;
 function statsHtml(){
   const s=S.stats,l=S.list;
@@ -849,16 +869,16 @@ btn.innerHTML='<svg class="bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M
 document.body.appendChild(btn);
 function build(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
  ctx=new AC();master=ctx.createGain();master.gain.value=0;
- const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1100;lp.Q.value=.2;
+ const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=2200;lp.Q.value=.2;
  const dl=ctx.createDelay(1.5);dl.delayTime.value=.42;const fb=ctx.createGain();fb.gain.value=.42;const wet=ctx.createGain();wet.gain.value=.55;
- master.connect(lp);lp.connect(ctx.destination);lp.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(wet);wet.connect(ctx.destination);
- [110,164.81,220,277.18,329.63,440].forEach((f,i)=>{const b=.09/(1+i*.4);
+ const cp=ctx.createDynamicsCompressor();cp.threshold.value=-18;cp.ratio.value=6;cp.knee.value=12;const out=ctx.createGain();out.gain.value=1.8;cp.connect(out);out.connect(ctx.destination);master.connect(lp);lp.connect(cp);lp.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(wet);wet.connect(cp);
+ [110,164.81,220,277.18,329.63,440].forEach((f,i)=>{const b=.2/(1+i*.4);
   for(const k of[-1,1]){const o=ctx.createOscillator();o.type=i%2?"triangle":"sine";o.frequency.value=f;o.detune.value=k*(4+i);
    const g=ctx.createGain();g.gain.value=b*.5;const l=ctx.createOscillator();l.frequency.value=.04+i*.013+(k>0?.01:0);const lg=ctx.createGain();lg.gain.value=b*.5;
    l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(master);o.start();l.start()}});
  return true}
 function fade(to,s){if(!master)return;const t=ctx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+s)}
-function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden){ctx.resume();fade(.1,4)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
+function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden){ctx.resume();fade(1.6,2)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
 const kick=()=>{if(started||!isHome()||!want)return;if(!ctx&&!build())return;started=true;upd()};
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,kick,{passive:true}));
 btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch(x){}btn.classList.toggle("off",!want);if(want&&!started){if(!ctx&&!build())return;started=true}upd()});
@@ -868,6 +888,30 @@ document.addEventListener("visibilitychange",upd);
 </script>
 <script>
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-act=rekey]");if(!b)return;b.disabled=true;const r=await api(A+"/key/resend",{});b.disabled=false;toast(r.ok?"Request sent. Our AI agent will DM you your key in a few seconds":(r.data.error||"Could not send the key"))});
+</script>
+<script>
+(()=>{const cv=document.createElement("canvas");cv.id="wp";cv.setAttribute("aria-hidden","true");document.body.appendChild(cv);const c=cv.getContext("2d");
+const body=document.body,isHome=()=>body.classList.contains("home"),rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+let W=0,H=0,D=1,last=0,mx=0,my=0,sx=0,sy=0;
+const COL=["255,255,255","255,255,255","200,220,255"];
+const N=matchMedia("(max-width:700px)").matches?40:70;
+const mk=(first)=>({x:(Math.random()-.5)*2,y:(Math.random()-.5)*2,z:first?Math.random():1,c:COL[(Math.random()*COL.length)|0],w:.5+Math.random()*.7});
+const S=Array.from({length:N},()=>mk(true));
+addEventListener("pointermove",e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
+function size(){D=Math.min(devicePixelRatio||1,2);W=cv.width=innerWidth*D;H=cv.height=innerHeight*D}
+function draw(){sx+=(mx-sx)*.05;sy+=(my-sy)*.05;
+ c.fillStyle="rgba(3,2,12,.4)";c.globalCompositeOperation="source-over";c.fillRect(0,0,W,H);
+ c.globalCompositeOperation="lighter";c.lineCap="round";
+ const cx=W*.5-sx*W*.12,cy=H*.42-sy*H*.12,F=Math.max(W,H)*.55,sp=rm?0:.014;
+ for(let i=0;i<N;i++){const s=S[i],z0=s.z+sp*11;s.z-=sp*(.6+(1-s.z)*1.4);
+  if(s.z<=.02){S[i]=mk(false);continue}
+  const x1=cx+s.x/s.z*F*.5,y1=cy+s.y/s.z*F*.5,x0=cx+s.x/z0*F*.5,y0=cy+s.y/z0*F*.5;
+  if(x1<-50||x1>W+50||y1<-50||y1>H+50){S[i]=mk(false);continue}
+  const a=Math.min(1,(1-s.z)*1.6);
+  c.strokeStyle="rgba("+s.c+","+a+")";c.lineWidth=s.w*D*(.7+(1-s.z)*.8);c.beginPath();c.moveTo(x0,y0);c.lineTo(x1,y1);c.stroke()}
+ const g=c.createRadialGradient(cx,cy,0,cx,cy,Math.min(W,H)*.5);g.addColorStop(0,"rgba(180,195,255,.06)");g.addColorStop(1,"rgba(0,0,0,0)");c.fillStyle=g;c.fillRect(0,0,W,H)}
+function loop(t){requestAnimationFrame(loop);if(document.hidden||!isHome()||t-last<30)return;last=t;draw()}
+addEventListener("resize",()=>{size();if(rm)draw()});size();if(rm){draw();new MutationObserver(()=>draw()).observe(body,{attributes:true,attributeFilter:["class"]})}else requestAnimationFrame(loop)})();
 </script>
 </body>
 </html>
