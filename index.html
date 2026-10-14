@@ -311,6 +311,22 @@ header .ic[data-act=menu]{display:none}}
 #pln .p3{position:absolute;left:-35%;top:-35%;width:170%;height:170%;pointer-events:none}
 .dnp{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px;position:relative;z-index:1}.dnp .box{max-width:460px;display:grid;gap:12px;justify-items:center}.dn-i{font-size:46px}
 .dn-r{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08)}.dn-r p{margin:2px 0 0}.box.dn{border-color:rgba(248,113,113,.35)}
+
+/* ===== Buy page ===== */
+.bv-s{margin:-6px 0 18px}
+.bv-g{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+@media(min-width:900px){.bv-g{grid-template-columns:repeat(4,1fr)}}
+.bv-c{position:relative;display:flex;flex-direction:column;gap:6px;padding:26px 16px 16px;border-radius:22px;background:var(--glass);border:1px solid rgba(255,255,255,.12);box-shadow:var(--spec);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.bv-c.pop{border-color:rgba(167,139,250,.7);background:linear-gradient(160deg,rgba(139,92,246,.28),rgba(20,16,40,.6));box-shadow:var(--spec),0 0 50px -14px rgba(139,92,246,.8)}
+.bv-h{font-size:44px;font-weight:800;line-height:1;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bv-h small{font-size:16px;margin-left:4px;font-weight:600}
+.bv-p{font-size:22px;font-weight:700}.bv-u{margin:0}
+.bv-l{list-style:none;padding:0;margin:10px 0 14px;display:grid;gap:8px;font-size:13px;color:#c9c9d6}
+.bv-l li::before{content:"\2713";color:#a78bfa;margin-right:8px;font-weight:800}
+.bv-c .b{margin-top:auto}
+.bv-tag{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;padding:2px 10px;border-radius:999px;background:#a78bfa;color:#0a0a0c}
+.bv-tag.s{background:rgba(255,255,255,.12);color:#ddd6fe}
+.bv-lv{display:flex;align-items:center;gap:8px;margin-bottom:6px}.bv-lv .dot{width:10px;height:10px;border-radius:50%;background:#a78bfa;animation:pu 1.8s infinite}
 </style>
 </head>
 <body>
@@ -635,7 +651,6 @@ const _sh=statsHtml;statsHtml=function(){const s=S.stats,l=S.list;if(!s&&!l)retu
 /* settings */
 settings=function(){const m=S.me,u=m.user||{},l=m.license,r=(a,b)=>`<div class="line"><span class="dim">${a}</span><b style="word-break:break-all;text-align:right">${esc(b||"—")}</b></div>`;
  return`<h1 class="sm">Settings</h1><div class="box prof">${av2(u.avatar,u.name)}<div class="pi"><h2>Discord account</h2></div></div><div class="box">${r("Username",u.name)}${r("Display name",u.globalName||u.name)}${r("Discord ID",u.id)}${r("Email",u.email)}${r("Account created",dts(snow(u.id)))}${r("Role",u.owner?"Owner":"Member")}</div>
- <div class="box"><h2>Your license key</h2>${none("Only you can see it. Paste it into the script.")}<div class="line"><code id="key">${l.key?"spy_****"+esc(l.key.slice(-4)):"—"}</code><span><button class="b sm" data-act="show">Show</button> <button class="b sm" data-act="copy">Copy</button></span></div></div>
  <div class="box"><h2>Preferences</h2><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div><button class="b out" data-act="logout">Log out</button>`};
 </script>
 <script>
@@ -651,7 +666,7 @@ uniform vec2 R;uniform float T;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
 void main(){vec2 p=(gl_FragCoord.xy/R-.5)*3.4;float d=length(p),e=smoothstep(1.,.99,d);
-float gl=exp(-(d-1.)*2.8)*.35*(1.-e);
+float gl=exp(-(d-1.)*2.8)*.35*(1.-e)*(1.-smoothstep(1.,1.65,d));
 float c=cos(-.35),s=sin(-.35);vec2 rp=mat2(c,-s,s,c)*p;float rr=length(vec2(rp.x,rp.y/.32));
 float ring=smoothstep(1.22,1.27,rr)*(1.-smoothstep(1.52,1.58,rr))*(1.-.8*smoothstep(.02,0.,abs(rr-1.39)))*(.5+.4*sin(rr*70.));
 vec3 rc=mix(vec3(.45,.35,.85),vec3(.85,.78,1.),.5+.5*sin(rr*40.));
@@ -704,7 +719,7 @@ buy=function(){let live=none("Sign in to see live availability.");
 if(S.me){const now=Math.floor(Date.now()/CELL),o=S.taken[now],nx=Object.keys(S.taken).map(Number).sort((a,b)=>a-b).find(c=>c>=now&&S.taken[c]<CONFIG.SEATS);
 live=o==null?none("Availability unavailable."):`<p><b>${o} / ${CONFIG.SEATS}</b> slots in use right now</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Next free slot: "+(nx==null?"none in the next 24 h":nx===now?"now":hm(nx*CELL)))}`}
 const p1=CONFIG.PRICE_PER_HOUR;
-return`<h1 class="sm">Buy</h1><div class="pcard"><div class="pc-in"><div class="pc-price">${money(p1)}<small>/ h</small></div><h2>Auto Joiner slot</h2><p class="pc-d">Book a slot, run the script and SpyHub joins the best servers for you. 1 hour costs ${money(p1)}.</p><ul class="pc-l"><li><i>✓</i><span><b>1 h</b> = ${money(p1)}</span></li><li><i>✓</i><span>Live <b>auto join</b></span></li><li><i>✓</i><span>You pick the <b>start time</b></span></li></ul><button class="b s w" data-act="buy" data-h="1">Buy slot</button><div class="pc-more">${PACKS.filter(x=>x[0]>1).map(([h,d])=>`<button class="b sm" data-act="buy" data-h="${h}">${h} h · ${money(price(h,d))}</button>`).join("")}</div></div></div><div class="box" aria-live="polite"><h2>Live availability</h2>${live}</div>`};
+return`<h1 class="sm">Buy</h1><p class="dim bv-s">Pick a pack, choose your start time. Your key is sent to you by Discord DM after your purchase.</p><div class="bv-g">${PACKS.map(([hh,d])=>{const p=price(hh,d),sv=p1*hh-p,pop=hh===10;return`<div class="bv-c tilt${pop?" pop":""}">${pop?'<span class="bv-tag">Popular</span>':sv>0?'<span class="bv-tag s">-'+Math.round((1-d)*100)+'%</span>':""}<div class="bv-h">${hh}<small>h</small></div><div class="bv-p">${money(p)}</div><p class="dim bv-u">${money(p/hh)} / hour</p><ul class="bv-l"><li>Live auto join</li><li>You pick the start time</li><li>${sv>0?"You save "+money(sv):"Flexible, no commitment"}</li></ul><button class="b${pop?" s":""} w" data-act="buy" data-h="${hh}">Buy ${hh} h</button></div>`}).join("")}</div><div class="box" aria-live="polite"><div class="bv-lv"><span class="dot"></span><h2 style="margin:0">Live availability</h2></div>${live}</div>`};
 board=function(){const L=S.lb,me=S.me?.user?.name,ini=n=>esc(String(n||"?")[0].toUpperCase());
 const flt=`<h1 class="sm">Leaderboard</h1><div class="fl">${[["d","Today"],["w","This week"],["a","All time"]].map(([k,n])=>`<button class="b sm${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
 if(!L)return flt+`<div class="box">${none("Leaderboard unavailable right now.")}</div>`;if(!L.length)return flt+`<div class="box">${none("No ranked players yet.")}</div>`;
