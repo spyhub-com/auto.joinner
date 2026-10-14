@@ -327,6 +327,7 @@ header .ic[data-act=menu]{display:none}}
 .bv-tag{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;padding:2px 10px;border-radius:999px;background:#a78bfa;color:#0a0a0c}
 .bv-tag.s{background:rgba(255,255,255,.12);color:#ddd6fe}
 .bv-lv{display:flex;align-items:center;gap:8px;margin-bottom:6px}.bv-lv .dot{width:10px;height:10px;border-radius:50%;background:#a78bfa;animation:pu 1.8s infinite}
+#plt{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:12px;padding:12px;font:inherit;margin:8px 0;color-scheme:dark}
 </style>
 </head>
 <body>
@@ -628,17 +629,24 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-su]");if(b
 setInterval(()=>{if(S.tab==="slots")slotUsers()},10000);setInterval(()=>{if(S.tab==="stats")loadStats()},15000);
 /* buy planner */
 let P={};const closePlan=()=>$("#md")?.remove();
-async function openPlan(h){P={h,day:0,start:null};await loadAvail();drawPlan()}
+const p2=n=>String(n).padStart(2,"0"),nowT=()=>{const d=new Date;return p2(d.getHours())+":"+p2(d.getMinutes())};
+function planStart(){if(!P.time)return null;const[hh,mm]=P.time.split(":").map(Number);if(!(hh>=0&&mm>=0))return null;const d=new Date();d.setHours(hh,mm,0,0);d.setDate(d.getDate()+P.day);return d.getTime()}
+async function openPlan(hh){P={h:hh,day:0,time:nowT()};await loadAvail();drawPlan()}
 function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="md";document.body.appendChild(m)}
- const f=first(),need=P.h*2,base=new Date();base.setHours(0,0,0,0);const T=[];
- for(let i=0;i<count();i++){const c=f+i,ms=c*CELL,d=new Date(ms);d.setHours(0,0,0,0);if(Math.round((d-base)/864e5)!==P.day)continue;const ok=Array.from({length:need},(_,k)=>c+k).every(x=>(S.taken[x]??0)<CONFIG.SEATS);T.push(`<button class="tm${P.start===c?" sel":""}" data-pl="t" data-c="${c}" ${ok?"":"disabled"}>${hm(ms)}</button>`)}
+ const base=new Date();base.setHours(0,0,0,0);
  const dys=[0,1].map(i=>`<button class="dy${P.day===i?" sel":""}" data-pl="d" data-d="${i}">${i?"Tomorrow":"Today"} · ${new Date(base.getTime()+i*864e5).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>`).join("");
- const s0=P.start*CELL,sum=P.start==null?none("Pick a start time."):`<p><b>${day(s0)}</b><br>${hm(s0)} → ${hm(s0+P.h*36e5)} (${P.h} h)</p><p>Price: <b>${money(price(P.h,(PACKS.find(x=>x[0]===P.h)||[0,1])[1]))}</b>. Balance: ${money(S.me.balance)}</p>`;
- m.innerHTML=`<div class="mp"><h2>Plan your ${P.h} h slot</h2><b>1. Day</b><div class="chips">${dys}</div><b>2. Start time</b><div class="tg2">${T.join("")||none("No time left today.")}</div><b>3. Summary</b>${sum}<div class="row2" style="margin-top:12px"><button class="b" data-pl="x">Cancel</button><button class="b s" data-pl="ok" ${P.start==null?"disabled":""}>Confirm and pay</button></div></div>`}
+ m.innerHTML=`<div class="mp"><h2>Plan your ${P.h} h slot</h2><b>1. Day</b><div class="chips">${dys}</div><b>2. Start time</b><input id="plt" type="time" step="60" value="${P.time}"><div class="chips"><button class="b sm" data-pl="now">Start now</button></div><b>3. Summary</b><div id="pls"></div><div class="row2" style="margin-top:12px"><button class="b" data-pl="x">Cancel</button><button class="b s" id="plok" data-pl="ok">Confirm and pay</button></div></div>`;updPlan()}
+function updPlan(){const el=$("#pls"),ok=$("#plok");if(!el)return;const s=planStart(),n=Date.now();
+ if(s==null){el.innerHTML=none("Pick a start time.");ok.disabled=true;return}
+ if(s<n-6e4){el.innerHTML=`<p class="bad">That time has already passed.</p>`;ok.disabled=true;return}
+ const en=s+P.h*36e5,pr=price(P.h,(PACKS.find(x=>x[0]===P.h)||[0,1])[1]),after=S.me.balance-pr;let busy=false;for(let c=Math.floor(s/CELL);c<Math.ceil(en/CELL);c++)if((S.taken[c]??0)>=CONFIG.SEATS)busy=true;
+ el.innerHTML=`<p><b>${day(s)}</b><br>${hm(s)} → ${hm(en)} (${P.h} h)</p><p>Price: <b>${money(pr)}</b>. Balance: ${money(S.me.balance)}.</p>`+(busy?`<p class="bad">All seats look taken around that time.</p>`:"")+(after<0?`<p class="bad">Not enough balance. Top up first.</p>`:"");
+ ok.disabled=after<0}
+document.addEventListener("input",e=>{if(e.target.id==="plt"){P.time=e.target.value;updPlan()}});
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-pl]");if(!b){if(e.target.id==="md")closePlan();return}const a=b.dataset.pl;
- if(a==="t"){P.start=+b.dataset.c;drawPlan()}else if(a==="d"){P.day=+b.dataset.d;P.start=null;drawPlan()}else if(a==="x")closePlan();
- else if(a==="ok"){b.disabled=true;const r1=await api(A+"/buy",{hours:P.h});if(!r1.ok){b.disabled=false;return toast(r1.data.error||"Purchase failed")}
-  const r=await api(A+"/reserve",{start:P.start*CELL,minutes:P.h*60});if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);toast("Slot booked");closePlan();S.tab="dash";await loadAvail();render()}else{toast(r.data.error||"Booking failed");await load();closePlan()}}});
+ if(a==="d"){P.day=+b.dataset.d;drawPlan()}else if(a==="now"){P.day=0;P.time=nowT();drawPlan()}else if(a==="x")closePlan();
+ else if(a==="ok"){const s=planStart();if(s==null)return;b.disabled=true;const r=await api(A+"/book",{hours:P.h,start:s});
+  if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);toast("Slot booked");closePlan();S.tab="dash";await loadAvail();render()}else{b.disabled=false;toast(r.data.error||"Booking failed");await loadAvail();updPlan()}}});
 /* giftcard */
 const gift2=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="gv-card"><div class="gv-top"><span>SPYHUB AJ</span><b>GIFT CARD</b></div><div class="gv-chip"></div><div class="gv-code" id="gvc">SPY-XXXX-XXXX-XXXX</div><div class="gv-ft"><span>One use only</span><span>One holder</span></div></div><div class="gv-form"><label for="code" class="dim">Enter your code</label><input id="code" type="text" placeholder="SPY-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="b s w" data-act="redeem">Redeem code</button><p class="dim" style="margin:0;font-size:13px">A code works for one person only and expires as soon as it is redeemed.</p></div></div>
 <div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
@@ -651,6 +659,7 @@ const _sh=statsHtml;statsHtml=function(){const s=S.stats,l=S.list;if(!s&&!l)retu
 /* settings */
 settings=function(){const m=S.me,u=m.user||{},l=m.license,r=(a,b)=>`<div class="line"><span class="dim">${a}</span><b style="word-break:break-all;text-align:right">${esc(b||"—")}</b></div>`;
  return`<h1 class="sm">Settings</h1><div class="box prof">${av2(u.avatar,u.name)}<div class="pi"><h2>Discord account</h2></div></div><div class="box">${r("Username",u.name)}${r("Display name",u.globalName||u.name)}${r("Discord ID",u.id)}${r("Email",u.email)}${r("Account created",dts(snow(u.id)))}${r("Role",u.owner?"Owner":"Member")}</div>
+ <div class="box"><h2>Your key</h2>${none("Your key is sent to you by Discord DM after your first purchase. Lost it? Send it again.")}<button class="b sm" data-act="rekey" style="margin-top:8px">Send my key by DM</button></div>
  <div class="box"><h2>Preferences</h2><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div><button class="b out" data-act="logout">Log out</button>`};
 </script>
 <script>
@@ -719,7 +728,7 @@ buy=function(){let live=none("Sign in to see live availability.");
 if(S.me){const now=Math.floor(Date.now()/CELL),o=S.taken[now],nx=Object.keys(S.taken).map(Number).sort((a,b)=>a-b).find(c=>c>=now&&S.taken[c]<CONFIG.SEATS);
 live=o==null?none("Availability unavailable."):`<p><b>${o} / ${CONFIG.SEATS}</b> slots in use right now</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Next free slot: "+(nx==null?"none in the next 24 h":nx===now?"now":hm(nx*CELL)))}`}
 const p1=CONFIG.PRICE_PER_HOUR;
-return`<h1 class="sm">Buy</h1><p class="dim bv-s">Pick a pack, choose your start time. Your key is sent to you by Discord DM after your purchase.</p><div class="bv-g">${PACKS.map(([hh,d])=>{const p=price(hh,d),sv=p1*hh-p,pop=hh===10;return`<div class="bv-c tilt${pop?" pop":""}">${pop?'<span class="bv-tag">Popular</span>':sv>0?'<span class="bv-tag s">-'+Math.round((1-d)*100)+'%</span>':""}<div class="bv-h">${hh}<small>h</small></div><div class="bv-p">${money(p)}</div><p class="dim bv-u">${money(p/hh)} / hour</p><ul class="bv-l"><li>Live auto join</li><li>You pick the start time</li><li>${sv>0?"You save "+money(sv):"Flexible, no commitment"}</li></ul><button class="b${pop?" s":""} w" data-act="buy" data-h="${hh}">Buy ${hh} h</button></div>`}).join("")}</div><div class="box" aria-live="polite"><div class="bv-lv"><span class="dot"></span><h2 style="margin:0">Live availability</h2></div>${live}</div>`};
+return`<h1 class="sm">Buy</h1><p class="dim bv-s">Pick a pack, choose any start time. Your key is sent to you by Discord DM after your purchase.</p><div class="bv-g">${PACKS.map(([hh,d])=>{const p=price(hh,d),sv=p1*hh-p,pop=hh===10;return`<div class="bv-c tilt${pop?" pop":""}">${pop?'<span class="bv-tag">Popular</span>':sv>0?'<span class="bv-tag s">-'+Math.round((1-d)*100)+'%</span>':""}<div class="bv-h">${hh}<small>h</small></div><div class="bv-p">${money(p)}</div><p class="dim bv-u">${money(p/hh)} / hour</p><ul class="bv-l"><li>Live auto join</li><li>You pick the start time</li><li>${sv>0?"You save "+money(sv):"Flexible, no commitment"}</li></ul><button class="b${pop?" s":""} w" data-act="buy" data-h="${hh}">Buy ${hh} h</button></div>`}).join("")}</div><div class="box" aria-live="polite"><div class="bv-lv"><span class="dot"></span><h2 style="margin:0">Live availability</h2></div>${live}</div>`};
 board=function(){const L=S.lb,me=S.me?.user?.name,ini=n=>esc(String(n||"?")[0].toUpperCase());
 const flt=`<h1 class="sm">Leaderboard</h1><div class="fl">${[["d","Today"],["w","This week"],["a","All time"]].map(([k,n])=>`<button class="b sm${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
 if(!L)return flt+`<div class="box">${none("Leaderboard unavailable right now.")}</div>`;if(!L.length)return flt+`<div class="box">${none("No ranked players yet.")}</div>`;
@@ -753,6 +762,9 @@ c.clearRect(0,0,tc.width,tc.height);c.globalCompositeOperation="lighter";
 for(let i=P.length-1;i>=0;i--){const p=P[i];p.x+=p.vx;p.y+=p.vy;p.l-=.03;if(p.l<=0){P.splice(i,1);continue}
 c.beginPath();c.fillStyle="hsla("+p.h+",90%,68%,"+p.l*.55+")";c.arc(p.x,p.y,2+p.l*3,0,6.283);c.fill()}
 requestAnimationFrame(f)})()})();
+</script>
+<script>
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-act=rekey]");if(!b)return;b.disabled=true;const r=await api(A+"/key/resend",{});b.disabled=false;toast(r.ok?"Key sent to your Discord DMs":(r.data.error||"Could not send the key"))});
 </script>
 </body>
 </html>
