@@ -328,6 +328,23 @@ header .ic[data-act=menu]{display:none}}
 .bv-tag.s{background:rgba(255,255,255,.12);color:#ddd6fe}
 .bv-lv{display:flex;align-items:center;gap:8px;margin-bottom:6px}.bv-lv .dot{width:10px;height:10px;border-radius:50%;background:#a78bfa;animation:pu 1.8s infinite}
 #plt{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:12px;padding:12px;font:inherit;margin:8px 0;color-scheme:dark}
+
+/* ===== Home universe, aurora, welcome title, sound button ===== */
+#uni,#au{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0;transition:opacity .9s ease}
+body.home #uni{opacity:1}body.home #au{opacity:.95}
+#pln{transition:opacity .6s ease,visibility .6s}
+body.home #pln{opacity:0!important;visibility:hidden}
+.hero h1.wl{background:none;color:#fff;font-size:clamp(34px,6.2vw,68px);line-height:1.02;margin:0 0 18px}
+.wl .w1{display:block;font-size:.3em;font-weight:600;letter-spacing:.38em;text-transform:uppercase;color:#c4b5fd;margin-bottom:.55em;animation:wup 1.1s cubic-bezier(.2,.8,.2,1) both}
+.sph{display:inline-block;white-space:nowrap}
+.sph i{display:inline-block;font-style:normal;background:linear-gradient(120deg,#fff 0%,#c4b5fd 28%,#7dd3fc 52%,#f0abfc 78%,#fff 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:sphw 3.4s ease-in-out infinite,sphg 7s linear infinite;animation-delay:calc(var(--i)*.14s),calc(var(--i)*-.45s);filter:drop-shadow(0 0 18px rgba(167,139,250,.55))}
+@keyframes sphw{0%,100%{transform:translateY(0)}50%{transform:translateY(-.1em)}}
+@keyframes sphg{to{background-position:240% 0}}
+@keyframes wup{from{opacity:0;transform:translateY(14px)}}
+#snd{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;display:none;width:40px;height:40px}
+body.home #snd{display:inline-grid}
+#snd .x{display:none}#snd.off .x{display:inline}#snd.off .wv{display:none}
+@media(prefers-reduced-motion:reduce){.sph i,.wl .w1{animation:none}}
 </style>
 </head>
 <body>
@@ -377,7 +394,7 @@ async function load(){
 const STEPS=[["Sign in","Log in with your Discord account."],["Book a slot","Pick a start time and a duration."],["Run the script","Paste your key and let the auto-join work."]];
 const FAQ=[["What if I don't connect during my slot?","The slot keeps running, you just don't use it."],["How many people at once?","4 users maximum per slot."],["How do I pay?","With your balance, topped up by gift card. There is no subscription."],["I changed device, what now?","Reset your HWID from Settings, once per day."],["Is it affiliated with Roblox?","No. SpyHub AJ is independent. See the Legal Notice."]];
 const ctas=`<div class="cta"><button class="b s" data-act="dash">Get Dashboard</button><button class="b" data-act="tab" data-t="stats">Live Stats</button></div>`;
-const home=()=>`<section class="hero rv"><h1>SpyHub Auto Joinner</h1><p class="lead">Spots the best brainrots live and joins the right server for you. Book a slot, run the script, that's it.</p>${ctas}</section>`;
+const home=()=>`<section class="hero rv"><h1 class="wl"><span class="w1">Welcome to</span><span class="sph">${[..."SpyHub"].map((ch,i)=>`<i style="--i:${i}">${ch}</i>`).join("")}</span></h1><p class="lead">The auto joiner that spots the best brainrots live and joins the right server for you. Book a slot, run the script, that's it.</p>${ctas}</section>`;
 const none=t=>`<p class="dim">${t}</p>`;
 function statsHtml(){
   const s=S.stats,l=S.list;
@@ -606,7 +623,7 @@ function line(v,lb,col,f){const W=640,H=170,L=40,B=22,T=8,mx=nice(Math.max(1,...
  return`<svg class="lc" viewBox="0 0 ${W} ${H}"><path d="${p}L${x(v.length-1)} ${H-B}L${x(0)} ${H-B}Z" fill="${col}" opacity=".16"/><path d="${p}" fill="none" stroke="${col}" stroke-width="2.5"/>${g}${xl}</svg>`}
 function dash(){const m=S.me,u=m.user||{},now=Date.now(),R=[...m.reservations].sort((a,b)=>b.start-a.start),cur=R.find(r=>now>=r.start&&now<r.end),nx=[...R].reverse().find(r=>r.start>now),mn=R.reduce((a,r)=>a+(r.end-r.start)/6e4,0),sp=R.reduce((a,r)=>a+r.price,0),nm=esc(u.name||"Player"),o=S.taken[Math.floor(now/CELL)]??0;S.end=cur?cur.end:0;
  const k=(a,b)=>`<div class="box"><span class="dim">${a}</span><div class="big">${b}</div></div>`;
- return`<h1 class="sm">Dashboard</h1><div class="box prof">${u.avatar?`<img class="pp" src="${esc(u.avatar)}" alt="" referrerpolicy="no-referrer">`:`<span class="av xl">${nm[0]?.toUpperCase()||"?"}</span>`}<div class="pi"><h2>${nm}${u.owner?' <span class="ow">Owner</span>':""}</h2><div class="pi2"><span class="dim">Discord ID</span><span>${esc(u.id||"—")}</span><span class="dim">Email</span><span>${esc(u.email||"—")}</span><span class="dim">Account created</span><span>${dts(snow(u.id))}</span><span class="dim">Role</span><span>${u.owner?"Owner":"Member"}</span><span class="dim">Bookings</span><span>${R.length}</span></div></div></div>
+ return`<h1 class="sm">Dashboard</h1>${S.keyNote?`<div class="ann">Check your Discord DMs: our AI agent sends you your key in a private message. Paste it in the script right after you run SpyHub AJ. <button class="b sm" data-act="knote" style="margin-left:8px">Got it</button></div>`:""}<div class="box prof">${u.avatar?`<img class="pp" src="${esc(u.avatar)}" alt="" referrerpolicy="no-referrer">`:`<span class="av xl">${nm[0]?.toUpperCase()||"?"}</span>`}<div class="pi"><h2>${nm}${u.owner?' <span class="ow">Owner</span>':""}</h2><div class="pi2"><span class="dim">Discord ID</span><span>${esc(u.id||"—")}</span><span class="dim">Email</span><span>${esc(u.email||"—")}</span><span class="dim">Account created</span><span>${dts(snow(u.id))}</span><span class="dim">Role</span><span>${u.owner?"Owner":"Member"}</span><span class="dim">Bookings</span><span>${R.length}</span></div></div></div>
  <div class="grid"><div class="box"><span class="dim">Balance</span><div class="big">${money(m.balance)}</div><button class="b sm" data-act="tab" data-t="gift" style="margin-top:10px">Top up</button></div>
  <div class="box"><span class="dim">Current slot</span>${cur?`<div class="big" id="cd">--:--:--</div>${none(hm(cur.start)+" to "+hm(cur.end))}`:none("None")}<p style="margin:8px 0 0"><b id="uo">${o} / ${CONFIG.SEATS}</b> <span class="dim">users connected</span></p>${cur?"":'<button class="b sm" data-act="tab" data-t="buy" style="margin-top:10px">Buy a slot</button>'}</div></div>
  <div class="g3">${k("Hours left",m.hours)}${k("Spent",money(sp))}${k("Auto-join time",dur(mn))}${k("Next booking",nx?hm(nx.start):"—")}</div>
@@ -635,7 +652,7 @@ async function openPlan(hh){P={h:hh,day:0,time:nowT()};await loadAvail();drawPla
 function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="md";document.body.appendChild(m)}
  const base=new Date();base.setHours(0,0,0,0);
  const dys=[0,1].map(i=>`<button class="dy${P.day===i?" sel":""}" data-pl="d" data-d="${i}">${i?"Tomorrow":"Today"} · ${new Date(base.getTime()+i*864e5).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>`).join("");
- m.innerHTML=`<div class="mp"><h2>Plan your ${P.h} h slot</h2><b>1. Day</b><div class="chips">${dys}</div><b>2. Start time</b><input id="plt" type="time" step="60" value="${P.time}"><div class="chips"><button class="b sm" data-pl="now">Start now</button></div><b>3. Summary</b><div id="pls"></div><div class="row2" style="margin-top:12px"><button class="b" data-pl="x">Cancel</button><button class="b s" id="plok" data-pl="ok">Confirm and pay</button></div></div>`;updPlan()}
+ m.innerHTML=`<div class="mp"><h2>Plan your ${P.h} h slot</h2><b>1. Day</b><div class="chips">${dys}</div><b>2. Start time</b><input id="plt" type="time" step="60" value="${P.time}"><div class="chips"><button class="b sm" data-pl="now">Start now</button></div><b>3. Summary</b><div id="pls"></div><p class="dim" style="font-size:13px;margin:10px 0 0">After you pay, our AI agent sends you a key in a private Discord message. Paste it in the script later.</p><div class="row2" style="margin-top:12px"><button class="b" data-pl="x">Cancel</button><button class="b s" id="plok" data-pl="ok">Confirm and pay</button></div></div>`;updPlan()}
 function updPlan(){const el=$("#pls"),ok=$("#plok");if(!el)return;const s=planStart(),n=Date.now();
  if(s==null){el.innerHTML=none("Pick a start time.");ok.disabled=true;return}
  if(s<n-6e4){el.innerHTML=`<p class="bad">That time has already passed.</p>`;ok.disabled=true;return}
@@ -646,7 +663,7 @@ document.addEventListener("input",e=>{if(e.target.id==="plt"){P.time=e.target.va
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-pl]");if(!b){if(e.target.id==="md")closePlan();return}const a=b.dataset.pl;
  if(a==="d"){P.day=+b.dataset.d;drawPlan()}else if(a==="now"){P.day=0;P.time=nowT();drawPlan()}else if(a==="x")closePlan();
  else if(a==="ok"){const s=planStart();if(s==null)return;b.disabled=true;const r=await api(A+"/book",{hours:P.h,start:s});
-  if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);toast("Slot booked");closePlan();S.tab="dash";await loadAvail();render()}else{b.disabled=false;toast(r.data.error||"Booking failed");await loadAvail();updPlan()}}});
+  if(r.ok){S.me.balance=r.data.balance;S.me.reservations.push(r.data.reservation);toast("Slot booked. Check your Discord DMs for your key.");S.keyNote=1;try{localStorage.setItem("spyaj_kn","1")}catch(x){}closePlan();S.tab="dash";await loadAvail();render()}else{b.disabled=false;toast(r.data.error||"Booking failed");await loadAvail();updPlan()}}});
 /* giftcard */
 const gift2=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="gv-card"><div class="gv-top"><span>SPYHUB AJ</span><b>GIFT CARD</b></div><div class="gv-chip"></div><div class="gv-code" id="gvc">SPY-XXXX-XXXX-XXXX</div><div class="gv-ft"><span>One use only</span><span>One holder</span></div></div><div class="gv-form"><label for="code" class="dim">Enter your code</label><input id="code" type="text" placeholder="SPY-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="b s w" data-act="redeem">Redeem code</button><p class="dim" style="margin:0;font-size:13px">A code works for one person only and expires as soon as it is redeemed.</p></div></div>
 <div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
@@ -659,7 +676,7 @@ const _sh=statsHtml;statsHtml=function(){const s=S.stats,l=S.list;if(!s&&!l)retu
 /* settings */
 settings=function(){const m=S.me,u=m.user||{},l=m.license,r=(a,b)=>`<div class="line"><span class="dim">${a}</span><b style="word-break:break-all;text-align:right">${esc(b||"—")}</b></div>`;
  return`<h1 class="sm">Settings</h1><div class="box prof">${av2(u.avatar,u.name)}<div class="pi"><h2>Discord account</h2></div></div><div class="box">${r("Username",u.name)}${r("Display name",u.globalName||u.name)}${r("Discord ID",u.id)}${r("Email",u.email)}${r("Account created",dts(snow(u.id)))}${r("Role",u.owner?"Owner":"Member")}</div>
- <div class="box"><h2>Your key</h2>${none("Your key is sent to you by Discord DM after your first purchase. Lost it? Send it again.")}<button class="b sm" data-act="rekey" style="margin-top:8px">Send my key by DM</button></div>
+ <div class="box"><h2>Your key</h2>${none("Our AI agent sends your key in a private Discord message after your first purchase. Lost it? Send it again.")}<button class="b sm" data-act="rekey" style="margin-top:8px">Send my key by DM</button></div>
  <div class="box"><h2>Preferences</h2><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div><button class="b out" data-act="logout">Log out</button>`};
 </script>
 <script>
@@ -728,7 +745,7 @@ buy=function(){let live=none("Sign in to see live availability.");
 if(S.me){const now=Math.floor(Date.now()/CELL),o=S.taken[now],nx=Object.keys(S.taken).map(Number).sort((a,b)=>a-b).find(c=>c>=now&&S.taken[c]<CONFIG.SEATS);
 live=o==null?none("Availability unavailable."):`<p><b>${o} / ${CONFIG.SEATS}</b> slots in use right now</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Next free slot: "+(nx==null?"none in the next 24 h":nx===now?"now":hm(nx*CELL)))}`}
 const p1=CONFIG.PRICE_PER_HOUR;
-return`<h1 class="sm">Buy</h1><p class="dim bv-s">Pick a pack, choose any start time. Your key is sent to you by Discord DM after your purchase.</p><div class="bv-g">${PACKS.map(([hh,d])=>{const p=price(hh,d),sv=p1*hh-p,pop=hh===10;return`<div class="bv-c tilt${pop?" pop":""}">${pop?'<span class="bv-tag">Popular</span>':sv>0?'<span class="bv-tag s">-'+Math.round((1-d)*100)+'%</span>':""}<div class="bv-h">${hh}<small>h</small></div><div class="bv-p">${money(p)}</div><p class="dim bv-u">${money(p/hh)} / hour</p><ul class="bv-l"><li>Live auto join</li><li>You pick the start time</li><li>${sv>0?"You save "+money(sv):"Flexible, no commitment"}</li></ul><button class="b${pop?" s":""} w" data-act="buy" data-h="${hh}">Buy ${hh} h</button></div>`}).join("")}</div><div class="box" aria-live="polite"><div class="bv-lv"><span class="dot"></span><h2 style="margin:0">Live availability</h2></div>${live}</div>`};
+return`<h1 class="sm">Buy</h1><p class="dim bv-s">Pick a pack, choose any start time. After your purchase, our AI agent sends you a key in a private Discord message. Paste it in the script later.</p><div class="bv-g">${PACKS.map(([hh,d])=>{const p=price(hh,d),sv=p1*hh-p,pop=hh===10;return`<div class="bv-c tilt${pop?" pop":""}">${pop?'<span class="bv-tag">Popular</span>':sv>0?'<span class="bv-tag s">-'+Math.round((1-d)*100)+'%</span>':""}<div class="bv-h">${hh}<small>h</small></div><div class="bv-p">${money(p)}</div><p class="dim bv-u">${money(p/hh)} / hour</p><ul class="bv-l"><li>Live auto join</li><li>You pick the start time</li><li>${sv>0?"You save "+money(sv):"Flexible, no commitment"}</li></ul><button class="b${pop?" s":""} w" data-act="buy" data-h="${hh}">Buy ${hh} h</button></div>`}).join("")}</div><div class="box" aria-live="polite"><div class="bv-lv"><span class="dot"></span><h2 style="margin:0">Live availability</h2></div>${live}</div>`};
 board=function(){const L=S.lb,me=S.me?.user?.name,ini=n=>esc(String(n||"?")[0].toUpperCase());
 const flt=`<h1 class="sm">Leaderboard</h1><div class="fl">${[["d","Today"],["w","This week"],["a","All time"]].map(([k,n])=>`<button class="b sm${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
 if(!L)return flt+`<div class="box">${none("Leaderboard unavailable right now.")}</div>`;if(!L.length)return flt+`<div class="box">${none("No ranked players yet.")}</div>`;
@@ -764,7 +781,93 @@ c.beginPath();c.fillStyle="hsla("+p.h+",90%,68%,"+p.l*.55+")";c.arc(p.x,p.y,2+p.
 requestAnimationFrame(f)})()})();
 </script>
 <script>
-document.addEventListener("click",async e=>{const b=e.target.closest("[data-act=rekey]");if(!b)return;b.disabled=true;const r=await api(A+"/key/resend",{});b.disabled=false;toast(r.ok?"Key sent to your Discord DMs":(r.data.error||"Could not send the key"))});
+/* ===== Home : univers, aurora qui suit le curseur (PC), son doux ===== */
+(()=>{
+const rm=matchMedia("(prefers-reduced-motion:reduce)").matches,pc=matchMedia("(hover:hover) and (pointer:fine)").matches,body=document.body,isHome=()=>body.classList.contains("home");
+try{if(localStorage.getItem("spyaj_kn")==="1")S.keyNote=1}catch(x){}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act=knote]");if(!b)return;S.keyNote=0;try{localStorage.removeItem("spyaj_kn")}catch(x){}render()});
+const gl=document.getElementById("gl");if(!gl)return;
+const uni=document.createElement("canvas"),au=document.createElement("canvas");uni.id="uni";au.id="au";uni.setAttribute("aria-hidden","true");au.setAttribute("aria-hidden","true");
+gl.after(uni);if(pc&&!rm)uni.after(au);
+const c=uni.getContext("2d"),ac=au.getContext("2d");
+let W=0,H=0,D=1,u=1,aw=160,ah=90,stars=[],mx=.5,my=.4,sx=.5,sy=.4,shoot=null,nextShoot=2500,last=0;
+const NEB=[{x:.78,y:.5,r:.62,c:"124,58,237",a:.2,s:.07,p:0,z:.3},{x:.12,y:.82,r:.5,c:"56,140,248",a:.14,s:.05,p:2,z:.5},{x:.4,y:.12,r:.46,c:"236,72,153",a:.1,s:.06,p:4,z:.4},{x:.95,y:.05,r:.4,c:"34,211,238",a:.08,s:.04,p:1,z:.2},{x:.5,y:.95,r:.55,c:"99,102,241",a:.12,s:.045,p:3,z:.35}];
+const R=[{c:"60,230,200",f:.012,s:.7,ph:0,a:.1,lag:.05,o:-.05},{c:"150,110,255",f:.009,s:-.5,ph:2,a:.13,lag:.035,o:0},{c:"255,110,200",f:.015,s:.9,ph:4,a:.08,lag:.025,o:.06},{c:"90,170,255",f:.007,s:-.35,ph:1,a:.16,lag:.018,o:-.1}];R.forEach(r=>r.cy=.4);
+function size(){D=Math.min(devicePixelRatio||1,1.5);W=uni.width=Math.round(innerWidth*D);H=uni.height=Math.round(innerHeight*D);u=Math.min(Math.max(W,H*.55),H*1.5);
+ stars=Array.from({length:Math.round(innerWidth*innerHeight/4800)},()=>({x:Math.random(),y:Math.random(),z:Math.random(),p:Math.random()*6.28,h:Math.random()}));
+ aw=au.width=Math.max(160,Math.round(innerWidth/4));ah=au.height=Math.max(90,Math.round(innerHeight/4))}
+const PI2=Math.PI*2;
+function sphere(x,y,r,cols,bands,T,glow){
+ if(glow){let g=c.createRadialGradient(x,y,r*.9,x,y,r*1.4);g.addColorStop(0,"rgba("+glow+",.5)");g.addColorStop(1,"rgba("+glow+",0)");c.globalCompositeOperation="lighter";c.fillStyle=g;c.beginPath();c.arc(x,y,r*1.4,0,PI2);c.fill();c.globalCompositeOperation="source-over"}
+ let g=c.createRadialGradient(x-r*.4,y-r*.42,r*.04,x,y,r);g.addColorStop(0,cols[0]);g.addColorStop(.55,cols[1]);g.addColorStop(1,cols[2]);
+ c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,PI2);c.fill();
+ if(bands){c.save();c.beginPath();c.arc(x,y,r,0,PI2);c.clip();for(const b of bands){const yy=y+b.o*r+Math.sin(T*.25+b.p)*r*.012;c.fillStyle=b.c;c.beginPath();c.ellipse(x,yy,r*1.15,b.h*r,0,0,PI2);c.fill()}c.restore()}
+ g=c.createRadialGradient(x-r*.58,y-r*.5,r*.25,x-r*.2,y-r*.15,r*1.5);g.addColorStop(0,"rgba(2,0,14,0)");g.addColorStop(.5,"rgba(2,0,14,0)");g.addColorStop(1,"rgba(2,0,14,.92)");
+ c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,PI2);c.fill();
+ g=c.createRadialGradient(x,y,r*.82,x,y,r);g.addColorStop(0,"rgba(255,255,255,0)");g.addColorStop(1,"rgba("+(glow||"200,190,255")+",.28)");c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,PI2);c.fill()}
+function ring(x,y,r,front){c.save();c.translate(x,y);c.rotate(-.38);c.scale(1,.3);
+ for(const d of [[1.28,1.42,.32],[1.46,1.62,.55],[1.66,1.74,.22],[1.78,1.98,.38]]){c.lineWidth=(d[1]-d[0])*r;c.strokeStyle="rgba(214,200,255,"+d[2]+")";c.beginPath();c.arc(0,0,(d[0]+d[1])/2*r,front?0:Math.PI,front?Math.PI:PI2);c.stroke()}
+ c.restore()}
+function draw(t){
+ const T=t/1000;sx+=(mx-sx)*.05;sy+=(my-sy)*.05;const px=sx-.5,py=sy-.5;
+ c.clearRect(0,0,W,H);c.globalCompositeOperation="lighter";
+ for(const n of NEB){const rr=n.r*u,x=n.x*W+Math.sin(T*n.s+n.p)*W*.03-px*n.z*W*.05,y=n.y*H+Math.cos(T*n.s*.8+n.p)*H*.03-py*n.z*H*.05,g=c.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,"rgba("+n.c+","+n.a+")");g.addColorStop(1,"rgba("+n.c+",0)");c.fillStyle=g;c.fillRect(x-rr,y-rr,rr*2,rr*2)}
+ c.globalCompositeOperation="source-over";
+ for(const s of stars){const x=((s.x*W-px*s.z*70*D-T*s.z*3*D)%W+W)%W,y=s.y*H-py*s.z*45*D,a=.25+.75*(.5+.5*Math.sin(T*(.6+s.z)+s.p)),r=(.4+s.z*1.3)*D;c.fillStyle=s.h<.16?"rgba(196,181,253,"+a+")":s.h<.28?"rgba(147,197,253,"+a+")":"rgba(255,255,255,"+a+")";c.fillRect(x,y,r,r)}
+ if(!rm){nextShoot-=33;if(!shoot&&nextShoot<=0){shoot={x:Math.random()*W*.7+W*.3,y:Math.random()*H*.35,l:0};nextShoot=5000+Math.random()*7000}
+  if(shoot){shoot.l+=.028;const k=shoot.l,x=shoot.x-k*W*.34,y=shoot.y+k*H*.16,g=c.createLinearGradient(x,y,x+110*D,y-48*D);g.addColorStop(0,"rgba(255,255,255,"+Math.max(0,1-k)+")");g.addColorStop(1,"rgba(255,255,255,0)");c.strokeStyle=g;c.lineWidth=1.6*D;c.beginPath();c.moveTo(x,y);c.lineTo(x+110*D,y-48*D);c.stroke();if(k>=1)shoot=null}}
+ /* soleil lointain */
+ {const x=.03*W-px*W*.02,y=.99*H-py*H*.02,rr=.5*u,g=c.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,"rgba(255,196,130,.42)");g.addColorStop(.3,"rgba(255,140,90,.12)");g.addColorStop(1,"rgba(255,120,80,0)");c.globalCompositeOperation="lighter";c.fillStyle=g;c.fillRect(x-rr,y-rr,rr*2,rr*2);c.globalCompositeOperation="source-over"}
+ /* petite planete lointaine */
+ sphere(.62*W-px*W*.03,.13*H-py*H*.03,.022*u,["#f5f3ff","#a5b4fc","#312e81"],null,T,"165,180,255");
+ /* planete braise + lune */
+ {const x=.3*W-px*W*.05,y=.2*H-py*H*.05,r=.05*u;
+  sphere(x,y,r,["#ffd1a8","#f0689a","#3b0a3a"],[{o:-.3,h:.14,c:"rgba(255,230,200,.18)",p:0},{o:.15,h:.18,c:"rgba(120,20,80,.28)",p:2},{o:.5,h:.12,c:"rgba(255,180,160,.14)",p:4}],T,"255,130,170");
+  const a=T*.32,mxp=x+Math.cos(a)*r*2.5,myp=y+Math.sin(a)*r*.7,mr=r*.26;if(Math.sin(a)>0||true){sphere(mxp,myp,mr,["#fafafa","#9ca3af","#1f2937"],null,T,null)}}
+ /* planete glace */
+ sphere(.15*W-px*W*.07,.8*H-py*H*.07,.085*u,["#cffafe","#38bdf8","#0b1b4d"],[{o:-.45,h:.1,c:"rgba(255,255,255,.2)",p:1},{o:-.05,h:.16,c:"rgba(20,90,200,.32)",p:3},{o:.4,h:.12,c:"rgba(210,245,255,.16)",p:5}],T,"90,200,255");
+ /* geante annelee */
+ {const x=.8*W-px*W*.04,y=.62*H-py*H*.04+Math.sin(T*.4)*H*.006,r=.2*u;ring(x,y,r,false);
+  sphere(x,y,r,["#e9d5ff","#8b5cf6","#1e1065"],[{o:-.62,h:.07,c:"rgba(255,255,255,.2)",p:0},{o:-.4,h:.1,c:"rgba(60,20,150,.4)",p:1},{o:-.15,h:.12,c:"rgba(230,215,255,.26)",p:2},{o:.1,h:.09,c:"rgba(40,10,110,.38)",p:3},{o:.32,h:.12,c:"rgba(196,170,255,.24)",p:4},{o:.58,h:.08,c:"rgba(30,10,90,.4)",p:5}],T,"150,110,255");
+  ring(x,y,r,true)}
+}
+function drawAu(T){ac.clearRect(0,0,aw,ah);ac.globalCompositeOperation="lighter";ac.lineCap="round";const tx=mx*aw;
+ for(const r of R){r.cy+=((my+r.o)-r.cy)*r.lag;const cy=r.cy*ah,amp=ah*r.a;let px=null,py=0;
+  for(let x=0;x<=aw;x+=3){const g=Math.exp(-((x-tx)*(x-tx))/(2*aw*aw*.035)),y=cy+Math.sin(x*r.f*4+T*r.s+r.ph)*amp*(.55+g*.9)+Math.sin(x*r.f*9-T*r.s*.6)*amp*.25,al=.05+.4*g;
+   if(px!==null){ac.strokeStyle="rgba("+r.c+","+al+")";ac.lineWidth=ah*(.04+.06*g);ac.beginPath();ac.moveTo(px,py);ac.lineTo(x,y);ac.stroke();ac.strokeStyle="rgba("+r.c+","+Math.min(.9,al*1.8)+")";ac.lineWidth=1.4;ac.beginPath();ac.moveTo(px,py);ac.lineTo(x,y);ac.stroke()}
+   px=x;py=y}}}
+function loop(t){requestAnimationFrame(loop);if(document.hidden||!isHome()||t-last<33)return;last=t;draw(t);if(pc&&!rm)drawAu(t/1000)}
+addEventListener("resize",()=>{size();if(rm&&isHome())draw(0)});
+addEventListener("pointermove",e=>{mx=e.clientX/innerWidth;my=e.clientY/innerHeight},{passive:true});
+size();if(rm)new MutationObserver(()=>{if(isHome())draw(0)}).observe(body,{attributes:true,attributeFilter:["class"]});else requestAnimationFrame(loop);
+
+/* ===== Son d'ambiance tres doux (demarre au premier clic, bouton en bas a gauche) ===== */
+const SK="spyaj_snd";let want=true;try{want=localStorage.getItem(SK)!=="off"}catch(x){}
+let ctx=null,master=null,started=false;
+const btn=document.createElement("button");btn.id="snd";btn.className="ic"+(want?"":" off");btn.type="button";btn.setAttribute("aria-label","Toggle ambient sound");btn.title="Ambient sound";
+btn.innerHTML='<svg class="bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wv" d="M16.5 9a4 4 0 010 6M19 6.5a8 8 0 010 11"/><path class="x" d="M17 9l5 6M22 9l-5 6"/></svg>';
+document.body.appendChild(btn);
+function build(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+ ctx=new AC();master=ctx.createGain();master.gain.value=0;
+ const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1100;lp.Q.value=.2;
+ const dl=ctx.createDelay(1.5);dl.delayTime.value=.42;const fb=ctx.createGain();fb.gain.value=.42;const wet=ctx.createGain();wet.gain.value=.55;
+ master.connect(lp);lp.connect(ctx.destination);lp.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(wet);wet.connect(ctx.destination);
+ [110,164.81,220,277.18,329.63,440].forEach((f,i)=>{const b=.09/(1+i*.4);
+  for(const k of[-1,1]){const o=ctx.createOscillator();o.type=i%2?"triangle":"sine";o.frequency.value=f;o.detune.value=k*(4+i);
+   const g=ctx.createGain();g.gain.value=b*.5;const l=ctx.createOscillator();l.frequency.value=.04+i*.013+(k>0?.01:0);const lg=ctx.createGain();lg.gain.value=b*.5;
+   l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(master);o.start();l.start()}});
+ return true}
+function fade(to,s){if(!master)return;const t=ctx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+s)}
+function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden){ctx.resume();fade(.1,4)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
+const kick=()=>{if(started||!isHome()||!want)return;if(!ctx&&!build())return;started=true;upd()};
+["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,kick,{passive:true}));
+btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch(x){}btn.classList.toggle("off",!want);if(want&&!started){if(!ctx&&!build())return;started=true}upd()});
+new MutationObserver(upd).observe(body,{attributes:true,attributeFilter:["class"]});
+document.addEventListener("visibilitychange",upd);
+})();
+</script>
+<script>
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-act=rekey]");if(!b)return;b.disabled=true;const r=await api(A+"/key/resend",{});b.disabled=false;toast(r.ok?"Request sent. Our AI agent will DM you your key in a few seconds":(r.data.error||"Could not send the key"))});
 </script>
 </body>
 </html>
