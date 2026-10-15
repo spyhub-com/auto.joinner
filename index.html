@@ -216,11 +216,11 @@ body.home .hero .cta .cap{order:3;width:100%;margin-top:4px}
 .dcl{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:10px}.dcl svg{width:18px;height:18px}
 /* v4 : panneaux latéraux + galaxie partout */
 #pl{opacity:1}.nopan .hmx{display:none!important}
-@media(hover:hover) and (pointer:fine) and (min-width:1200px){
-body:not(.home) .hmx{display:block;width:230px;top:10px;max-height:calc(100vh - 20px);background:rgba(10,10,22,.88);border:1px solid rgba(255,255,255,.1)}
+@media(min-width:1000px){
+body:not(.home) .hmx{display:block;width:210px;top:10px;max-height:calc(100vh - 20px);background:rgba(10,10,22,.88);border:1px solid rgba(255,255,255,.1)}
 body:not(.home) .hmLx{left:12px}body:not(.home) .hmRx{right:12px}
-body:not(.home) #app{max-width:none;padding-left:254px;padding-right:254px}}
-@media(hover:hover) and (pointer:fine) and (min-width:1560px){
+body:not(.home) #app{max-width:none;padding-left:232px;padding-right:232px}}
+@media(min-width:1560px){
 body:not(.home) .hmx{width:clamp(190px,calc((100vw - 1120px)/2 - 30px),320px)}
 body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 </style>
@@ -295,13 +295,13 @@ const paintTeam=()=>{const e=$("#team");if(e)e.innerHTML=teamHtml()};
 /* ===== Views ===== */
 const DISC='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.74 19.74 0 003.677 4.37a.07.07 0 00-.032.028C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.1 13.1 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 01.078-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.079.009c.12.1.246.198.373.293a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>';
 const home=()=>`<div class="hm"><aside class="box hmc hmL" id="hmL">${feedHtml()}</aside><section class="hero rv"><h1 class="wl">SpyHub</h1><div class="cta"><button class="b s" data-act="dash">${DISC}<span>Open Dashboard</span></button><p class="cap">Access your personal dashboard</p><button class="b" data-act="tab" data-t="stats">Live Stats</button></div></section><aside class="box hmc hmR" id="hmR">${usersHtml()}</aside></div>`;
-const HM={feed:[],users:[],t:0};
-const feedHtml=()=>`<h2>Latest steals</h2>`+(HM.feed.length?HM.feed.map((x,i)=>`<div class="fd"><button class="fi" data-stl="${i}" aria-label="Who stole">${brImg(x.n)}</button><div class="fx"><b>${esc(x.n)}</b>${mutOf(x.m)?` <span class="mu">${esc(mutOf(x.m))}</span>`:""}<div class="dim">${esc(x.name)} · ${ago(x.t)}</div></div><span class="vl">${fmt(x.v)}</span></div>`).join(""):none(HM.t?"No steals yet":"Loading..."));
-const usersHtml=()=>`<h2>Members</h2>`+(HM.users.length?HM.users.map(u=>`<div class="mb">${av2(u.avatar,u.name)}<div class="fx"><b>${esc(u.name)}</b><div class="dim">ID ${esc(u.id)}</div><div class="dim ${u.aj?"ajon":""}">${u.aj?"Online on AJ":(u.t?"Seen "+ago(u.t):"Never seen")}</div></div><span class="sc" title="Steals">${u.steals}</span></div>`).join(""):none(HM.t?"No members":"Loading..."));
+const HM={feed:[],users:[],t:0,err:""};
+const feedHtml=()=>`<h2>Latest steals</h2>`+(HM.feed.length?HM.feed.map((x,i)=>`<div class="fd"><button class="fi" data-stl="${i}" aria-label="Who stole">${brImg(x.n)}</button><div class="fx"><b>${esc(x.n)}</b>${mutOf(x.m)?` <span class="mu">${esc(mutOf(x.m))}</span>`:""}<div class="dim">${esc(x.name)} · ${ago(x.t)}</div></div><span class="vl">${fmt(x.v)}</span></div>`).join(""):none(HM.err?"Unavailable: "+esc(HM.err):HM.t?"No steals yet":"Loading..."));
+const usersHtml=()=>`<h2>Members</h2>`+(HM.users.length?HM.users.map(u=>`<div class="mb">${av2(u.avatar,u.name)}<div class="fx"><b>${esc(u.name)}</b><div class="dim">ID ${esc(u.id)}</div><div class="dim ${u.aj?"ajon":""}">${u.aj?"Online on AJ":(u.t?"Seen "+ago(u.t):"Never seen")}</div></div><span class="sc" title="Steals">${u.steals}</span></div>`).join(""):none(HM.err?"Unavailable: "+esc(HM.err):HM.t?"No members":"Loading..."));
 let _hmT=0;
-async function loadHome(){if(Date.now()-_hmT<8e3&&HM.t)return paintHome();_hmT=Date.now();const r=await api(A+"/home-data");if(r.ok){HM.feed=r.data.feed||[];HM.users=r.data.users||[];HM.t=Date.now()}paintHome()}
+async function loadHome(){if(Date.now()-_hmT<8e3&&HM.t)return paintHome();_hmT=Date.now();const r=await api(A+"/home-data");if(r.ok){HM.feed=r.data.feed||[];HM.users=r.data.users||[];HM.err=""}else HM.err=r.data.error||"Unavailable";HM.t=Date.now();paintHome()}
 function paintHome(){for(const i of["#hmL","#hmLx"]){const l=$(i);if(l)l.innerHTML=feedHtml()}for(const i of["#hmR","#hmRx"]){const r=$(i);if(r)r.innerHTML=usersHtml()}}
-const pcSide=()=>matchMedia("(hover:hover) and (pointer:fine) and (min-width:1200px)").matches;
+const pcSide=()=>matchMedia("(min-width:1000px)").matches;
 setInterval(()=>{if((S.tab==="home"||pcSide())&&!document.hidden){_hmT=0;loadHome()}},3e4);
 document.addEventListener("click",e=>{const b=e.target.closest("[data-stl]");if(b){const x=HM.feed[+b.dataset.stl];if(!x)return;const m=document.createElement("div");m.className="stm";m.innerHTML=`<div class="box stc"><button class="b sm stx" aria-label="Close">&times;</button><div class="stp">${x.avatar?`<img class="pp" src="${esc(x.avatar)}" alt="" referrerpolicy="no-referrer">`:av2("",x.name)}<div><h2 style="margin:0">${esc(x.name)}</h2><div class="dim">Discord ID ${esc(x.id)}</div></div></div><div class="stb">${stealH(x.n,x.m,x.v)}</div><div class="dim">${ago(x.t)} · ${new Date(x.t).toLocaleString("en-US")}</div></div>`;m.addEventListener("click",ev=>{if(ev.target===m||ev.target.closest(".stx"))m.remove()});document.body.appendChild(m)}});
 
