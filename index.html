@@ -184,8 +184,20 @@ main.pg{animation:pg .5s cubic-bezier(.2,.8,.2,1) backwards}@keyframes pg{from{o
 .qm{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:10px;background:rgba(255,255,255,.1);font-weight:700;color:#aab}.fi .qm{width:42px;height:42px}
 .hmx{display:none;position:fixed;top:100px;z-index:3;width:clamp(190px,calc((100vw - 1120px)/2 - 30px),320px);max-height:calc(100vh - 175px);overflow:auto}.hmLx{left:16px}.hmRx{right:16px}
 @media(min-width:1560px){body.home .hmx{display:block}.hm{grid-template-columns:1fr}.hm .hmc{display:none}.hm .hero{min-height:calc(100vh - 230px)}}
-body.home header,body.home .hmx,body.home .hmc{border:1px solid transparent;background:linear-gradient(rgba(10,10,22,.88),rgba(10,10,22,.88)) padding-box,linear-gradient(90deg,#38bdf8 0%,#1e3a8a 50%,#8b5cf6 100%) border-box;background-attachment:scroll,fixed}
+body.home header,body.home .hmx,body.home .hmc{background:rgba(10,10,22,.88);border:1px solid rgba(255,255,255,.1)}
 body.home .hmx{top:10px;max-height:calc(100vh - 80px)}
+body.home .hm .hero{width:100%;min-height:0;align-self:center;margin:0 auto;padding:30px 22px;border:0;background:none}
+body.home .hm .hero{max-width:520px}
+body.home .hero .cta{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px;max-width:none;margin-top:18px}
+body.home .hero .cta .b{width:auto;flex:0 0 auto;padding:11px 22px;border-radius:999px;font-size:13px;font-weight:650}
+body.home .hero .cta .b.s{background:#fff;color:#0a0a0c;border:1px solid #fff;box-shadow:0 6px 24px -8px rgba(255,255,255,.45)}
+body.home .hero .cta .b.s:hover:not(:disabled){background:#e8e8ee}
+body.home .hero .cta .b:not(.s){background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+body.home .hero .cta .b:not(.s):hover:not(:disabled){background:rgba(255,255,255,.16)}
+body.home .hero .cta .cap{order:3;width:100%;margin-top:4px}
+@media(min-width:901px){body.home .hm .hero{align-self:end;margin-bottom:8vh}}
+@media(min-width:1560px){.hm{min-height:calc(100vh - 140px);align-items:center}}
+#pl{z-index:1}#app{z-index:2}
 </style>
 </head>
 <body>
@@ -532,11 +544,11 @@ let ctx=null,master=null,started=false;
 const btn=document.createElement("button");btn.id="snd";btn.className="ic"+(want?"":" off");btn.type="button";btn.setAttribute("aria-label","Toggle ambient sound");
 btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wv" d="M16.5 9a4 4 0 010 6M19 6.5a8 8 0 010 11"/><path class="x" d="M17 9l5 6M22 9l-5 6"/></svg>';document.body.appendChild(btn);
 function build(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;ctx=new AC();master=ctx.createGain();master.gain.value=0;
- const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=2200;const out=ctx.createGain();out.gain.value=1.8;master.connect(lp);lp.connect(out);out.connect(ctx.destination);
- [110,164.81,220,277.18,329.63,440].forEach((f,i)=>{const b=.2/(1+i*.4);for(const k of[-1,1]){const o=ctx.createOscillator();o.type=i%2?"triangle":"sine";o.frequency.value=f;o.detune.value=k*(4+i);
+ const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=700;lp.Q.value=.3;const out=ctx.createGain();out.gain.value=1;const cp=ctx.createDynamicsCompressor();cp.threshold.value=-30;cp.knee.value=30;cp.ratio.value=6;master.connect(lp);lp.connect(out);out.connect(cp);cp.connect(ctx.destination);
+ [110,164.81,220,277.18,329.63].forEach((f,i)=>{const b=.2/(1+i*.4);for(const k of[-1,1]){const o=ctx.createOscillator();o.type="sine";o.frequency.value=f;o.detune.value=k*(2+i*.5);
   const g=ctx.createGain();g.gain.value=b*.5,l=ctx.createOscillator();l.frequency.value=.04+i*.013;const lg=ctx.createGain();lg.gain.value=b*.5;l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(master);o.start();l.start()}});return true}
 function fade(to,s){if(!master)return;const t=ctx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+s)}
-function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden){ctx.resume();fade(1.6,2)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
+function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden){ctx.resume();fade(.3,3)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
 const kick=()=>{if(started||!isHome()||!want)return;if(!ctx&&!build())return;started=true;upd()};
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,kick,{passive:true}));
 btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch{}btn.classList.toggle("off",!want);if(want&&!started){if(!ctx&&!build())return;started=true}upd()});
