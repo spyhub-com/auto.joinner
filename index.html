@@ -175,6 +175,12 @@ main.pg{animation:pg .5s cubic-bezier(.2,.8,.2,1) backwards}@keyframes pg{from{o
 #cr{width:30px;height:30px;margin:-15px 0 0 -15px;border:1px solid rgba(167,139,250,.7);transition:width .25s,height .25s,margin .25s,background .25s}
 #cr.h{width:50px;height:50px;margin:-25px 0 0 -25px;background:rgba(139,92,246,.14)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}.rv{opacity:1;transform:none}}
+.hm{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr) minmax(0,300px);gap:16px;align-items:start}.hm .hero{min-height:calc(100vh - 230px)}
+.hmc{max-height:calc(100vh - 160px);overflow:auto;position:sticky;top:76px}.fd,.mb{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)}.fx{flex:1;min-width:0;font-size:13px}.fx b{overflow-wrap:anywhere}.fi{all:unset;cursor:pointer;display:grid;border-radius:12px}.fi .bri{width:42px;height:42px;border-radius:12px;object-fit:cover}.fi:hover{filter:brightness(1.2)}
+.sc{font-weight:700;padding:2px 10px;border-radius:999px;background:rgba(255,255,255,.1)}.ajon{color:#4ade80}
+.stm{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}.stc{position:relative;max-width:360px;width:100%}.stx{position:absolute;right:10px;top:10px}.stp{display:flex;gap:12px;align-items:center;margin:6px 0 12px}.stb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+#pl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0;transition:opacity .9s}body.home #pl{opacity:1}#app{position:relative;z-index:1}
+@media(max-width:900px){.hm{grid-template-columns:1fr}.hm .hero{order:1;min-height:0;padding:5vh 0 2vh;margin:0 auto}.hmL{order:2}.hmR{order:3}.hmc{position:static;max-height:none}}
 </style>
 </head>
 <body>
@@ -246,7 +252,15 @@ const paintTeam=()=>{const e=$("#team");if(e)e.innerHTML=teamHtml()};
 
 /* ===== Views ===== */
 const DISC='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.74 19.74 0 003.677 4.37a.07.07 0 00-.032.028C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.1 13.1 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 01.078-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.079.009c.12.1.246.198.373.293a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>';
-const home=()=>`<section class="hero rv"><h1 class="wl">SpyHub</h1><div class="cta"><button class="b s" data-act="dash">${DISC}<span>Open Dashboard</span></button><p class="cap">Access your personal dashboard</p><button class="b" data-act="tab" data-t="stats">Live Stats</button></div><div class="team" id="team">${teamHtml()}</div></section>`;
+const home=()=>`<div class="hm"><aside class="box hmc hmL" id="hmL">${feedHtml()}</aside><section class="hero rv"><h1 class="wl">SpyHub</h1><div class="cta"><button class="b s" data-act="dash">${DISC}<span>Open Dashboard</span></button><p class="cap">Access your personal dashboard</p><button class="b" data-act="tab" data-t="stats">Live Stats</button></div></section><aside class="box hmc hmR" id="hmR">${usersHtml()}</aside></div>`;
+const HM={feed:[],users:[],t:0};
+const feedHtml=()=>`<h2>Latest steals</h2>`+(HM.feed.length?HM.feed.map((x,i)=>`<div class="fd"><button class="fi" data-stl="${i}" aria-label="Who stole">${brImg(x.n)}</button><div class="fx"><b>${esc(x.n)}</b>${mutOf(x.m)?` <span class="mu">${esc(mutOf(x.m))}</span>`:""}<div class="dim">${esc(x.name)} · ${ago(x.t)}</div></div><span class="vl">${fmt(x.v)}</span></div>`).join(""):none(HM.t?"No steals yet":"Loading..."));
+const usersHtml=()=>`<h2>Members</h2>`+(HM.users.length?HM.users.map(u=>`<div class="mb">${av2(u.avatar,u.name)}<div class="fx"><b>${esc(u.name)}</b><div class="dim">ID ${esc(u.id)}</div><div class="dim ${u.aj?"ajon":""}">${u.aj?"Online on AJ":(u.t?"Seen "+ago(u.t):"Never seen")}</div></div><span class="sc" title="Steals">${u.steals}</span></div>`).join(""):none(HM.t?"No members":"Loading..."));
+let _hmT=0;
+async function loadHome(){if(Date.now()-_hmT<8e3&&HM.t)return paintHome();_hmT=Date.now();const r=await api(A+"/home-data");if(r.ok){HM.feed=r.data.feed||[];HM.users=r.data.users||[];HM.t=Date.now()}paintHome()}
+function paintHome(){const l=$("#hmL"),r=$("#hmR");if(l)l.innerHTML=feedHtml();if(r)r.innerHTML=usersHtml()}
+setInterval(()=>{if(S.tab==="home"&&!document.hidden){_hmT=0;loadHome()}},3e4);
+document.addEventListener("click",e=>{const b=e.target.closest("[data-stl]");if(b){const x=HM.feed[+b.dataset.stl];if(!x)return;const m=document.createElement("div");m.className="stm";m.innerHTML=`<div class="box stc"><button class="b sm stx" aria-label="Close">&times;</button><div class="stp">${x.avatar?`<img class="pp" src="${esc(x.avatar)}" alt="" referrerpolicy="no-referrer">`:av2("",x.name)}<div><h2 style="margin:0">${esc(x.name)}</h2><div class="dim">Discord ID ${esc(x.id)}</div></div></div><div class="stb">${stealH(x.n,x.m,x.v)}</div><div class="dim">${ago(x.t)} · ${new Date(x.t).toLocaleString("en-US")}</div></div>`;m.addEventListener("click",ev=>{if(ev.target===m||ev.target.closest(".stx"))m.remove()});document.body.appendChild(m)}});
 
 function statsHtml(){
   const s=S.stats,l=S.list;
@@ -380,7 +394,7 @@ function render(){
   document.querySelectorAll(".grid>.box,.tm").forEach(e=>e.classList.add("tilt"));
   paintCharts();reveal();
   if(S.tab!==_lt){_lt=S.tab;showLd()}
-  if(S.tab==="owner")ownerPaint();if(S.tab==="dash")dashFx();if(S.tab==="home"){loadTeam();addRecent()}}
+  if(S.tab==="owner")ownerPaint();if(S.tab==="dash")dashFx();if(S.tab==="home")loadHome()}
 let _rc=null,_ra=0;
 async function addRecent(){const m=document.querySelector("main");if(S.tab!=="home"||!m||m.querySelector(".rcu"))return;
   if(!_rc||Date.now()-_ra>3e4){const r=await api(A+"/recent-users");_rc=r.ok?r.data.users||[]:[];_ra=Date.now()}
@@ -522,6 +536,17 @@ const kick=()=>{if(started||!isHome()||!want)return;if(!ctx&&!build())return;sta
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,kick,{passive:true}));
 btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch{}btn.classList.toggle("off",!want);if(want&&!started){if(!ctx&&!build())return;started=true}upd()});
 new MutationObserver(upd).observe(body,{attributes:true,attributeFilter:["class"]});document.addEventListener("visibilitychange",upd)})();
+
+(()=>{const cv=document.createElement("canvas");cv.id="pl";cv.setAttribute("aria-hidden","true");document.body.insertBefore(cv,document.body.firstChild);const c=cv.getContext("2d"),R=190,o=document.createElement("canvas");o.width=o.height=R;const oc=o.getContext("2d"),im=oc.createImageData(R,R),d=im.data;
+const h=(x,y,z)=>{let n=Math.sin(x*127.1+y*311.7+z*74.7)*43758.5453;return n-Math.floor(n)};
+const vn=(x,y,z)=>{const ix=Math.floor(x),iy=Math.floor(y),iz=Math.floor(z),fx=x-ix,fy=y-iy,fz=z-iz,u=fx*fx*(3-2*fx),v=fy*fy*(3-2*fy),w=fz*fz*(3-2*fz),L=(a,b,t)=>a+(b-a)*t;return L(L(L(h(ix,iy,iz),h(ix+1,iy,iz),u),L(h(ix,iy+1,iz),h(ix+1,iy+1,iz),u),v),L(L(h(ix,iy,iz+1),h(ix+1,iy,iz+1),u),L(h(ix,iy+1,iz+1),h(ix+1,iy+1,iz+1),u),v),w)};
+const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;let a=0,last=0;
+function size(){const D=Math.min(devicePixelRatio||1,2);cv.width=innerWidth*D;cv.height=innerHeight*D}size();addEventListener("resize",size);
+function frame(t){requestAnimationFrame(frame);if(!document.body.classList.contains("home")||document.hidden||t-last<50)return;last=t;if(!rm)a+=.012;const ca=Math.cos(a),sa=Math.sin(a);
+for(let j=0;j<R;j++)for(let i=0;i<R;i++){const x=(i/R)*2-1,y=(j/R)*2-1,r2=x*x+y*y,k=(j*R+i)*4;if(r2>1){d[k+3]=0;continue}const z=Math.sqrt(1-r2),rx=x*ca+z*sa,rz=-x*sa+z*ca,n=vn(rx*3+5,y*3,rz*3)*.6+vn(rx*7,y*7,rz*7)*.3+vn(rx*15,y*15,rz*15)*.1,l=Math.max(0,x*-.5+y*-.4+z*.75)+.08,rim=Math.pow(1-z,3)*.5;
+const w=n>.52?1:0,cr=w?70+n*120:20+n*50,cg=w?120+n*90:60+n*90,cb=w?60+n*40:150+n*110;d[k]=Math.min(255,cr*l+rim*90);d[k+1]=Math.min(255,cg*l+rim*140);d[k+2]=Math.min(255,cb*l+rim*255);d[k+3]=255}
+oc.putImageData(im,0,0);c.clearRect(0,0,cv.width,cv.height);const s=Math.min(cv.width,cv.height)*(innerWidth<700?.9:.75);c.globalAlpha=.55;c.imageSmoothingEnabled=true;c.drawImage(o,(cv.width-s)/2,(cv.height-s)/2+cv.height*.02,s,s)}
+requestAnimationFrame(frame)})();
 </script>
 </body>
 </html>
