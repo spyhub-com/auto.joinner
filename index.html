@@ -198,6 +198,22 @@ body.home .hero .cta .cap{order:3;width:100%;margin-top:4px}
 @media(min-width:901px){body.home .hm .hero{align-self:end;margin-bottom:8vh}}
 @media(min-width:1560px){.hm{min-height:calc(100vh - 140px);align-items:center}}
 #pl{z-index:1}#app{z-index:2}
+/* v4 : boutons + dashboard */
+.b{border-radius:12px;background:#15151c;border:1px solid rgba(255,255,255,.14);color:#f1f1f6;font-weight:650;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 6px 16px -10px #000}
+.b:hover:not(:disabled){background:#1e1e28;border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+.b.s{background:#fff;color:#0a0a0c;border-color:#fff}.b.s:hover:not(:disabled){background:#e8e8ee}
+.b.sm.on,.b.sm.on:hover{background:rgba(52,211,153,.16);border-color:rgba(52,211,153,.6);color:#6ee7b7}
+.pl{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:10px;border:1px solid rgba(52,211,153,.55);background:rgba(52,211,153,.14);color:#6ee7b7;font-size:18px;font-weight:700;line-height:1;cursor:pointer;padding:0}.pl:hover{background:rgba(52,211,153,.28)}
+.hd .chip{color:#6ee7b7;border-color:rgba(52,211,153,.4)}.hd .pp.s,.hd .av{width:30px;height:30px}
+.gr{color:#34d399;background:none;-webkit-text-fill-color:#34d399}
+.dtop{display:flex;align-items:center;gap:14px}.dtop .pi{flex:1;min-width:0}.dnm{display:block;font-size:15px}.dbal{font-size:30px;margin-top:2px}.sndb{display:inline-flex;align-items:center;gap:6px}
+.dst .big{margin-top:2px}.rng{display:flex;gap:6px}.bl svg{display:block;width:100%;overflow:visible}.bl text{fill:#8d8d98;font-size:11px}.bhit{cursor:pointer}
+.t3{gap:12px;justify-content:flex-start}.t3>span:nth-child(2){flex:1;min-width:0}.rk{display:grid;place-items:center;width:24px;height:24px;border-radius:8px;background:rgba(52,211,153,.16);color:#6ee7b7;font-weight:800;font-size:12px;flex:none}
+.scr{position:relative}.scrh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.lkb{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--dim);border:1px solid var(--ln);border-radius:999px;padding:2px 9px}
+.lki{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.scrb{position:relative;display:grid;gap:8px;min-height:110px}.scrr{display:flex;align-items:center;gap:10px;filter:blur(5px);opacity:.6}.scrr i{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.2)}.scrr span{height:12px;border-radius:6px;background:rgba(255,255,255,.2)}
+.scro{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:3px;text-align:center}.scro .lki{width:26px;height:26px;color:#d6d6dc}
+.dcl{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:10px}.dcl svg{width:18px;height:18px}
 </style>
 </head>
 <body>
@@ -254,7 +270,7 @@ async function loadDock(){const[b,c]=await Promise.all([api("/api/brainrots?limi
 async function load(){
   const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance;S.downWeb=!!cg.data.downWeb;S.downAll=!!cg.data.downAll}
   const r=await api(A+"/me");
-  S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],live:!!r.data.live,reservations:r.data.reservations||[]}:null;
+  S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],stl:r.data.stl||null,live:!!r.data.live,reservations:r.data.reservations||[]}:null;
   if(S.me){cacheTeam(S.me.user);await loadAvail()}render()}
 
 /* ===== Team (home) ===== */
@@ -364,21 +380,47 @@ function line(v,lb,col,f){const W=640,H=150,L=40,B=22,T=8,mx=nice(Math.max(1,...
   for(let i=0;i<=3;i++){const yy=y(mx*i/3);g+=`<line x1="${L}" x2="${W-6}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.08)"/><text x="${L-6}" y="${yy+4}" text-anchor="end">${f(mx*i/3)}</text>`}
   const xl=[0,v.length>>1,v.length-1].map(i=>`<text x="${x(i)}" y="${H-6}" text-anchor="middle">${lb[i]}</text>`).join("");
   return`<svg class="lc" viewBox="0 0 ${W} ${H}"><path d="${p}L${x(v.length-1)} ${H-B}L${x(0)} ${H-B}Z" fill="${col}" opacity=".16"/><path d="${p}" fill="none" stroke="${col}" stroke-width="2.5"/>${g}${xl}</svg>`}
-function dash(){const m=S.me,u=m.user||{},now=Date.now(),R=[...m.reservations].sort((a,b)=>b.start-a.start),cur=R.find(r=>now>=r.start&&now<r.end),nm=esc(u.name||"Player");S.end=cur?cur.end:0;
-  const lv=S.live==null?"…":S.live,row=(a,b)=>`<div class="mr"><span>${a}</span><span title="${esc(b)}">${esc(b)}</span></div>`;
+const lockI='<svg viewBox="0 0 24 24" class="lki" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
+const BL={r:"a",pts:[]};
+function stlOf(m){const a=m.steals||[];return m.stl||{n:a.length,total:a.reduce((s,x)=>s+(+x.value||0),0),top:[...a].sort((x,y)=>y.value-x.value).slice(0,3)}}
+function balPts(){const m=S.me,now=Date.now(),ev=[...(m.gifts||[]).map(g=>({t:g.t,d:+g.v||0,l:"Gift card"})),...(m.reservations||[]).map(r=>({t:Math.min(r.start,now),d:-(+r.price||0),l:"Slot "+dur((r.end-r.start)/6e4)}))].sort((a,b)=>a.t-b.t);
+  let v=m.balance-ev.reduce((s,e)=>s+e.d,0);const all=[{t:ev.length?ev[0].t-36e5:now-864e5,v,l:"Start",d:0}];
+  for(const e of ev){v+=e.d;all.push({t:e.t,v,l:e.l,d:e.d})}all.push({t:now,v:m.balance,l:"Now",d:0});
+  const span={d:864e5,w:7*864e5,m:30*864e5}[BL.r];if(!span)return all;const cut=now-span,bf=all.filter(p=>p.t<cut);
+  return[{t:cut,v:bf.length?bf[bf.length-1].v:all[0].v,l:"Start of range",d:0},...all.filter(p=>p.t>=cut)]}
+function balChart(){const P=balPts();BL.pts=P;const W=640,H=230,L=48,B=26,T=12,R=10,t0=P[0].t,t1=Math.max(P[P.length-1].t,t0+1),vs=P.map(p=>p.v);
+  let lo=Math.min(...vs),hi=Math.max(...vs);if(hi-lo<1){lo-=1;hi+=1}const pd=(hi-lo)*.18;lo-=pd;hi+=pd;
+  const x=t=>L+(W-L-R)*(t-t0)/(t1-t0),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  let d="M"+x(P[0].t).toFixed(1)+" "+y(P[0].v).toFixed(1);
+  for(let i=1;i<P.length;i++){const xa=x(P[i-1].t),xb=x(P[i].t),m=(xa+xb)/2;d+=`C${m.toFixed(1)} ${y(P[i-1].v).toFixed(1)},${m.toFixed(1)} ${y(P[i].v).toFixed(1)},${xb.toFixed(1)} ${y(P[i].v).toFixed(1)}`}
+  let g="";for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4,yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.07)"/><text x="${L-6}" y="${yy+4}" text-anchor="end">$${v.toFixed(v<10?2:0)}</text>`}
+  const fm=BL.r==="d"?(t=>hm(t)):(t=>new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric"}));
+  const xl=[0,1,2,3].map(i=>{const t=t0+(t1-t0)*i/3;return`<text x="${x(t)}" y="${H-7}" text-anchor="${i?i===3?"end":"middle":"start"}">${fm(t)}</text>`}).join("");
+  const dots=P.map((p,i)=>`<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="${i&&i<P.length-1?3.2:2.4}" fill="#0b0b10" stroke="${GR}" stroke-width="1.6"/><circle class="bhit" data-i="${i}" cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="11" fill="transparent"/>`).join("");
+  return`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Balance over time"><defs><linearGradient id="blg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${GR}" stop-opacity=".32"/><stop offset="1" stop-color="${GR}" stop-opacity="0"/></linearGradient></defs>${g}<path d="${d}L${x(P[P.length-1].t).toFixed(1)} ${H-B}L${x(P[0].t).toFixed(1)} ${H-B}Z" fill="url(#blg)"/><path d="${d}" fill="none" stroke="${GR}" stroke-width="2.4" stroke-linecap="round"/>${xl}${dots}</svg><div class="tip"></div>`}
+const GR="#34d399";
+function scriptsBox(){const ow=S.me.user&&S.me.user.owner;
+  return`<div class="box scr${ow?"":" lkd"}"><div class="scrh"><h2 style="margin:0">Scripts</h2>${ow?'<span class="mu">Unlocked</span>':`<span class="lkb">${lockI}Locked</span>`}</div>${ow?none("No scripts added yet."):`<div class="scrb" aria-hidden="true">${[78,64,86].map(w=>`<div class="scrr"><i></i><span style="width:${w}%"></span></div>`).join("")}<div class="scro">${lockI}<b>Locked</b><span class="dim">Reserved for the owner</span></div></div>`}</div>`}
+function dash(){const m=S.me,u=m.user||{},now=Date.now(),R=[...m.reservations].sort((a,b)=>b.start-a.start),cur=R.find(r=>now>=r.start&&now<r.end),nm=esc(u.name||"Player"),st=stlOf(m),dep=(m.gifts||[]).reduce((s,g)=>s+(+g.v||0),0),spent=R.reduce((s,r)=>s+(+r.price||0),0);S.end=cur?cur.end:0;
+  const lv=S.live==null?"…":S.live,c=(k,v,s)=>`<div class="box dst"><span class="dim">${k}</span><div class="big gr">${v}</div>${s?`<p class="dim" style="margin:2px 0 0;font-size:12px">${s}</p>`:""}</div>`;
   return`<h1 class="sm">Dashboard</h1>${S.keyNote?`<div class="ann">Check your Discord DMs: your key was sent there. It only works during your slot and locks to the first Roblox account that uses it. <button class="b sm" data-act="knote" style="margin-left:8px">Got it</button></div>`:""}
-  <div class="box prof">${u.avatar?`<img class="pp" src="${esc(u.avatar)}" alt="" referrerpolicy="no-referrer">`:`<span class="av xl">${nm[0]?.toUpperCase()||"?"}</span>`}<div class="pi"><h2>${nm}${u.owner?' <span class="ow">Owner</span>':""}</h2>${row("Discord ID",u.id||"—")}${row("Email",u.email||"—")}${row("Account created",dts(snow(u.id)))}${row("Role",u.owner?"Owner":"Member")}</div></div>
-  <div class="box"><div class="snd">${u.avatar?`<img class="pp s" src="${esc(u.avatar)}" alt="" referrerpolicy="no-referrer">`:`<span class="av">${nm[0]?.toUpperCase()||"?"}</span>`}<span class="nm">${nm}</span><button class="ic" data-act="sendtog" aria-label="Send money" aria-expanded="${S.sendOpen}" title="Send money"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button></div>
-  <div class="snd-f" ${S.sendOpen?"":"hidden"}>${none("Send part of your balance to any user with their Discord ID.")}<div class="row2"><input id="tid" type="text" inputmode="numeric" placeholder="Discord ID" autocomplete="off"><input id="tam" type="number" min="0.01" step="0.01" placeholder="Amount $"></div><button class="b s w" data-act="send" style="margin-top:8px">Send</button></div></div>
-  <div class="grid"><div class="box"><span class="dim">Balance</span><div class="big">${money(m.balance)}</div><button class="b sm" data-act="tab" data-t="gift" style="margin-top:8px">Top up</button></div>
-  <div class="box"><span class="dim">Current slot</span>${cur?`<div class="big" id="cdn">--:--:--</div>${none(hm(cur.start)+" to "+hm(cur.end))}`:none("None")}<p style="margin:6px 0 0"><b id="uo">${lv} / ${CONFIG.SEATS}</b> <span class="dim">AJ online</span></p>${cur?"":'<button class="b sm" data-act="tab" data-t="buy" style="margin-top:8px">Buy a slot</button>'}</div></div>
-  <div class="box"><h2>My steals</h2>${m.steals&&m.steals.length?m.steals.map(x=>`<div class="stv"><span>${stealH(x.name,x.mut,x.value)}</span><span class="dim">${ago(x.t)}</span></div>`).join(""):none("No steal detected yet. When you steal a brainrot it shows up here.")}</div>
-  <div class="box"><h2>Brainrot logs received</h2><p class="dim" style="margin:0 0 6px">Last 24 hours</p><div id="dc1"></div></div>
-  <div class="box"><h2>My spending</h2><p class="dim" style="margin:0 0 6px">Last 14 days</p><div id="dc2"></div></div>
+  <div class="box dtop">${av2(u.avatar,u.name).replace('pp s','pp')}<div class="pi"><b class="dnm">${nm}${u.owner?' <span class="ow">Owner</span>':""}</b><div class="big gr dbal">${money(m.balance)}</div></div><button class="b sm sndb" data-act="sendtog" aria-expanded="${S.sendOpen}"><svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send</button></div>
+  <div class="box snd-f" ${S.sendOpen?"":"hidden"}>${none("Send part of your balance to any user with their Discord ID.")}<div class="row2"><input id="tid" type="text" inputmode="numeric" placeholder="Discord ID" autocomplete="off"><input id="tam" type="number" min="0.01" step="0.01" placeholder="Amount $"></div><button class="b s w" data-act="send" style="margin-top:8px">Send</button></div>
+  ${scriptsBox()}
+  <div class="grid">${c("Total Steal",fmt(st.total),st.n+" brainrot"+(st.n===1?"":"s")+" stolen")}${c("Deposited",money(dep),"Spent on AJ: "+money(spent))}</div>
+  <div class="box lgc"><div class="line" style="padding:0"><h2 class="t">Balance Logs</h2><div class="rng">${[["d","24h"],["w","7d"],["m","30d"],["a","All"]].map(([k,n])=>`<button class="b sm${BL.r===k?" on":""}" data-act="blr" data-r="${k}">${n}</button>`).join("")}</div></div><p class="dim" style="margin:0">Every top-up and purchase, hover a point for details.</p><div class="ch3d bl" id="dbl"></div></div>
+  <div class="box"><h2>Your Top 3 Steal</h2>${st.top&&st.top.length?st.top.slice(0,3).map((x,i)=>`<div class="stv t3"><span class="rk">${i+1}</span><span>${stealH(x.name,x.mut,x.value)}</span><span class="dim">${ago(x.t)}</span></div>`).join(""):none("No steal detected yet. When you steal a brainrot it shows up here.")}</div>
+  <div class="box"><span class="dim">Current slot</span>${cur?`<div class="big" id="cdn">--:--:--</div>${none(hm(cur.start)+" to "+hm(cur.end))}`:none("None")}<p style="margin:6px 0 0"><b id="uo">${lv} / ${CONFIG.SEATS}</b> <span class="dim">AJ online</span></p>${cur?"":'<button class="b sm" data-act="tab" data-t="buy" style="margin-top:8px">Buy a slot</button>'}</div>
   <div class="box"><h2>History</h2>${R.length?`<div class="sx"><table><thead><tr><th>Date</th><th>Duration</th><th>Price</th><th>Status</th></tr></thead><tbody>${R.slice(0,5).map(r=>`<tr><td>${new Date(r.start).toLocaleDateString("en-US")} ${hm(r.start)}</td><td>${dur((r.end-r.start)/6e4)}</td><td>${money(r.price)}</td><td>${now<r.start?"Upcoming":now<r.end?"Active":"Done"}</td></tr>`).join("")}</tbody></table></div>`:none("No bookings yet.")}</div>`}
-function paintDash(){const a=$("#dc1"),b=$("#dc2");if(a){const h=hist();a.innerHTML=line(h.map(x=>x.finds),h.map((_,i)=>i===23?"Now":(23-i)+"h"),"#8b5cf6",int)}
-  if(b){const base=new Date();base.setHours(0,0,0,0);const d=Array.from({length:14},(_,i)=>base.getTime()-(13-i)*864e5),v=d.map(t=>S.me.reservations.filter(r=>r.start>=t&&r.start<t+864e5).reduce((a,r)=>a+r.price,0));
-    b.innerHTML=line(v,d.map(t=>new Date(t).toLocaleDateString("en-US",{month:"numeric",day:"numeric"})),"#34d399",n=>"$"+(+n.toFixed(1)))}}
+function paintDash(){const e=$("#dbl");if(e)e.innerHTML=balChart();document.querySelectorAll("[data-act=blr]").forEach(b=>b.classList.toggle("on",b.dataset.r===BL.r))}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act=blr]");if(b){BL.r=b.dataset.r;paintDash()}});
+document.addEventListener("pointerover",e=>{const c=$("#dbl"),t=c&&c.querySelector(".tip");if(!t)return;const h=e.target.closest&&e.target.closest(".bhit");if(!h){t.style.opacity=0;return}
+  const p=BL.pts[+h.dataset.i],r=h.getBoundingClientRect(),cr=c.getBoundingClientRect();
+  t.innerHTML=`<b>${new Date(p.t).toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</b><div><span>${esc(p.l)}</span><b style="color:${p.d<0?"#ff8a93":p.d>0?GR:"#fff"};margin:0">${p.d?(p.d>0?"+":"-")+money(Math.abs(p.d)):"—"}</b></div><div><span>Balance</span><b style="color:#fff;margin:0">${money(p.v)}</b></div>`;
+  t.style.left=Math.min(Math.max(0,r.left-cr.left+r.width/2-60),cr.width-140)+"px";t.style.top="8px";t.style.opacity=1});
+document.addEventListener("click",e=>{if(!e.target.closest("[data-act=pay]"))return;const m=document.createElement("div");m.className="stm";
+  m.innerHTML=`<div class="box stc"><button class="b sm stx" aria-label="Close">&times;</button><h2>Giftcard or other payment</h2><p class="dim">Get a gift card or pay another way on our Discord, then redeem the code in the Giftcard tab.</p><a class="b s w dcl" href="https://discord.gg/SpyHub" target="_blank" rel="noopener">${DISC}<span>discord.gg/SpyHub</span></a></div>`;
+  m.addEventListener("click",ev=>{if(ev.target===m||ev.target.closest(".stx"))m.remove()});document.body.appendChild(m)});
 function dashFx(){paintDash();loadLive();if(!DK.upd)loadDock()}
 
 /* --- Legal --- */
@@ -403,7 +445,7 @@ function render(){
   if((S.downWeb||S.downAll)&&!S.me?.user?.owner){$("#app").innerHTML=`<div class="dnp"><div class="box"><div class="dn-i">${S.downAll?"⏻":"🔧"}</div><h1 class="sm">${S.downAll?"Everything is down":"Site is down"}</h1><p class="dim">${S.downAll?"All SpyHub services are stopped for now.":"The website is closed for now."} Please come back later.</p><button class="b sm" data-act="login">Owner login</button></div></div>`;return}
   const V={home,stats,buy,board,gift,settings,dash,login:loginView,owner:()=>S.me?.user?.owner?owner():home(),legal,terms:legal,privacy:legal,refund:legal};
   if(!S.me&&LOCK.includes(S.tab))S.tab="home";
-  $("#app").innerHTML=`${(S.downWeb||S.downAll)?`<div class="ann">${S.downAll?"ALL DOWN":"WEB DOWN"}: only you (owner) can use the site.</div>`:""}${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><span class="hl"><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button></span><div class="tn">${tnHtml()}</div><span class="hd">${S.me?`<span class="chip" aria-label="Balance">${money(S.me.balance)}</span>`:'<button class="b sm" data-act="login">Login</button>'}<button class="ic" data-act="menu" aria-label="Menu" aria-expanded="false" aria-haspopup="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></span>${menuHtml()}</header>
+  $("#app").innerHTML=`${(S.downWeb||S.downAll)?`<div class="ann">${S.downAll?"ALL DOWN":"WEB DOWN"}: only you (owner) can use the site.</div>`:""}${S.banner||S.maint?`<div class="ann">${S.maint?"Maintenance in progress. ":""}${esc(S.banner||"")}</div>`:""}<header><span class="hl"><button class="brand" data-act="tab" data-t="home">SpyHub AJ</button></span><div class="tn">${tnHtml()}</div><span class="hd">${S.me?`<button class="pl" data-act="pay" aria-label="Add funds" title="Add funds">+</button><span class="chip" aria-label="Balance">${money(S.me.balance)}</span>${av2(S.me.user.avatar,S.me.user.name)}`:'<button class="b sm" data-act="login">Login</button>'}<button class="ic" data-act="menu" aria-label="Menu" aria-expanded="false" aria-haspopup="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></span>${menuHtml()}</header>
   <main>${S.tab!=="home"&&!S.me?'<button class="b sm back" data-act="tab" data-t="home">← Back</button>':""}${V[S.tab]()}</main>
   <footer><span>© SpyHub AJ</span>${[["terms","Terms of Service"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
   document.body.classList.toggle("home",S.tab==="home");
