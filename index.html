@@ -214,6 +214,15 @@ body.home .hero .cta .cap{order:3;width:100%;margin-top:4px}
 .scrb{position:relative;display:grid;gap:8px;min-height:110px}.scrr{display:flex;align-items:center;gap:10px;filter:blur(5px);opacity:.6}.scrr i{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.2)}.scrr span{height:12px;border-radius:6px;background:rgba(255,255,255,.2)}
 .scro{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:3px;text-align:center}.scro .lki{width:26px;height:26px;color:#d6d6dc}
 .dcl{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:10px}.dcl svg{width:18px;height:18px}
+/* v4 : panneaux latéraux + galaxie partout */
+#pl{opacity:1}.nopan .hmx{display:none!important}
+@media(hover:hover) and (pointer:fine) and (min-width:1200px){
+body:not(.home) .hmx{display:block;width:230px;top:10px;max-height:calc(100vh - 20px);background:rgba(10,10,22,.88);border:1px solid rgba(255,255,255,.1)}
+body:not(.home) .hmLx{left:12px}body:not(.home) .hmRx{right:12px}
+body:not(.home) #app{max-width:none;padding-left:254px;padding-right:254px}}
+@media(hover:hover) and (pointer:fine) and (min-width:1560px){
+body:not(.home) .hmx{width:clamp(190px,calc((100vw - 1120px)/2 - 30px),320px)}
+body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 </style>
 </head>
 <body>
@@ -292,7 +301,8 @@ const usersHtml=()=>`<h2>Members</h2>`+(HM.users.length?HM.users.map(u=>`<div cl
 let _hmT=0;
 async function loadHome(){if(Date.now()-_hmT<8e3&&HM.t)return paintHome();_hmT=Date.now();const r=await api(A+"/home-data");if(r.ok){HM.feed=r.data.feed||[];HM.users=r.data.users||[];HM.t=Date.now()}paintHome()}
 function paintHome(){for(const i of["#hmL","#hmLx"]){const l=$(i);if(l)l.innerHTML=feedHtml()}for(const i of["#hmR","#hmRx"]){const r=$(i);if(r)r.innerHTML=usersHtml()}}
-setInterval(()=>{if(S.tab==="home"&&!document.hidden){_hmT=0;loadHome()}},3e4);
+const pcSide=()=>matchMedia("(hover:hover) and (pointer:fine) and (min-width:1200px)").matches;
+setInterval(()=>{if((S.tab==="home"||pcSide())&&!document.hidden){_hmT=0;loadHome()}},3e4);
 document.addEventListener("click",e=>{const b=e.target.closest("[data-stl]");if(b){const x=HM.feed[+b.dataset.stl];if(!x)return;const m=document.createElement("div");m.className="stm";m.innerHTML=`<div class="box stc"><button class="b sm stx" aria-label="Close">&times;</button><div class="stp">${x.avatar?`<img class="pp" src="${esc(x.avatar)}" alt="" referrerpolicy="no-referrer">`:av2("",x.name)}<div><h2 style="margin:0">${esc(x.name)}</h2><div class="dim">Discord ID ${esc(x.id)}</div></div></div><div class="stb">${stealH(x.n,x.m,x.v)}</div><div class="dim">${ago(x.t)} · ${new Date(x.t).toLocaleString("en-US")}</div></div>`;m.addEventListener("click",ev=>{if(ev.target===m||ev.target.closest(".stx"))m.remove()});document.body.appendChild(m)}});
 
 function statsHtml(){
@@ -442,6 +452,7 @@ const menuHtml=()=>`<div class="mn" id="mn" role="menu" hidden>`+navList().map((
 let ldT,_lt=null;function showLd(ms=450){let e=$("#ld");if(!e){e=document.createElement("div");e.id="ld";e.innerHTML="<i></i><span>Loading...</span>";document.body.appendChild(e)}e.className="";clearTimeout(ldT);ldT=setTimeout(()=>e.classList.add("out"),ms)}
 function render(){
   if(S.me&&S.tab0){S.tab="dash";S.tab0=0}
+  document.body.classList.toggle("nopan",!!((S.downWeb||S.downAll)&&!S.me?.user?.owner));
   if((S.downWeb||S.downAll)&&!S.me?.user?.owner){$("#app").innerHTML=`<div class="dnp"><div class="box"><div class="dn-i">${S.downAll?"⏻":"🔧"}</div><h1 class="sm">${S.downAll?"Everything is down":"Site is down"}</h1><p class="dim">${S.downAll?"All SpyHub services are stopped for now.":"The website is closed for now."} Please come back later.</p><button class="b sm" data-act="login">Owner login</button></div></div>`;return}
   const V={home,stats,buy,board,gift,settings,dash,login:loginView,owner:()=>S.me?.user?.owner?owner():home(),legal,terms:legal,privacy:legal,refund:legal};
   if(!S.me&&LOCK.includes(S.tab))S.tab="home";
@@ -453,7 +464,7 @@ function render(){
   document.querySelectorAll(".grid>.box,.tm").forEach(e=>e.classList.add("tilt"));
   paintCharts();reveal();
   if(S.tab!==_lt){_lt=S.tab;showLd()}
-  if(S.tab==="owner")ownerPaint();if(S.tab==="dash")dashFx();if(S.tab==="home")loadHome()}
+  if(S.tab==="owner")ownerPaint();if(S.tab==="dash")dashFx();if(S.tab==="home"||pcSide())loadHome()}
 let _rc=null,_ra=0;
 async function addRecent(){const m=document.querySelector("main");if(S.tab!=="home"||!m||m.querySelector(".rcu"))return;
   if(!_rc||Date.now()-_ra>3e4){const r=await api(A+"/recent-users");_rc=r.ok?r.data.users||[]:[];_ra=Date.now()}
@@ -599,7 +610,7 @@ new MutationObserver(upd).observe(body,{attributes:true,attributeFilter:["class"
 (()=>{const cv=document.createElement("canvas");cv.id="pl";cv.setAttribute("aria-hidden","true");document.body.insertBefore(cv,document.body.firstChild);const c=cv.getContext("2d"),rm=matchMedia("(prefers-reduced-motion:reduce)").matches,N=innerWidth<700?900:2200,g=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5;
 const P=Array.from({length:N},()=>{const r=Math.pow(Math.random(),1.5),arm=Math.floor(Math.random()*3);const t=arm*2.0944+r*5.5+g()*(.1+.5*(1-r));const k=Math.random();return{r,t,s:.6+Math.random()*1.4*(1.1-r),c:r<.25?"255,225,180":k<.5?"150,185,255":k<.8?"190,140,255":"255,255,255",o:.35+Math.random()*.65}});
 let W=0,H=0,a=0,last=0;function size(){const D=Math.min(devicePixelRatio||1,2);W=cv.width=innerWidth*D;H=cv.height=innerHeight*D}size();addEventListener("resize",size);
-function frame(t){requestAnimationFrame(frame);if(!document.body.classList.contains("home")||document.hidden||t-last<33)return;last=t;if(!rm)a+=.002;
+function frame(t){requestAnimationFrame(frame);if(document.hidden||t-last<33)return;last=t;if(!rm)a+=.002;
 c.clearRect(0,0,W,H);const S=Math.max(W,H)*.42,cx=W/2,cy=H/2,rot=-.45,cr=Math.cos(rot),sr=Math.sin(rot);
 let gr=c.createRadialGradient(cx,cy,0,cx,cy,S*.55);gr.addColorStop(0,"rgba(255,230,190,.5)");gr.addColorStop(.25,"rgba(170,150,255,.18)");gr.addColorStop(1,"rgba(40,30,120,0)");c.globalCompositeOperation="lighter";c.fillStyle=gr;c.fillRect(0,0,W,H);
 const D=W/innerWidth;for(const p of P){const th=p.t+a*(1.4-p.r),x=p.r*Math.cos(th)*S,y=p.r*Math.sin(th)*S*.42,X=cx+x*cr-y*sr,Y=cy+x*sr+y*cr;c.fillStyle="rgba("+p.c+","+p.o+")";c.fillRect(X,Y,p.s*D,p.s*D)}}
