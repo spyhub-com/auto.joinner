@@ -660,8 +660,8 @@ requestAnimationFrame(frame)})();
 .bst{display:flex;align-items:center;gap:12px;border:1px solid transparent;background:linear-gradient(rgba(10,10,22,.88),rgba(10,10,22,.88)) padding-box,linear-gradient(90deg,#38bdf8,#1e3a8a,#8b5cf6) border-box}
 .bst .bri{width:46px;height:46px;border-radius:12px;margin:0;object-fit:contain}.bst .qm{width:46px;height:46px}
 .bst .fx{flex:1;min-width:0}.bst small{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-.pdm2{position:relative;display:grid;grid-template-columns:1fr 1.18fr 1fr;gap:8px;align-items:end;margin:22px 0 20px}
-.pdm2::before{content:"";position:absolute;left:50%;top:-14%;width:80%;height:130%;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 0,rgba(245,196,81,.2),transparent 68%);pointer-events:none}
+.bst{margin-bottom:0}.pdm2{position:relative;display:grid;grid-template-columns:1fr 1.18fr 1fr;gap:8px;align-items:end;margin:56px 0 24px}.lbh{margin:0 0 6px}
+.pdm2::before{content:"";position:absolute;left:50%;top:0;width:80%;height:100%;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 0,rgba(245,196,81,.2),transparent 68%);pointer-events:none}
 .pc{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;min-width:0;animation:pcIn .8s cubic-bezier(.2,.9,.2,1) both;animation-delay:var(--d,0s)}
 .pc.p1{--c:#f5c451;--c2:#ffe9a8}.pc.p2{--c:#cfd3dc;--c2:#f1f3f8}.pc.p3{--c:#cd8a5a;--c2:#ffd2b3}
 @keyframes pcIn{from{opacity:0;transform:translateY(46px) scale(.9)}}
@@ -686,19 +686,20 @@ requestAnimationFrame(frame)})();
 </style>
 <script>
 window.board=function(){
-  const L=S.lb,me=S.me&&S.me.user&&S.me.user.name,
+  const NR=r=>{const l=r.last||{};return{n:r.n??l.name??"?",v:+(r.v??l.value)||0,m:r.m??l.mut??"",u:r.u??r.name??r.username??"Player",avatar:r.avatar||"",t:r.t??l.t??0}},
+  L=S.lb&&S.lb.map(NR),me=S.me&&S.me.user&&S.me.user.name,
   fl=`<h1 class="sm">Leaderboard</h1><div class="fl">${[["d","Today"],["w","This week"],["a","All time"]].map(([k,n])=>`<button class="b sm${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
   if(!L)return fl+`<div class="box">${none("Leaderboard unavailable right now.")}</div>`;
   if(!L.length)return fl+`<div class="box">${none("No steals ranked yet.")}</div>`;
   const mine=S.me&&S.me.stl&&S.me.stl.top&&S.me.stl.top[0],
   best=mine?`<div class="box bst">${brImg(mine.name)}<div class="fx"><small>Your best steal</small><b>${esc(mine.name)}</b>${mutOf(mine.mut)?` <span class="mu">${esc(mutOf(mine.mut))}</span>`:""}</div><span class="vl">${fmt(mine.value)}</span></div>`:"",
   mu=r=>mutOf(r.m)?`<span class="mu">${esc(mutOf(r.m))}</span>`:"",
-  who=r=>`<span class="pw">${av2(r.avatar,r.u)}<span>${esc(r.u||"Player")}</span></span>`,
+  who=r=>`<span class="pw">${av2(r.avatar,r.u)}<span>${esc(r.u)}</span></span>`,
   crown='<svg class="pcr" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18l1-11-5 4-5-7-5 7-5-4z" fill="#f5c451"/></svg>',
   DL=[".25s",".1s",".4s"],
   col=i=>{const r=L[i];return r?`<div class="pc p${i+1}" style="--d:${DL[i]}">${i===0?crown:""}<div class="rb">#${i+1}</div><div class="im"><span class="au"></span>${brImg(r.n)}</div><b class="nm" title="${esc(r.n)}">${esc(r.n)}</b>${mu(r)}<div class="vv">${fmt(r.v)}</div>${who(r)}<div class="pst"><span>${i+1}</span></div></div>`:`<div></div>`},
   rest=L.slice(3,10);
-  return fl+best+`<div class="pdm2">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box">${rest.map((r,i)=>`<div class="rw${r.u===me?" me":""}"><span class="rn">#${i+4}</span>${brImg(r.n)}<div class="fx"><b>${esc(r.n)}</b> ${mu(r)}<div class="dim">${esc(r.u||"Player")} · ${ago(r.t)}</div></div><span class="vl">${fmt(r.v)}</span></div>`).join("")}</div>`:"")};
+  return fl+best+`<div class="pdm2">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box"><h2 class="lbh">Other players</h2>${rest.map((r,i)=>`<div class="rw${r.u===me?" me":""}"><span class="rn">#${i+4}</span>${brImg(r.n)}<div class="fx"><b>${esc(r.n)}</b> ${mu(r)}<div class="dim">${esc(r.u)}${r.t?" · "+ago(r.t):""}</div></div><span class="vl">${fmt(r.v)}</span></div>`).join("")}</div>`:"")};
 if(typeof S!=="undefined"&&S.tab==="board")render();
 </script>
 
