@@ -288,7 +288,7 @@ async function loadAvail(d=0){if(!S.me)return;const b=new Date();b.setHours(0,0,
 async function loadLive(){const r=await api(A+"/slot/users");if(r.ok){S.live=(r.data.users||[]).length;const e=$("#uo");if(e)e.textContent=S.live+" / "+CONFIG.SEATS}}
 async function loadStats(){
   const[a,b]=await Promise.all([api("/api/stats"),api("/api/brainrots?limit=100&sort=mps")]);
-  S.err=a.ok?"":(a.data.error||"");S.stats=a.ok?a.data:null;const d=b.data;S.list=b.ok?(Array.isArray(d)?d:d.brainrots||[]):null;
+  S.err=a.ok?"":(a.data.error||"");S.stats=a.ok?a.data:null;if(S.stats)smp(S.stats);const d=b.data;S.list=b.ok?(Array.isArray(d)?d:d.brainrots||[]):null;
   if(S.tab==="stats")paintStats()}
 async function loadBoard(){const r=await api(`${A}/leaderboard?range=${S.f}`);S.lb=r.ok?(r.data.rows||[]):null;if(S.tab==="board")render()}
 async function loadDock(){const[b,c]=await Promise.all([api("/api/brainrots?limit=100"),api("/api/logs")]);if(b.ok)DK.recent=b.data.brainrots||[];if(c.ok)DK.logs=c.data.logs||[];DK.upd=Date.now();paintCharts();if(S.tab==="dash")paintDash()}
@@ -321,15 +321,35 @@ const pcSide=()=>matchMedia("(min-width:1000px)").matches;
 setInterval(()=>{if((S.tab==="home"||pcSide())&&!document.hidden){_hmT=0;loadHome()}},3e4);
 document.addEventListener("click",e=>{const b=e.target.closest("[data-stl]");if(b){const x=HM.feed[+b.dataset.stl];if(!x)return;const m=document.createElement("div");m.className="stm";m.innerHTML=`<div class="box stc"><button class="b sm stx" aria-label="Close">&times;</button><div class="stp">${x.avatar?`<img class="pp" src="${esc(x.avatar)}" alt="" referrerpolicy="no-referrer">`:av2("",x.name)}<div><h2 style="margin:0">${esc(x.name)}</h2><div class="dim">Discord ID ${esc(x.id)}</div></div></div><div class="stb">${stealH(x.n,x.m,x.v)}</div><div class="dim">${ago(x.t)} · ${new Date(x.t).toLocaleString("en-US")}</div></div>`;m.addEventListener("click",ev=>{if(ev.target===m||ev.target.closest(".stx"))m.remove()});document.body.appendChild(m)}});
 
-function statsHtml(){
-  const s=S.stats,l=S.list;
-  if(!s&&!l)return`<div class="box"><h2>Live Stats</h2>${none("Data unavailable."+(S.err?" "+esc(S.err)+".":""))}</div>`;
-  const d=new Date;d.setUTCHours(0,0,0,0);const td=(l||[]).filter(b=>b.timestamp>=+d).sort((a,b)=>b.mps-a.mps),top=td.length?td[0].mps:null,
-    last=Math.max(0,...(l||[]).map(b=>b.timestamp||0)),fz=s&&!(s.scanners>0),c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`;
-  return(s?`<div class="box stl ${fz?"fz":"ok"}"><span class="dot"></span><div><b>${fz?"Frozen":"Finds"}</b><p class="dim">${fz?"No scanner online":"Scanners are online"+(last?" · last find "+ago(last):"")}</p></div></div><div class="grid">${c("Finds today",s.activeToday??"—")}${c("Top value today",top!=null?fmt(top):"—")}</div>`:"")
-  +`<div class="box"><h2>Top brainrots today</h2>${td.length?`<div class="sx"><table><thead><tr><th>Name</th><th>Value</th><th>Found</th></tr></thead><tbody>${td.slice(0,10).map(b=>`<tr><td>${brImg(b.name)}<b>${esc(b.name)}</b>${mutOf(b.mutation)?` <span class="mu">${esc(mutOf(b.mutation))}</span>`:""}</td><td>${fmt(b.mps)}</td><td class="dim">${b.timestamp?ago(b.timestamp):"—"}</td></tr>`).join("")}</tbody></table></div>`:none("No brainrots today yet.")}</div>`}
-const stats=()=>`<h1 class="sm">Live Stats</h1><div id="st" aria-live="polite">${statsHtml()}</div><div class="box lgc"><h2 class="t">Logs, last 24 hours</h2><p class="dim" style="margin:0">Finds and frozen sessions per hour.</p><div class="ch3d" id="ch"></div></div>`;
-const paintStats=()=>{const e=$("#st");if(e)e.innerHTML=statsHtml()};
+/* --- Stats : un seul graphique --- */
+const STR={r:"6h",f:1,s:1},SMK="spyaj_sm",sm3=a=>a.map((v,i)=>(2*v+(a[i-1]??v)+(a[i+1]??v))/4);
+let SM=[];try{SM=JSON.parse(localStorage.getItem(SMK)||"[]")}catch{}
+function smp(st){const n=Date.now(),l=SM[SM.length-1];if(l&&n-l.t<4e3)return;SM.push({t:n,s:+st.scanners||0,f:+st.activeToday||0});const c=n-864e5;while(SM.length&&SM[0].t<c)SM.shift();if(SM.length>4000)SM.splice(0,SM.length-4000);try{localStorage.setItem(SMK,JSON.stringify(SM))}catch{}}
+function statSeries(){const now=Date.now(),span={"1h":36e5,"6h":216e5,"24h":864e5}[STR.r],N=90,bw=span/N,t0=now-span,fi=Array(N).fill(0),sc=Array(N).fill(0),rec=DK.recent||[],old=rec.length>=100?Math.min(...rec.map(x=>x.timestamp||now)):0;
+  for(const x of rec){const i=Math.floor(((x.timestamp||0)-t0)/bw);if(i>=0&&i<N)fi[i]++}
+  let pf=null;for(const m of SM){const i=Math.floor((m.t-t0)/bw);if(i>=0&&i<N){sc[i]=Math.max(sc[i],m.s);if(pf!=null&&m.f>pf&&t0+i*bw<old)fi[i]+=m.f-pf}pf=m.f}
+  return{fi:sm3(fi),sc:sm3(sc),t0,bw,N,tot:fi.reduce((a,b)=>a+b,0)}}
+function spl(P,lo,hi){const c=v=>Math.min(hi,Math.max(lo,v)),f=n=>n.toFixed(1);let d="M"+f(P[0][0])+" "+f(P[0][1]);
+  for(let i=0;i<P.length-1;i++){const a=P[i-1]||P[i],b=P[i],e=P[i+1],g=P[i+2]||e;d+=`C${f(b[0]+(e[0]-a[0])/6)} ${f(c(b[1]+(e[1]-a[1])/6))},${f(e[0]-(g[0]-b[0])/6)} ${f(c(e[1]-(g[1]-b[1])/6))},${f(e[0])} ${f(e[1])}`}return d}
+let SC={};
+function statChart(){const q=statSeries(),{fi,sc,t0,bw,N}=q,W=640,H=260,L=40,R=34,T=14,B=28,pw=W-L-R,ph=H-T-B,mf=nice(Math.max(1,...fi)),ms=Math.max(2,Math.ceil(Math.max(...sc))),x=i=>L+pw*i/(N-1),yf=v=>T+ph*(1-v/mf),ys=v=>T+ph*(1-v/ms),bt=T+ph;SC={q,L,pw,N,W,T,ph,yf,ys,x};
+  let g="";for(let i=0;i<=4;i++){const yy=T+ph*i/4;g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.07)"/><text x="${L-6}" y="${yy+4}" text-anchor="end">${int(mf*(1-i/4))}</text><text x="${W-R+6}" y="${yy+4}" style="fill:#6ee7b7">${(ms*(1-i/4)).toFixed(ms<8&&i%2?1:0)}</text>`}
+  const xl=[0,1,2,3,4].map(i=>`<text x="${x((N-1)*i/4)}" y="${H-8}" text-anchor="${i?i===4?"end":"middle":"start"}">${hm(t0+bw*(N-1)*i/4)}</text>`).join("");
+  const P=a=>a.map((v,i)=>[x(i),v]),pf=P(fi.map(yf)),ps=P(sc.map(ys));
+  const fa=STR.f?`<path d="${spl(pf,T,bt)}L${x(N-1)} ${bt}L${x(0)} ${bt}Z" fill="url(#sfg)"/><path d="${spl(pf,T,bt)}" fill="none" stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round"/>`:"",sa=STR.s?`<path d="${spl(ps,T,bt)}" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>`:"";
+  const now=S.stats?+S.stats.scanners||0:0,chip=(k,c,n,v)=>`<button class="${STR[k]?"":"off"}" data-act="sser" data-k="${k}"><i style="background:${c}"></i>${n} <b>${v}</b></button>`;
+  return`<div class="line" style="padding:0 0 6px"><div class="lg" style="margin:0">${chip("f","#a78bfa","Finds",q.tot)}${chip("s","#34d399","Scanners online",now)}</div><div class="rng">${["1h","6h","24h"].map(r=>`<button class="b sm${STR.r===r?" on":""}" data-act="srg" data-r="${r}">${r}</button>`).join("")}</div></div>
+  <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Finds and scanners over time"><defs><linearGradient id="sfg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a78bfa" stop-opacity=".4"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></linearGradient></defs>${g}${xl}${fa}${sa}<line id="scx" y1="${T}" y2="${bt}" stroke="rgba(255,255,255,.35)" opacity="0"/><circle id="scf" r="4" fill="#a78bfa" opacity="0"/><circle id="scs" r="4" fill="#34d399" opacity="0"/><rect id="sch2" x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent"/></svg><div class="tip"></div><p class="dim" style="margin:6px 0 0;font-size:11.5px">${now?"":"No scanner online right now. "}Scanner history is recorded while this page is open.</p>`}
+const stats=()=>`<h1 class="sm">Live Stats</h1><div class="box lgc"><div class="ch3d" id="sch"></div></div>`;
+const paintStats=()=>{const e=$("#sch");if(e)e.innerHTML=statChart()};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act=srg],[data-act=sser]");if(!b)return;if(b.dataset.act==="srg")STR.r=b.dataset.r;else STR[b.dataset.k]=STR[b.dataset.k]?0:1;paintStats()});
+document.addEventListener("pointermove",e=>{const r=e.target.closest&&e.target.closest("#sch2"),c=$("#sch");if(!c)return;const t=c.querySelector(".tip"),sv=c.querySelector("svg");
+  if(!r){if(t)t.style.opacity=0;["scx","scf","scs"].forEach(i=>{const n=$("#"+i);if(n)n.setAttribute("opacity",0)});return}
+  const b=sv.getBoundingClientRect(),px=(e.clientX-b.left)/b.width*SC.W,i=Math.max(0,Math.min(SC.N-1,Math.round((px-SC.L)/SC.pw*(SC.N-1)))),q=SC.q,xx=SC.x(i);
+  const l=$("#scx");l.setAttribute("x1",xx);l.setAttribute("x2",xx);l.setAttribute("opacity",1);
+  const f=$("#scf"),s=$("#scs");f.setAttribute("cx",xx);f.setAttribute("cy",SC.yf(q.fi[i]));f.setAttribute("opacity",STR.f?1:0);s.setAttribute("cx",xx);s.setAttribute("cy",SC.ys(q.sc[i]));s.setAttribute("opacity",STR.s?1:0);
+  const t0=q.t0+q.bw*i;t.innerHTML=`<b>${hm(t0)} to ${hm(t0+q.bw)}</b>${STR.f?`<div><span><i style="background:#a78bfa"></i>Finds</span><b style="color:#fff;margin:0">${q.fi[i].toFixed(1)}</b></div>`:""}${STR.s?`<div><span><i style="background:#34d399"></i>Scanners</span><b style="color:#fff;margin:0">${q.sc[i].toFixed(1)}</b></div>`:""}`;
+  t.style.left=Math.min(Math.max(0,e.clientX-c.getBoundingClientRect().left-60),c.clientWidth-140)+"px";t.style.top="8px";t.style.opacity=1});
 
 /* --- Buy --- */
 function buy(){const m=S.me,u=m.user||{};return`<h1 class="sm">Buy</h1><div class="box dtop">${av2(u.avatar,u.name).replace("pp s","pp")}<div class="pi"><b class="dnm">${esc(u.name||"Player")}</b><div class="big gr dbal">${money(m.balance)}</div></div><button class="b s" data-act="plan">Buy</button></div><div class="box"><h2>User WL for next time</h2>${nextUsers()}</div>`}
@@ -528,7 +548,7 @@ function chartHtml(){const b=hist(),{W,H,L,B,T}=CH,cw=(W-L-6)/24,sh=SER.filter(s
   b.forEach((x,i)=>{const cx=L+cw*i+cw/2;if(SHOW.finds)bars+=`<rect x="${cx-cw*.33}" y="${y(x.finds)}" width="${cw*.66}" height="${Math.max(0,H-B-y(x.finds))}" rx="3" fill="rgb(${SER[0][2]})"/>`;if(SHOW.frozen)pts.push([cx,y(x.frozen)]);hit+=`<rect class="hit" data-i="${i}" x="${L+cw*i}" y="${T}" width="${cw}" height="${H-T-B}" fill="transparent"/>`});
   const col=`rgb(${SER[1][2]})`,ln=pts.length?`<path d="${pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join("")}" fill="none" stroke="${col}" stroke-width="2"/>`+pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${col}"/>`).join(""):"",xl=[0,6,12,18,23].map(i=>`<text x="${L+cw*i+cw/2}" y="${H-8}" text-anchor="middle">${lbl(i)}</text>`).join("");
   return`<div class="lg">${SER.map(s=>`<button class="${SHOW[s[0]]?"":"off"}" data-act="ser" data-k="${s[0]}"><i style="background:rgb(${s[2]})"></i>${s[1]}</button>`).join("")}</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Finds and frozen sessions per hour, last 24 hours">${g}${bars}${ln}${xl}${hit}</svg><div class="tip"></div><p class="dim" style="margin:6px 0 0;font-size:11.5px">${DK.upd?`Based on the latest ${DK.recent.length} finds, updated ${ago(DK.upd)}.`:"Loading data..."}</p>`}
-const paintCharts=()=>{const e=$("#ch");if(e)e.innerHTML=chartHtml()};
+const paintCharts=()=>{const e=$("#ch");if(e)e.innerHTML=chartHtml();paintStats()};
 document.addEventListener("pointerover",e=>{const c=$("#ch"),t=c&&c.querySelector(".tip");if(!t)return;const h=e.target.closest&&e.target.closest(".hit");if(!h){t.style.opacity=0;return}const i=+h.dataset.i,x=hist()[i],r=h.getBoundingClientRect(),cr=c.getBoundingClientRect();
   t.innerHTML=`<b>${i===23?"Now":(23-i)+"h ago"}</b>`+SER.filter(s=>SHOW[s[0]]).map(s=>`<div><span><i style="background:rgb(${s[2]})"></i>${s[1]}</span><b style="color:#fff;margin:0">${int(x[s[0]])}</b></div>`).join("");t.style.left=Math.min(Math.max(0,r.left-cr.left+r.width/2-60),cr.width-130)+"px";t.style.top="44px";t.style.opacity=1});
 /* reveal */
