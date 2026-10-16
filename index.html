@@ -295,7 +295,7 @@ async function loadDock(){const[b,c]=await Promise.all([api("/api/brainrots?limi
 async function load(){
   const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance;S.downWeb=!!cg.data.downWeb;S.downAll=!!cg.data.downAll}
   const r=await api(A+"/me");
-  S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],stl:r.data.stl||null,live:!!r.data.live,reservations:r.data.reservations||[]}:null;
+  S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],stl:r.data.stl||null,live:!!r.data.live,dm:r.data.dm||{},reservations:r.data.reservations||[]}:null;
   if(S.me){cacheTeam(S.me.user);await loadAvail()}render()}
 
 /* ===== Team (home) ===== */
@@ -417,10 +417,16 @@ const gift=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="
 <div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
 
 /* --- Settings --- */
-function settings(){const m=S.me,u=m.user||{},r=(a,b)=>`<div class="line"><span class="dim">${a}</span><b style="word-break:break-all;text-align:right">${esc(b||"—")}</b></div>`;
-  return`<h1 class="sm">Settings</h1><div class="box prof">${av2(u.avatar,u.name)}<div class="pi"><h2 style="margin:0">Discord account</h2></div></div><div class="box">${r("Username",u.name)}${r("Discord ID",u.id)}${r("Email",u.email)}${r("Account created",dts(snow(u.id)))}${r("Role",u.owner?"Owner":"Member")}</div>
-  <div class="box"><h2>How your key works</h2><ol class="how"><li>Each time you buy a slot, a <b>new key</b> is created and sent to your Discord DMs.</li><li>It only works during the hours of your slot. Outside of them, you are kicked from the game.</li><li>The first Roblox account that connects is locked to the key. No one else can use it.</li><li>When your slot ends you are kicked with "expired key" and the key resets.</li></ol></div>
-  <div class="box"><h2>Preferences</h2><div class="line"><span id="nl">Notifications</span><button class="tg${S.notif?" on":""}" role="switch" aria-checked="${S.notif}" aria-labelledby="nl" data-act="notif"><i></i></button></div></div><button class="b out" data-act="logout">Log out</button>`}
+function settings(){const m=S.me,u=m.user||{},dm=m.dm||{},r=(a,b)=>`<div class="line"><span class="dim">${a}</span><b style="word-break:break-all;text-align:right">${esc(b||"—")}</b></div>`,
+  tg=(k,n,d)=>`<div class="line"><span><b>${n}</b><br><span class="dim" style="font-size:12px">${d}</span></span><button class="tg${dm[k]?" on":""}" role="switch" aria-checked="${!!dm[k]}" aria-label="${n}" data-act="dm" data-k="${k}"><i></i></button></div>`;
+  return`<h1 class="sm">Settings</h1><div class="box prof">${av2(u.avatar,u.name)}<div class="pi"><h2 style="margin:0">Discord account</h2></div></div><div class="box">${r("Username",u.name)}${r("Discord ID",u.id)}${r("Email",u.email)}${r("Account created",dts(snow(u.id)))}${u.owner?r("Role","Owner"):""}</div>
+  <div class="box"><h2>Discord DM alerts</h2>${none("Get a direct message from the bot on Discord.")}${tg("start","Slot starts","When your booked slot begins")}${tg("warn","Slot ending","10 minutes before your slot ends")}${tg("steal","Steal detected","When one of your steals is recorded")}</div>
+  <div class="box"><h2>Security</h2>${none("Signed in on a device you no longer use? Sign out everywhere. You will need to log in again with Discord.")}<button class="b w" data-act="logoutall" style="margin-top:8px">Log out of all devices</button></div>
+  <div class="box"><h2>Support</h2>${none("A problem with your key, balance or a steal? Contact us on Discord.")}<a class="b s w dcl" href="https://discord.gg/SpyHub" target="_blank" rel="noopener">${DISC}<span>Join the support server</span></a></div>
+  <button class="b out" data-act="logout">Log out</button>`}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-act=dm],[data-act=logoutall]");if(!b||!S.me)return;
+  if(b.dataset.act==="dm"){const k=b.dataset.k,dm={...(S.me.dm||{})};dm[k]=!dm[k];const old=S.me.dm;S.me.dm=dm;render();const r=await api(A+"/prefs",dm);if(!r.ok){S.me.dm=old;render();toast(r.data.error||"Could not save")}}
+  else{if(!confirm("Log out of all devices?"))return;b.disabled=true;const r=await api(A+"/logout-all",{});if(r.ok){setTok("");S.me=null;S.tab="home";render();toast("Logged out everywhere")}else{b.disabled=false;toast(r.data.error||"Failed")}}});
 
 /* --- Dashboard --- */
 function line(v,lb,col,f){const W=640,H=150,L=40,B=22,T=8,mx=nice(Math.max(1,...v)),x=i=>L+(W-L-6)*i/Math.max(1,v.length-1),y=n=>T+(H-T-B)*(1-n/mx),p=v.map((n,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(n).toFixed(1)).join("");let g="";
