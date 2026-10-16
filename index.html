@@ -227,6 +227,9 @@ body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 .dc.part{background:rgba(251,191,36,.22);border-color:rgba(251,191,36,.6)}
 .dc .av4{display:grid;grid-template-columns:12px 12px;gap:1px;pointer-events:none}
 .dc .av4 img{position:static;transform:none;width:12px;height:12px;border-radius:50%;border:1px solid #fff}
+.dc .cn{font-size:10px;font-weight:700;color:#fff;pointer-events:none}.dc.part .cn{color:#fde68a}.dc.full .cn{color:#fff}
+#kscr{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(3,2,12,.97);text-align:center}
+#kscr .ksb{display:grid;justify-items:center;gap:12px;max-width:380px}#kscr .ksb svg{width:54px;height:54px;color:#5865f2}#kscr .big{font-size:44px}
 </style>
 </head>
 <body>
@@ -322,6 +325,10 @@ const paintStats=()=>{const e=$("#st");if(e)e.innerHTML=statsHtml()};
 /* --- Buy --- */
 function buy(){const m=S.me,u=m.user||{};return`<h1 class="sm">Buy</h1><div class="box dtop">${av2(u.avatar,u.name).replace("pp s","pp")}<div class="pi"><b class="dnm">${esc(u.name||"Player")}</b><div class="big gr dbal">${money(m.balance)}</div></div><button class="b s" data-act="plan">Buy</button></div>`}
 
+function keyScreen(){const o=document.createElement("div");o.id="kscr";let t=90;
+  o.innerHTML=`<div class="ksb">${DISC}<h1 class="sm">Check your Discord DMs</h1><p class="dim">Your key was sent to you by direct message. Open Discord to get it.</p><div class="big gr" id="kcd">1:30</div><button class="b s" id="kcl" disabled>Close</button></div>`;
+  document.body.appendChild(o);const iv=setInterval(()=>{t--;const c=$("#kcd");if(c)c.textContent=Math.floor(t/60)+":"+String(t%60).padStart(2,"0");if(t<=0){clearInterval(iv);const b=$("#kcl");if(b)b.disabled=false}},1000);
+  $("#kcl").onclick=()=>o.remove()}
 let P={};
 const closePlan=()=>$("#md")?.remove();
 const selCells=()=>{if(P.start==null)return[];const e=P.start+P.dur*6e4,a=[];for(let c=Math.floor(P.start/CELL);c<Math.ceil(e/CELL);c++)a.push(c);return a};
@@ -330,7 +337,7 @@ const priceOf=m=>{const h=m/60,ow=S.me.user&&S.me.user.owner,uh=ow?h:Math.min(S.
 async function openPlan(){P={step:1,dur:60,day:0,start:null};await loadAvail(0);drawPlan()}
 function barHtml(){const b=new Date();b.setHours(0,0,0,0);const base=Math.floor((b.getTime()+P.day*864e5)/CELL),n=Date.now();let cells="",ticks="";
   for(let i=0;i<48;i++){const c=base+i,t=S.taken[c]??0,ms=c*CELL,past=ms+CELL<=n,full=t>=CONFIG.SEATS,w=S.who[c],wl=[].concat(w&&w.avatar!==undefined?[w.avatar]:w||[]).filter(Boolean).slice(0,4);
-    cells+=`<button class="dc${full?" full":t?" part":""}${past?" past":""}" data-pl="c" data-c="${c}" ${past||full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} seats free">${wl.length?`<span class="av4">${wl.map(x=>`<img src="${esc(x)}" alt="" referrerpolicy="no-referrer">`).join("")}</span>`:""}</button>`;
+    cells+=`<button class="dc${full?" full":t?" part":""}${past?" past":""}" data-pl="c" data-c="${c}" ${past||full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} seats free">${t?`<span class="cn">${t}/${CONFIG.SEATS}</span>`:""}</button>`;
     ticks+=`<span>${i%2===0?String(i/2).padStart(2,"0")+"h":""}</span>`}
   return`<div class="dscr"><div class="dbar">${cells}</div><div class="dtk">${ticks}</div></div>`}
 function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="md";document.body.appendChild(m)}
@@ -343,9 +350,7 @@ function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="
     body=`<h2>Step 2 of 3 · When does it start?</h2>${none("Your slot lasts <b>"+dur(P.dur)+"</b>. Tap the time you want to start.")}<div class="chips">${[0,1].map(i=>`<button class="dy${P.day===i?" sel":""}" data-pl="day" data-d="${i}">${i?"Tomorrow":"Today"} · ${new Date(d0.getTime()+i*864e5).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>`).join("")}<button class="b sm" data-pl="now">Start now</button></div>${barHtml()}<div class="lgd"><span><i style="background:rgba(255,255,255,.1)"></i>Free</span><span><i style="background:rgba(251,191,36,.5)"></i>Partly taken (still bookable)</span><span><i style="background:#dc2626"></i>Full</span><span><i style="background:#8b5cf6"></i>Your slot</span></div><div class="box" id="pls" style="margin:0 0 10px"></div><div class="row2"><button class="b" data-pl="prev">Back</button><button class="b s" id="pln" data-pl="next" disabled>Continue</button></div>`}
   else{
     const s=P.start,e=s+P.dur*6e4,pr=priceOf(P.dur),after=S.me.balance-pr.pay,hl=Math.round(((S.me.hours||0)-pr.uh)*100)/100,nowS=s<=Date.now()+12e4;
-    body=`<h2>Step 3 of 3 · Check everything</h2>${none("Read this carefully, then confirm.")}<div class="sumt"><div><span>Day</span><b>${day(s)}</b></div><div><span>Starts</span><b>${hm(s)}${nowS?" (right now)":""}</b></div><div><span>Ends</span><b>${hm(e)}</b></div><div><span>Length</span><b>${dur(P.dur)}</b></div><div><span>Price (${money(CONFIG.PRICE_PER_HOUR)} / h)</span><b>${money(pr.full)}</b></div>${pr.uh>0?`<div><span>Free hours used</span><b>-${pr.uh} h</b></div>`:""}<div class="tot"><span>You pay now</span><b>${money(pr.pay)}</b></div><div><span>Balance before</span><b>${money(S.me.balance)}</b></div><div><span>Balance after</span><b>${money(Math.max(after,0))}${pr.uh>0?" · "+hl+" free h left":""}</b></div></div>
-    <h2 style="margin-top:12px">What happens next</h2><ol class="how"><li>Right after you pay, a <b>new key</b> is generated and sent to your <b>Discord DMs</b>. Make sure your DMs are open.</li><li>Paste it in your script. It only works <b>between ${hm(s)} and ${hm(e)}</b>. Before ${hm(s)} you are kicked from the game.</li><li>The <b>first Roblox account</b> that uses the key is locked to it. Nobody else can use your key.</li><li>At <b>${hm(e)}</b> you are kicked with "expired key". The key is then reset and the next connection can be any account.</li></ol>
-    <div class="warn">Booked slots are not refundable once they have started, whether or not you connect.</div>${after<0?`<p class="bad">Not enough balance. Top up first.</p>`:""}<div class="row2"><button class="b" data-pl="prev">Back</button><button class="b s" id="plok" data-pl="ok" ${after<0?"disabled":""}>Confirm and pay ${money(pr.pay)}</button></div>`}
+    body=`<h2>Step 3 of 3 · Check everything</h2><div class="sumt"><div><span>Day</span><b>${day(s)}</b></div><div><span>Starts</span><b>${hm(s)}${nowS?" (right now)":""}</b></div><div><span>Ends</span><b>${hm(e)}</b></div><div><span>Length</span><b>${dur(P.dur)}</b></div><div><span>Price (${money(CONFIG.PRICE_PER_HOUR)} / h)</span><b>${money(pr.full)}</b></div>${pr.uh>0?`<div><span>Free hours used</span><b>-${pr.uh} h</b></div>`:""}<div class="tot"><span>You pay now</span><b>${money(pr.pay)}</b></div><div><span>Balance before</span><b>${money(S.me.balance)}</b></div><div><span>Balance after</span><b>${money(Math.max(after,0))}${pr.uh>0?" · "+hl+" free h left":""}</b></div></div>${after<0?`<p class="bad">Not enough balance. Top up first.</p>`:""}<div class="row2"><button class="b" data-pl="prev">Back</button><button class="b s" id="plok" data-pl="ok" ${after<0?"disabled":""}>Confirm and pay ${money(pr.pay)}</button></div>`}
   m.innerHTML=`<div class="mp">${steps}${body}</div>`;
   if(P.step===2){const s=$(".dscr");if(s){if(sl!=null)s.scrollLeft=sl;else if(P.day===0)s.scrollLeft=Math.max(0,(new Date().getHours()*2-3)*30)}updPlan()}}
 function updPlan(){const sel=new Set(selCells());document.querySelectorAll(".dc").forEach(b=>b.classList.toggle("sel",sel.has(+b.dataset.c)));
@@ -360,7 +365,7 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-pl]"
   else if(a==="now"){if(P.day!==0){P.day=0;$(".dscr")?.remove();await loadAvail(0)}P.start=Math.floor(Date.now()/6e4)*6e4;drawPlan()}
   else if(a==="c"){const ms=+b.dataset.c*CELL;P.start=ms<Date.now()?Math.floor(Date.now()/6e4)*6e4:ms;updPlan()}
   else if(a==="ok"){b.disabled=true;const r=await api(A+"/reserve",{start:P.start,minutes:P.dur});
-    if(r.ok){S.me.balance=r.data.balance;S.me.hours=r.data.hours;S.me.reservations.push(r.data.reservation);S.keyNote=1;try{localStorage.setItem("spyaj_kn","1")}catch{}closePlan();toast("Slot booked. Check your Discord DMs for your key.");S.tab="dash";await loadAvail();render()}
+    if(r.ok){S.me.balance=r.data.balance;S.me.hours=r.data.hours;S.me.reservations.push(r.data.reservation);S.keyNote=1;try{localStorage.setItem("spyaj_kn","1")}catch{}closePlan();keyScreen();S.tab="dash";await loadAvail();render()}
     else{b.disabled=false;toast(r.data.error||"Booking failed");await loadAvail(P.day);if(r.status===409){P.step=2;P.start=null}drawPlan()}}});
 
 /* --- Leaderboard --- */
