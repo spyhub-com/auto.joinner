@@ -230,6 +230,15 @@ body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 .dc .cn{font-size:10px;font-weight:700;color:#fff;pointer-events:none}.dc.part .cn{color:#fde68a}.dc.full .cn{color:#fff}
 #kscr{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(3,2,12,.97);text-align:center}
 #kscr .ksb{display:grid;justify-items:center;gap:12px;max-width:380px}#kscr .ksb svg{width:54px;height:54px;color:#5865f2}#kscr .big{font-size:44px}
+/* carte bancaire */
+.gv-card{aspect-ratio:1.586;background:radial-gradient(120% 90% at 85% 10%,rgba(139,92,246,.45),transparent 55%),linear-gradient(135deg,#0b0820,#1b1145 60%,#07051a);overflow:hidden;justify-content:space-between}
+.gv-card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.7;background:radial-gradient(1px 1px at 12% 22%,#fff,transparent),radial-gradient(1px 1px at 38% 74%,#fff,transparent),radial-gradient(1.5px 1.5px at 60% 16%,#fff,transparent),radial-gradient(1px 1px at 80% 84%,#fff,transparent),radial-gradient(1px 1px at 28% 44%,#fff,transparent)}
+.gv-card>*{position:relative;z-index:1}.gv-card>.pln{position:absolute;z-index:0;right:-14px;top:-8px;width:46%;aspect-ratio:1}
+.pln::before{content:"";position:absolute;inset:14%;border-radius:50%;background:radial-gradient(circle at 32% 30%,#e9d5ff,#8b5cf6 38%,#3b1d8f 70%,#150b45);box-shadow:0 0 40px rgba(139,92,246,.7),inset -10px -12px 24px rgba(0,0,0,.45)}
+.pln::after{content:"";position:absolute;left:-6%;right:-6%;top:38%;height:26%;border:3px solid rgba(233,213,255,.7);border-radius:50%;transform:rotate(-18deg);clip-path:inset(50% 0 0 0)}
+.gv-top b{letter-spacing:.2em}.gv-mid{display:flex;align-items:center;gap:14px}
+.gv-bl small{display:block;font-size:10px;letter-spacing:.16em;opacity:.7}.gv-amt{font-size:clamp(26px,8vw,38px);font-weight:800;letter-spacing:-.02em;color:#fff;text-shadow:0 0 24px rgba(167,139,250,.7)}
+.gv-num{font:600 clamp(13px,3.8vw,17px) ui-monospace,Menlo,monospace;letter-spacing:.16em}
 </style>
 </head>
 <body>
@@ -323,7 +332,9 @@ const stats=()=>`<h1 class="sm">Live Stats</h1><div id="st" aria-live="polite">$
 const paintStats=()=>{const e=$("#st");if(e)e.innerHTML=statsHtml()};
 
 /* --- Buy --- */
-function buy(){const m=S.me,u=m.user||{};return`<h1 class="sm">Buy</h1><div class="box dtop">${av2(u.avatar,u.name).replace("pp s","pp")}<div class="pi"><b class="dnm">${esc(u.name||"Player")}</b><div class="big gr dbal">${money(m.balance)}</div></div><button class="b s" data-act="plan">Buy</button></div>`}
+function buy(){const m=S.me,u=m.user||{};return`<h1 class="sm">Buy</h1><div class="box dtop">${av2(u.avatar,u.name).replace("pp s","pp")}<div class="pi"><b class="dnm">${esc(u.name||"Player")}</b><div class="big gr dbal">${money(m.balance)}</div></div><button class="b s" data-act="plan">Buy</button></div><div class="box"><h2>User WL for next time</h2>${nextUsers()}</div>`}
+function nextUsers(){const c0=Math.floor(Date.now()/CELL),seen={},L=[];for(const c of[c0,c0+1])for(const x of[].concat(S.who[c]||[])){const k=(x.n||"")+"|"+(x.a||"");if(!seen[k]){seen[k]=1;L.push(x)}}
+  return L.length?L.map(x=>`<div class="mb">${av2(x.a,x.n||"Player")}<div class="fx"><b>${esc(x.n||"Player")}</b></div></div>`).join(""):none("Nobody has booked the next hour yet.")}
 
 function keyScreen(){const o=document.createElement("div");o.id="kscr";let t=90;
   o.innerHTML=`<div class="ksb">${DISC}<h1 class="sm">Check your Discord DMs</h1><p class="dim">Your key was sent to you by direct message. Open Discord to get it.</p><div class="big gr" id="kcd">1:30</div><button class="b s" id="kcl" disabled>Close</button></div>`;
@@ -380,7 +391,7 @@ function board(){
   return flt+`<div class="pdm">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box sx"><table><thead><tr><th>#</th><th>Player</th><th>Last steal</th><th>Stolen</th><th>Total value</th></tr></thead><tbody>${rest.map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+4}</td><td><span class="lbu">${img(r)}<b>${esc(r.name)}</b></span></td><td class="dim">${r.last?stealH(r.last.name,r.last.mut,r.last.value):"—"}</td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`:"")}
 
 /* --- Gift --- */
-const gift=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="gv-card"><div class="gv-top"><span>SPYHUB AJ</span><b>GIFT CARD</b></div><div class="gv-chip"></div><div class="gv-code" id="gvc">SPY-XXXX-XXXX-XXXX</div><div class="gv-ft"><span>One use only</span><span>One holder</span></div></div><div class="gv-form"><label for="code" class="dim">Enter your code</label><input id="code" type="text" placeholder="SPY-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40"><button class="b s w" id="rdm" data-act="redeem">Redeem code</button><p class="dim" style="margin:0;font-size:12px">A code works for one person only and is burned as soon as it is redeemed.</p></div></div>
+const gift=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="gv-card"><div class="pln"></div><div class="gv-top"><b>SPYHUB</b><span>AJ</span></div><div class="gv-mid"><div class="gv-chip"></div><div class="gv-bl"><small>BALANCE</small><div class="gv-amt">${money(S.me.balance)}</div></div></div><div class="gv-num">•••• •••• •••• ${esc(String(S.me.user.id||"0000").slice(-4))}</div><div class="gv-ft"><span>${esc(String(S.me.user.name||"Player").toUpperCase())}</span><span>${S.me.hours?S.me.hours+" FREE H":"SPYHUB CARD"}</span></div></div><div class="gv-form"><label for="code" class="dim">Enter your code</label><input id="code" type="text" placeholder="SPY-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40"><button class="b s w" id="rdm" data-act="redeem">Redeem code</button><p class="dim" style="margin:0;font-size:12px">A code works for one person only and is burned as soon as it is redeemed.</p></div></div>
 <div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
 
 /* --- Settings --- */
@@ -465,7 +476,7 @@ function render(){
   <footer><span>© SpyHub AJ</span>${[["terms","Terms of Service"],["refund","Refund Policy"]].map(([id,n])=>`<button data-act="tab" data-t="${id}">${n}</button>`).join("")}</footer>`;
   document.body.classList.toggle("home",S.tab==="home");
   if(S._t!==S.tab){S._t=S.tab;$("main").classList.add("pg")}
-  document.querySelectorAll(".grid>.box,.tm").forEach(e=>e.classList.add("tilt"));
+  document.querySelectorAll(".grid>.box,.tm,.gv-card").forEach(e=>e.classList.add("tilt"));
   paintCharts();reveal();
   if(S.tab!==_lt){_lt=S.tab;showLd()}
   if(S.tab==="owner")ownerPaint();if(S.tab==="dash")dashFx();if(S.tab==="home"||pcSide())loadHome()}
