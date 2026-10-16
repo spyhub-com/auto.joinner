@@ -655,5 +655,52 @@ requestAnimationFrame(frame)})();
 
 (()=>{const mk=(id,c)=>{const e=document.createElement("aside");e.id=id;e.className="box hmx "+c;document.body.appendChild(e)};mk("hmLx","hmLx");mk("hmRx","hmRx");paintHome()})();
 </script>
+<!-- === Leaderboard podium : colle ce bloc juste AVANT </body> (tout en bas du fichier index) === -->
+<style>
+.bst{display:flex;align-items:center;gap:12px;border:1px solid transparent;background:linear-gradient(rgba(10,10,22,.88),rgba(10,10,22,.88)) padding-box,linear-gradient(90deg,#38bdf8,#1e3a8a,#8b5cf6) border-box}
+.bst .bri{width:46px;height:46px;border-radius:12px;margin:0;object-fit:contain}.bst .qm{width:46px;height:46px}
+.bst .fx{flex:1;min-width:0}.bst small{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.pdm2{position:relative;display:grid;grid-template-columns:1fr 1.18fr 1fr;gap:8px;align-items:end;margin:22px 0 20px}
+.pdm2::before{content:"";position:absolute;left:50%;top:-14%;width:80%;height:130%;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 0,rgba(245,196,81,.2),transparent 68%);pointer-events:none}
+.pc{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;min-width:0;animation:pcIn .8s cubic-bezier(.2,.9,.2,1) both;animation-delay:var(--d,0s)}
+.pc.p1{--c:#f5c451;--c2:#ffe9a8}.pc.p2{--c:#cfd3dc;--c2:#f1f3f8}.pc.p3{--c:#cd8a5a;--c2:#ffd2b3}
+@keyframes pcIn{from{opacity:0;transform:translateY(46px) scale(.9)}}
+.rb{font-weight:800;font-size:12px;padding:2px 12px;border-radius:999px;color:#0a0a0c;background:linear-gradient(180deg,var(--c2),var(--c));box-shadow:0 0 18px -2px var(--c)}
+.p1 .rb{font-size:14px;padding:3px 15px}
+.pcr{width:30px;height:30px;margin-bottom:-6px;filter:drop-shadow(0 0 12px rgba(245,196,81,.9));animation:pcB 2.6s ease-in-out infinite}
+.im{position:relative;width:min(100%,88px);aspect-ratio:1;margin:6px 0 2px}.p1 .im{width:min(100%,118px)}
+.au{position:absolute;inset:-26%;border-radius:50%;background:radial-gradient(circle,var(--c),transparent 66%);filter:blur(10px);opacity:.55;animation:pcP 3s ease-in-out infinite}
+.im .bri,.im .qm{position:relative;width:100%;height:100%;margin:0;border-radius:20px;object-fit:contain;background:rgba(255,255,255,.07);border:1px solid var(--c);box-shadow:0 10px 28px -10px var(--c)}
+.im .qm{font-size:30px}.p1 .im{animation:pcB 3s ease-in-out infinite}
+@keyframes pcB{50%{transform:translateY(-6px)}}@keyframes pcP{50%{opacity:.85;transform:scale(1.06)}}
+.pc .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}.p1 .nm{font-size:14.5px}
+.pc .vv{font-weight:800;font-size:14px;background:linear-gradient(180deg,var(--c2),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}.p1 .vv{font-size:19px}
+.pw{display:inline-flex;align-items:center;gap:5px;max-width:100%;font-size:11px;color:var(--dim)}.pw .pp.s,.pw .av{width:18px;height:18px;font-size:10px}.pw span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pst{position:relative;overflow:hidden;width:100%;margin-top:8px;display:grid;place-items:center;border-radius:16px 16px 6px 6px;border:1px solid var(--c);font-size:40px;font-weight:800;color:var(--c2);text-shadow:0 0 22px var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 55%,transparent),color-mix(in srgb,var(--c) 6%,transparent));transform-origin:bottom;animation:pdR .9s cubic-bezier(.2,.9,.2,1) both;animation-delay:var(--d,0s)}
+.p1 .pst{height:150px}.p2 .pst{height:108px}.p3 .pst{height:82px}
+.pst::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.3) 50%,transparent 62%);transform:translateX(-120%);animation:pdS 4.5s ease-in-out infinite}
+@keyframes pdR{from{transform:scaleY(0);opacity:0}}@keyframes pdS{55%,100%{transform:translateX(120%)}}
+.rw{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}.rw:first-child{border-top:0}
+.rw .rn{font-weight:800;width:30px;color:var(--dim)}.rw .bri{width:36px;height:36px;margin:0;border-radius:10px}.rw .qm{width:36px;height:36px}
+@media(max-width:420px){.pdm2{gap:5px}.pc .nm{font-size:11.5px}.p1 .nm{font-size:13px}.pc .vv{font-size:12px}.p1 .vv{font-size:16px}.pst{font-size:32px}}
+</style>
+<script>
+window.board=function(){
+  const L=S.lb,me=S.me&&S.me.user&&S.me.user.name,
+  fl=`<h1 class="sm">Leaderboard</h1><div class="fl">${[["d","Today"],["w","This week"],["a","All time"]].map(([k,n])=>`<button class="b sm${S.f===k?" on":""}" data-act="filt" data-f="${k}">${n}</button>`).join("")}</div>`;
+  if(!L)return fl+`<div class="box">${none("Leaderboard unavailable right now.")}</div>`;
+  if(!L.length)return fl+`<div class="box">${none("No steals ranked yet.")}</div>`;
+  const mine=S.me&&S.me.stl&&S.me.stl.top&&S.me.stl.top[0],
+  best=mine?`<div class="box bst">${brImg(mine.name)}<div class="fx"><small>Your best steal</small><b>${esc(mine.name)}</b>${mutOf(mine.mut)?` <span class="mu">${esc(mutOf(mine.mut))}</span>`:""}</div><span class="vl">${fmt(mine.value)}</span></div>`:"",
+  mu=r=>mutOf(r.m)?`<span class="mu">${esc(mutOf(r.m))}</span>`:"",
+  who=r=>`<span class="pw">${av2(r.avatar,r.u)}<span>${esc(r.u||"Player")}</span></span>`,
+  crown='<svg class="pcr" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18l1-11-5 4-5-7-5 7-5-4z" fill="#f5c451"/></svg>',
+  DL=[".25s",".1s",".4s"],
+  col=i=>{const r=L[i];return r?`<div class="pc p${i+1}" style="--d:${DL[i]}">${i===0?crown:""}<div class="rb">#${i+1}</div><div class="im"><span class="au"></span>${brImg(r.n)}</div><b class="nm" title="${esc(r.n)}">${esc(r.n)}</b>${mu(r)}<div class="vv">${fmt(r.v)}</div>${who(r)}<div class="pst"><span>${i+1}</span></div></div>`:`<div></div>`},
+  rest=L.slice(3,10);
+  return fl+best+`<div class="pdm2">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box">${rest.map((r,i)=>`<div class="rw${r.u===me?" me":""}"><span class="rn">#${i+4}</span>${brImg(r.n)}<div class="fx"><b>${esc(r.n)}</b> ${mu(r)}<div class="dim">${esc(r.u||"Player")} · ${ago(r.t)}</div></div><span class="vl">${fmt(r.v)}</span></div>`).join("")}</div>`:"")};
+if(typeof S!=="undefined"&&S.tab==="board")render();
+</script>
+
 </body>
 </html>
