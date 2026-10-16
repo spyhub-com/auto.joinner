@@ -223,6 +223,10 @@ body:not(.home) #app{max-width:none;padding-left:232px;padding-right:232px}}
 @media(min-width:1560px){
 body:not(.home) .hmx{width:clamp(190px,calc((100vw - 1120px)/2 - 30px),320px)}
 body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
+.dbar,.dtk{grid-template-columns:repeat(48,28px)}
+.dc.part{background:rgba(251,191,36,.22);border-color:rgba(251,191,36,.6)}
+.dc .av4{display:grid;grid-template-columns:12px 12px;gap:1px;pointer-events:none}
+.dc .av4 img{position:static;transform:none;width:12px;height:12px;border-radius:50%;border:1px solid #fff}
 </style>
 </head>
 <body>
@@ -316,12 +320,7 @@ const stats=()=>`<h1 class="sm">Live Stats</h1><div id="st" aria-live="polite">$
 const paintStats=()=>{const e=$("#st");if(e)e.innerHTML=statsHtml()};
 
 /* --- Buy --- */
-function buy(){
-  const m=S.me,now=Math.floor(Date.now()/CELL),o=S.taken[now];let live=none("Availability unavailable.");
-  if(o!=null){const nx=Object.keys(S.taken).map(Number).sort((a,b)=>a-b).find(c=>c>=now&&S.taken[c]<CONFIG.SEATS);
-    live=`<p><b>${o} / ${CONFIG.SEATS}</b> slots in use right now</p><div class="bar"><i style="width:${o/CONFIG.SEATS*100}%"></i></div>${none("Next free slot: "+(nx==null?"none left today":nx===now?"now":hm(nx*CELL)))}`}
-  return`<h1 class="sm">Buy a slot</h1><div class="box"><h2>Book your auto-join time</h2><ul class="bv-l"><li>Minimum ${CONFIG.MIN_H} h, maximum ${CONFIG.MAX_H} h per slot</li><li>${money(CONFIG.PRICE_PER_HOUR)} per hour · your balance: <b>${money(m.balance)}</b>${m.hours?" + <b>"+m.hours+" free h</b>":""}</li><li>You pick the exact start time on a timeline of the whole day</li><li>A new key is sent to your Discord DMs right after you pay</li></ul><button class="b s w" data-act="plan">Continue</button></div>
-  <div class="box" aria-live="polite"><div class="bv-lv"><span class="dot"></span><h2 style="margin:0">Live availability</h2></div>${live}</div>`}
+function buy(){const m=S.me,u=m.user||{};return`<h1 class="sm">Buy</h1><div class="box dtop">${av2(u.avatar,u.name).replace("pp s","pp")}<div class="pi"><b class="dnm">${esc(u.name||"Player")}</b><div class="big gr dbal">${money(m.balance)}</div></div><button class="b s" data-act="plan">Buy</button></div>`}
 
 let P={};
 const closePlan=()=>$("#md")?.remove();
@@ -330,8 +329,8 @@ const winOk=()=>P.start!=null&&selCells().every(c=>(S.taken[c]??0)<CONFIG.SEATS)
 const priceOf=m=>{const h=m/60,ow=S.me.user&&S.me.user.owner,uh=ow?h:Math.min(S.me.hours||0,h),pay=ow?0:Math.round((h-uh)*CONFIG.PRICE_PER_HOUR*100)/100;return{h,uh,pay,full:Math.round(h*CONFIG.PRICE_PER_HOUR*100)/100}};
 async function openPlan(){P={step:1,dur:60,day:0,start:null};await loadAvail(0);drawPlan()}
 function barHtml(){const b=new Date();b.setHours(0,0,0,0);const base=Math.floor((b.getTime()+P.day*864e5)/CELL),n=Date.now();let cells="",ticks="";
-  for(let i=0;i<48;i++){const c=base+i,t=S.taken[c]??0,ms=c*CELL,past=ms+CELL<=n,full=t>=CONFIG.SEATS,w=S.who[c],sa=w&&(i===0||!S.who[c-1]||S.who[c-1].avatar!==w.avatar);
-    cells+=`<button class="dc${full?" full":t?" part":""}${past?" past":""}" data-pl="c" data-c="${c}" ${past||full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} seats free">${sa&&w.avatar?`<img src="${esc(w.avatar)}" alt="" referrerpolicy="no-referrer">`:""}</button>`;
+  for(let i=0;i<48;i++){const c=base+i,t=S.taken[c]??0,ms=c*CELL,past=ms+CELL<=n,full=t>=CONFIG.SEATS,w=S.who[c],wl=[].concat(w&&w.avatar!==undefined?[w.avatar]:w||[]).filter(Boolean).slice(0,4);
+    cells+=`<button class="dc${full?" full":t?" part":""}${past?" past":""}" data-pl="c" data-c="${c}" ${past||full?"disabled":""} aria-label="${hm(ms)}, ${CONFIG.SEATS-t} seats free">${wl.length?`<span class="av4">${wl.map(x=>`<img src="${esc(x)}" alt="" referrerpolicy="no-referrer">`).join("")}</span>`:""}</button>`;
     ticks+=`<span>${i%2===0?String(i/2).padStart(2,"0")+"h":""}</span>`}
   return`<div class="dscr"><div class="dbar">${cells}</div><div class="dtk">${ticks}</div></div>`}
 function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="md";document.body.appendChild(m)}
@@ -341,14 +340,14 @@ function drawPlan(){let m=$("#md");if(!m){m=document.createElement("div");m.id="
     const opts=[];for(let mn=CONFIG.MIN_H*60;mn<=CONFIG.MAX_H*60;mn+=30)opts.push(mn);
     body=`<h2>Step 1 of 3 · How long?</h2>${none("Choose the length of your slot. Minimum "+CONFIG.MIN_H+" h, maximum "+CONFIG.MAX_H+" h.")}<div class="chips">${opts.map(mn=>`<button class="du${P.dur===mn?" sel":""}" data-pl="dur" data-m="${mn}"><b>${dur(mn)}</b><small>${priceOf(mn).pay===0?"Free":money(priceOf(mn).pay)}</small></button>`).join("")}</div><div class="row2"><button class="b" data-pl="x">Cancel</button><button class="b s" data-pl="next">Continue</button></div>`}
   else if(P.step===2){
-    body=`<h2>Step 2 of 3 · When does it start?</h2>${none("Your slot lasts <b>"+dur(P.dur)+"</b>. Tap the time you want to start.")}<div class="chips">${[0,1].map(i=>`<button class="dy${P.day===i?" sel":""}" data-pl="day" data-d="${i}">${i?"Tomorrow":"Today"} · ${new Date(d0.getTime()+i*864e5).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>`).join("")}<button class="b sm" data-pl="now">Start now</button></div>${barHtml()}<div class="lgd"><span><i style="background:rgba(255,255,255,.1)"></i>Free</span><span><i style="background:rgba(239,68,68,.5)"></i>Partly taken</span><span><i style="background:#dc2626"></i>Full (avatar = who booked)</span><span><i style="background:#8b5cf6"></i>Your slot</span></div><div class="box" id="pls" style="margin:0 0 10px"></div><div class="row2"><button class="b" data-pl="prev">Back</button><button class="b s" id="pln" data-pl="next" disabled>Continue</button></div>`}
+    body=`<h2>Step 2 of 3 · When does it start?</h2>${none("Your slot lasts <b>"+dur(P.dur)+"</b>. Tap the time you want to start.")}<div class="chips">${[0,1].map(i=>`<button class="dy${P.day===i?" sel":""}" data-pl="day" data-d="${i}">${i?"Tomorrow":"Today"} · ${new Date(d0.getTime()+i*864e5).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>`).join("")}<button class="b sm" data-pl="now">Start now</button></div>${barHtml()}<div class="lgd"><span><i style="background:rgba(255,255,255,.1)"></i>Free</span><span><i style="background:rgba(251,191,36,.5)"></i>Partly taken (still bookable)</span><span><i style="background:#dc2626"></i>Full</span><span><i style="background:#8b5cf6"></i>Your slot</span></div><div class="box" id="pls" style="margin:0 0 10px"></div><div class="row2"><button class="b" data-pl="prev">Back</button><button class="b s" id="pln" data-pl="next" disabled>Continue</button></div>`}
   else{
     const s=P.start,e=s+P.dur*6e4,pr=priceOf(P.dur),after=S.me.balance-pr.pay,hl=Math.round(((S.me.hours||0)-pr.uh)*100)/100,nowS=s<=Date.now()+12e4;
     body=`<h2>Step 3 of 3 · Check everything</h2>${none("Read this carefully, then confirm.")}<div class="sumt"><div><span>Day</span><b>${day(s)}</b></div><div><span>Starts</span><b>${hm(s)}${nowS?" (right now)":""}</b></div><div><span>Ends</span><b>${hm(e)}</b></div><div><span>Length</span><b>${dur(P.dur)}</b></div><div><span>Price (${money(CONFIG.PRICE_PER_HOUR)} / h)</span><b>${money(pr.full)}</b></div>${pr.uh>0?`<div><span>Free hours used</span><b>-${pr.uh} h</b></div>`:""}<div class="tot"><span>You pay now</span><b>${money(pr.pay)}</b></div><div><span>Balance before</span><b>${money(S.me.balance)}</b></div><div><span>Balance after</span><b>${money(Math.max(after,0))}${pr.uh>0?" · "+hl+" free h left":""}</b></div></div>
     <h2 style="margin-top:12px">What happens next</h2><ol class="how"><li>Right after you pay, a <b>new key</b> is generated and sent to your <b>Discord DMs</b>. Make sure your DMs are open.</li><li>Paste it in your script. It only works <b>between ${hm(s)} and ${hm(e)}</b>. Before ${hm(s)} you are kicked from the game.</li><li>The <b>first Roblox account</b> that uses the key is locked to it. Nobody else can use your key.</li><li>At <b>${hm(e)}</b> you are kicked with "expired key". The key is then reset and the next connection can be any account.</li></ol>
     <div class="warn">Booked slots are not refundable once they have started, whether or not you connect.</div>${after<0?`<p class="bad">Not enough balance. Top up first.</p>`:""}<div class="row2"><button class="b" data-pl="prev">Back</button><button class="b s" id="plok" data-pl="ok" ${after<0?"disabled":""}>Confirm and pay ${money(pr.pay)}</button></div>`}
   m.innerHTML=`<div class="mp">${steps}${body}</div>`;
-  if(P.step===2){const s=$(".dscr");if(s){if(sl!=null)s.scrollLeft=sl;else if(P.day===0)s.scrollLeft=Math.max(0,(new Date().getHours()*2-3)*24)}updPlan()}}
+  if(P.step===2){const s=$(".dscr");if(s){if(sl!=null)s.scrollLeft=sl;else if(P.day===0)s.scrollLeft=Math.max(0,(new Date().getHours()*2-3)*30)}updPlan()}}
 function updPlan(){const sel=new Set(selCells());document.querySelectorAll(".dc").forEach(b=>b.classList.toggle("sel",sel.has(+b.dataset.c)));
   const el=$("#pls"),nx=$("#pln");if(!el)return;
   if(P.start==null){el.innerHTML=none("Tap a time on the bar to choose your start.");nx.disabled=true;return}
