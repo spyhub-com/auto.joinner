@@ -298,8 +298,14 @@ async function loadDock(){const[b,c]=await Promise.all([api("/api/brainrots?limi
 async function load(){
   const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance;S.downWeb=!!cg.data.downWeb;S.downAll=!!cg.data.downAll}
   const r=await api(A+"/me");
-  S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],stl:r.data.stl||null,live:!!r.data.live,dm:r.data.dm||{},reservations:r.data.reservations||[]}:null;
+  if(r.ok){S.me={user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],stl:r.data.stl||null,live:!!r.data.live,dm:r.data.dm||{},reservations:r.data.reservations||[]};_meFail=0}
+  else if(r.status===401||r.status===403){S.me=null;setTok("")}   /* token refusé : vraie déconnexion */
+  else if(tok()){   /* erreur serveur (500) ou réseau : on GARDE la session et on réessaie */
+    _meFail++;if(_meFail<=6)setTimeout(load,Math.min(30000,3000*_meFail))
+    if(!S.me)toast("Server error, retrying...")
+  }else S.me=null;
   if(S.me){cacheTeam(S.me.user);await loadAvail()}render()}
+let _meFail=0;
 
 /* ===== Team (home) ===== */
 const TEAM=[[OWNER_ID,"Founder",""],[COFOUNDER_ID,"Co-founder","co"]];
