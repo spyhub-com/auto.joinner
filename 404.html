@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0">
+<script>
+// GitHub Pages renvoie ce fichier pour toutes les URLs inconnues.
+// On sauvegarde le chemin demandé et on redirige vers index.html.
+// index.html le lira et ouvrira le bon onglet.
+var path = window.location.pathname.replace(/^\//, "").split("/")[0].toLowerCase();
+sessionStorage.setItem("spyhub_route", path || "home");
+window.location.replace("/");
+</script>
+</head>
+<body></body>
+</html>
