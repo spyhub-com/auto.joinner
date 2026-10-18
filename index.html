@@ -673,21 +673,59 @@ addEventListener("pointermove",e=>{x=e.clientX;y=e.clientY;cd.style.transform="t
 document.addEventListener("pointerover",e=>cr.classList.toggle("h",!!(e.target.closest&&e.target.closest("a,button,.b,input,summary,[data-act]"))));
 addEventListener("pointerdown",()=>cr.style.transform+=" scale(.8)");
 (function f(){rx+=(x-rx)*.18;ry+=(y-ry)*.18;cr.style.transform="translate("+rx+"px,"+ry+"px)";requestAnimationFrame(f)})()})();
-/* ===== Soft ambient sound (home only) ===== */
-(()=>{const body=document.body,isHome=()=>body.classList.contains("home"),SK="spyaj_snd";let want=true;try{want=localStorage.getItem(SK)!=="off"}catch{}
-let ctx=null,master=null,started=false;
-const btn=document.createElement("button");btn.id="snd";btn.className="ic"+(want?"":" off");btn.type="button";btn.setAttribute("aria-label","Toggle ambient sound");
+/* ===== Musique Halloween (originale, générée, sans grésillement) ===== */
+/* Halloween waltz : musique originale générée (pas de fichier mp3). Boucle parfaite, sans clip. */
+function hwSynth(sr,onDone,yieldFn){
+ var BEAT=.5,BARS=16,N=Math.round(BARS*3*BEAT*sr),L=new Float32Array(N),R=new Float32Array(N);
+ var hz=function(m){return 440*Math.pow(2,(m-69)/12)};
+ function add(buf,t0,pan,gain,src,len){var o=Math.round(t0*sr),gl=gain*(1-pan),gr=gain*(1+pan);
+  for(var e=0;e<3;e++){var d=Math.round([0,.375,.75][e]*sr),g=[1,.32,.15][e],p=e==1?-pan:e==2?pan:0,a=g*gain*(1-p)*.5,b=g*gain*(1+p)*.5;
+   if(e==0){a=gl*.5;b=gr*.5}
+   var s=(o+d)%N;for(var i=0;i<len;i++){var j=s+i;if(j>=N)j-=N;L[j]+=src[i]*a;R[j]+=src[i]*b}}}
+ function note(kind,t,m,dur,gain,pan){
+  var f=hz(m),len=Math.round(Math.min(dur,3)*sr),s=new Float32Array(len),w=6.283185307*f/sr,i,x,env;
+  var att=kind=="pad"?.45*sr:.01*sr,rel=Math.min(len*.5,(kind=="pad"?.6:.05)*sr);
+  for(i=0;i<len;i++){
+   if(kind=="box"){env=Math.exp(-i/sr*3.2);x=Math.sin(w*i)+.35*Math.sin(2*w*i)*Math.exp(-i/sr*6)+.12*Math.sin(3.01*w*i)*Math.exp(-i/sr*10)}
+   else if(kind=="bass"){env=Math.exp(-i/sr*2.2);x=Math.sin(w*i)+.3*Math.sin(2*w*i)}
+   else{env=1;x=Math.sin(w*i)+.5*Math.sin(w*i*1.004)+.25*Math.sin(2*w*i)}
+   var a=i<att?i/att:1,r=i>len-rel?(len-i)/rel:1;a=a*a*(3-2*a);r=r*r*(3-2*r);s[i]=x*env*a*r}
+  add(null,t,pan||0,gain,s,len)}
+ var A=57,E=64;var bar=3*BEAT;
+ var ch=[[57,60,64],[57,60,64],[50,53,57],[57,60,64],[53,57,60],[52,56,59],[57,60,64],[52,56,59]];
+ var bs=[45,45,38,45,41,40,45,40];
+ var mel=[[0,76,1],[1,72,1],[2,69,1],[3,72,1],[4,71,2],[6,69,1],[7,64,1],[8,69,1],[9,72,1],[10,76,1],[11,77,2],[13,76,1],[14,72,1],[15,69,1],
+  [16,65,1],[17,69,1],[18,72,1],[19,76,1],[20,74,2],[22,72,1],[23,71,1],[24,68,1],[25,71,1],[26,74,1],[27,76,2],[29,71,1],[30,68,1],[31,64,1],
+  [32,69,3],[35,72,1],[36,76,2],[38,72,1],[39,69,1],[40,64,2],[42,68,1],[43,71,1],[44,72,1],[45,71,1],[46,69,3]];
+ var jobs=[];
+ for(var rep=0;rep<2;rep++)for(var k=0;k<8;k++){(function(rep,k){var t=(rep*8+k)*bar;
+  jobs.push(function(){var c=ch[k];c.forEach(function(m,q){note("pad",t,m,bar*1.15,.07,q-1?.3:-.3)});
+   note("bass",t,bs[k],bar*.95,.2,0);note("bass",t+BEAT*2,bs[k]+7,BEAT*1.5,.07,0);
+   note("box",t+BEAT,c[1]+12,BEAT*3,.05,-.4);note("box",t+BEAT*2,c[2]+12,BEAT*3,.05,.4)})})(rep,k)}
+ for(var rep2=0;rep2<2;rep2++)mel.forEach(function(n){jobs.push(function(){var m=n[1]+(rep2&&n[0]%2?0:0);note("box",rep2*24+n[0]*BEAT,rep2?m+(n[0]>30?0:0):m,n[2]*BEAT*3,.22,((n[0]*37)%7-3)*.07)})});
+ var ji=0;(function step(){var t0=Date.now();while(ji<jobs.length&&Date.now()-t0<12)jobs[ji++]();
+  if(ji<jobs.length){yieldFn(step);return}
+  var pk=0,i;for(i=0;i<N;i++){pk=Math.max(pk,Math.abs(L[i]),Math.abs(R[i]))}
+  var g=.55/(pk||1);for(i=0;i<N;i++){L[i]*=g;R[i]*=g}onDone(L,R,sr)})()}
+
+(()=>{const SK="spyaj_snd";let want=true;try{want=localStorage.getItem(SK)!=="off"}catch{}
+let ctx=null,gain=null,src=null,buf=null,gen=false,playing=false;
+const btn=document.createElement("button");btn.id="snd";btn.className="ic"+(want?"":" off");btn.type="button";btn.setAttribute("aria-label","Toggle music");
 btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wv" d="M16.5 9a4 4 0 010 6M19 6.5a8 8 0 010 11"/><path class="x" d="M17 9l5 6M22 9l-5 6"/></svg>';document.body.appendChild(btn);
-function build(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;ctx=new AC();master=ctx.createGain();master.gain.value=0;
- const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=700;lp.Q.value=.3;const out=ctx.createGain();out.gain.value=1;const cp=ctx.createDynamicsCompressor();cp.threshold.value=-30;cp.knee.value=30;cp.ratio.value=6;master.connect(lp);lp.connect(out);out.connect(cp);cp.connect(ctx.destination);
- [110,164.81,220,277.18,329.63].forEach((f,i)=>{const b=.2/(1+i*.4);for(const k of[-1,1]){const o=ctx.createOscillator();o.type="sine";o.frequency.value=f;o.detune.value=k*(2+i*.5);
-  const g=ctx.createGain();g.gain.value=b*.5,l=ctx.createOscillator();l.frequency.value=.04+i*.013;const lg=ctx.createGain();lg.gain.value=b*.5;l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(master);o.start();l.start()}});return true}
-function fade(to,s){if(!master)return;const t=ctx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+s)}
-function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden&&!window.__hm){ctx.resume();fade(.3,3)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
-const kick=()=>{if(started||!isHome()||!want)return;if(!ctx&&!build())return;started=true;upd()};
+function init(){if(ctx)return true;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+ try{ctx=new AC({latencyHint:"playback"})}catch{ctx=new AC()}
+ gain=ctx.createGain();gain.gain.value=0;gain.connect(ctx.destination);return true}
+function build(){if(gen||buf)return;gen=true;hwSynth(ctx.sampleRate,(L,R,sr)=>{buf=ctx.createBuffer(2,L.length,sr);buf.copyToChannel(L,0);buf.copyToChannel(R,1);upd()},f=>setTimeout(f,0))}
+function ramp(to,s){const t=ctx.currentTime;gain.gain.cancelScheduledValues(t);gain.gain.setValueAtTime(gain.gain.value,t);gain.gain.linearRampToValueAtTime(to,t+s)}
+function upd(){if(!ctx)return;const should=want&&!document.hidden;
+ if(should){ctx.resume();if(!buf){build();return}
+  if(!playing){src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);src.start();playing=true}
+  ramp(.35,2.5)}
+ else if(playing){ramp(0,.6);setTimeout(()=>{if(!(want&&!document.hidden)&&ctx&&playing){try{src.stop()}catch{}playing=false;ctx.suspend()}},800)}}
+const kick=()=>{if(!want||!init())return;upd()};
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,kick,{passive:true}));
-btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch{}btn.classList.toggle("off",!want);if(want&&!started){if(!ctx&&!build())return;started=true}upd()});
-new MutationObserver(upd).observe(body,{attributes:true,attributeFilter:["class"]});document.addEventListener("visibilitychange",upd)})();
+btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch{}btn.classList.toggle("off",!want);if(want&&!init())return;upd()});
+document.addEventListener("visibilitychange",upd)})();
 
 (()=>{const cv=document.createElement("canvas");cv.id="pl";cv.setAttribute("aria-hidden","true");document.body.insertBefore(cv,document.body.firstChild);const c=cv.getContext("2d"),rm=matchMedia("(prefers-reduced-motion:reduce)").matches,N=innerWidth<700?900:2200,g=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5;
 const P=Array.from({length:N},()=>{const r=Math.pow(Math.random(),1.5),arm=Math.floor(Math.random()*3);const t=arm*2.0944+r*5.5+g()*(.1+.5*(1-r));const k=Math.random();return{r,t,s:.6+Math.random()*1.4*(1.1-r),c:r<.25?"255,225,180":k<.5?"150,185,255":k<.8?"190,140,255":"255,255,255",o:.35+Math.random()*.65}});
@@ -748,7 +786,7 @@ window.board=function(){
 if(typeof S!=="undefined"&&S.tab==="board")render();
 </script>
 
-<!-- === HALLOWEEN : thème orange, citrouilles, fond 3D, musique (spooky-scary-skeletons.mp3) === -->
+<!-- === HALLOWEEN : thème orange, citrouilles, fond 3D, musique générée (aucun fichier mp3) === -->
 <style>
 body.hw{--hw1:#ff8a1f;--hw2:#ff5a00;--hw3:#ffd27a}
 body.hw #gl,body.hw.home #gl{background:radial-gradient(120% 90% at 50% 105%,#4a1c00,#1a0800 52%,#050200)}
@@ -821,15 +859,6 @@ function frame(){
 let raf=0;function loop(){frame();raf=requestAnimationFrame(loop)}
 if(rm)frame();else loop();
 document.addEventListener("visibilitychange",()=>{if(rm)return;if(document.hidden)cancelAnimationFrame(raf);else{cancelAnimationFrame(raf);loop()}});
-/* ----- Musique : Spooky Scary Skeletons (fichier spooky-scary-skeletons.mp3 à côté de index.html) ----- */
-const SK="spyaj_snd",au=new Audio("spooky-scary-skeletons.mp3");au.loop=true;au.preload="auto";au.volume=.4;
-let want=true,dead=false,on=false;const rd=()=>{try{want=localStorage.getItem(SK)!=="off"}catch{}};rd();
-au.addEventListener("error",()=>{dead=true;window.__hm=false});
-function go(){if(dead||on||!want||document.hidden)return;const p=au.play();if(p&&p.then)p.then(()=>{on=true;window.__hm=true;document.dispatchEvent(new Event("visibilitychange"))}).catch(()=>{})}
-["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,go,{passive:true}));
-const sb=document.getElementById("snd");
-if(sb)sb.addEventListener("click",()=>setTimeout(()=>{rd();if(want){on=false;go()}else{au.pause();on=false;window.__hm=false}},0));
-document.addEventListener("visibilitychange",()=>{if(document.hidden)au.pause();else if(want&&window.__hm){au.play().catch(()=>{})}});
 })();
 </script>
 
