@@ -10,7 +10,7 @@
 <meta property="og:site_name" content="SpyHub AJ">
 <meta property="og:title" content="SpyHub AJ - Live brainrot finder and auto-join">
 <meta property="og:description" content="SpyHub AJ spots the best brainrots live and joins the right server for you. Book a slot, run the script, and let the auto-join do the work. Sign in with Discord.">
-<meta property="og:url" content="https://spy-aj.kdns.fr/">
+<meta property="og:url" content="https://spyhub.kdns.fr/">
 <meta property="og:image" content="https://i.postimg.cc/rpv14ZQw/file-000000007f2081f4953cf83a6ef8c035.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="SpyHub AJ - Live brainrot finder and auto-join">
@@ -683,7 +683,7 @@ function build(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)
  [110,164.81,220,277.18,329.63].forEach((f,i)=>{const b=.2/(1+i*.4);for(const k of[-1,1]){const o=ctx.createOscillator();o.type="sine";o.frequency.value=f;o.detune.value=k*(2+i*.5);
   const g=ctx.createGain();g.gain.value=b*.5,l=ctx.createOscillator();l.frequency.value=.04+i*.013;const lg=ctx.createGain();lg.gain.value=b*.5;l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(master);o.start();l.start()}});return true}
 function fade(to,s){if(!master)return;const t=ctx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+s)}
-function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden){ctx.resume();fade(.3,3)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
+function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden&&!window.__hm){ctx.resume();fade(.3,3)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
 const kick=()=>{if(started||!isHome()||!want)return;if(!ctx&&!build())return;started=true;upd()};
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,kick,{passive:true}));
 btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch{}btn.classList.toggle("off",!want);if(want&&!started){if(!ctx&&!build())return;started=true}upd()});
@@ -746,6 +746,91 @@ window.board=function(){
   rest=L.slice(3,10);
   return fl+best+`<div class="pdm2">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box"><h2 class="lbh">Other players</h2>${rest.map((r,i)=>`<div class="rw${r.u===me?" me":""}"><span class="rn">#${i+4}</span>${brImg(r.n)}<div class="fx"><b>${esc(r.n)}</b> ${mu(r)}<div class="dim">${esc(r.u)}${r.t?" · "+ago(r.t):""}</div></div><span class="vl">${fmt(r.v)}</span></div>`).join("")}</div>`:"")};
 if(typeof S!=="undefined"&&S.tab==="board")render();
+</script>
+
+<!-- === HALLOWEEN : thème orange, citrouilles, fond 3D, musique (spooky-scary-skeletons.mp3) === -->
+<style>
+body.hw{--hw1:#ff8a1f;--hw2:#ff5a00;--hw3:#ffd27a}
+body.hw #gl,body.hw.home #gl{background:radial-gradient(120% 90% at 50% 105%,#4a1c00,#1a0800 52%,#050200)}
+body.hw .vig{background:radial-gradient(130% 100% at 50% 40%,transparent 48%,rgba(26,8,0,.72))}
+body.hw h1{text-shadow:0 0 28px rgba(255,122,26,.45)}
+body.hw #wp{mix-blend-mode:screen}
+#hw3d{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.hwp{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) - 4px);z-index:0;pointer-events:none;width:clamp(96px,27vw,190px);--ry:14deg;animation:hwb 5s ease-in-out infinite;transform-origin:50% 100%}
+.hwp.l{left:max(56px,calc(env(safe-area-inset-left,0px) + 56px))}
+.hwp.r{right:max(8px,env(safe-area-inset-right,0px));--ry:-14deg;width:clamp(84px,24vw,165px);animation-delay:-2.2s}
+.hwp svg{display:block;width:100%;height:auto;overflow:visible}
+.hwp .gl{position:absolute;left:-30%;right:-30%;top:-10%;bottom:-20%;background:radial-gradient(closest-side,rgba(255,138,31,.55),rgba(255,90,0,.18) 55%,transparent 75%);animation:hwf 2.6s ease-in-out infinite alternate;z-index:-1}
+.hwp .hf{animation:hwf 1.7s ease-in-out infinite alternate}
+@keyframes hwb{0%,100%{transform:perspective(520px) rotateY(var(--ry)) translateY(0)}50%{transform:perspective(520px) rotateY(calc(var(--ry) * -.45)) translateY(-7px)}}
+@keyframes hwf{from{opacity:.62}to{opacity:1}}
+#snd{display:inline-grid!important}
+@media(prefers-reduced-motion:reduce){.hwp,.hwp .gl,.hwp .hf{animation:none!important}}
+</style>
+<script>
+(()=>{
+document.body.classList.add("hw");
+/* ----- Citrouilles (SVG, bas gauche et bas droite) ----- */
+function pk(id,v){
+ const eyes=v?'<path d="M36 54 Q44 44 52 54 Z"/><path d="M68 54 Q76 44 84 54 Z"/>':'<path d="M36 52 L52 52 L44 36 Z"/><path d="M68 52 L84 52 L76 36 Z"/>';
+ const mouth=v?'<path d="M34 68 Q60 98 86 68 Q60 84 34 68 Z"/><path d="M52 80 L56 88 L60 82 L64 88 L68 80 Q60 84 52 80Z" fill="#2a0e00"/>':'<path d="M34 70 L42 68 L48 78 L54 70 L60 80 L66 70 L72 78 L78 68 L86 70 Q60 100 34 70 Z"/>';
+ return '<div class="gl"></div><svg viewBox="0 0 120 112" aria-hidden="true"><defs>'+
+ '<radialGradient id="pg'+id+'" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#ffc062"/><stop offset=".45" stop-color="#ff8a1f"/><stop offset="1" stop-color="#b53a00"/></radialGradient>'+
+ '<linearGradient id="ps'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b8f2a"/><stop offset="1" stop-color="#2e4a12"/></linearGradient></defs>'+
+ '<ellipse cx="60" cy="106" rx="46" ry="6" fill="rgba(0,0,0,.5)"/>'+
+ '<ellipse cx="32" cy="62" rx="28" ry="40" fill="url(#pg'+id+')"/><ellipse cx="88" cy="62" rx="28" ry="40" fill="url(#pg'+id+')"/>'+
+ '<ellipse cx="60" cy="60" rx="33" ry="44" fill="url(#pg'+id+')"/>'+
+ '<path d="M60 18 Q50 60 60 102 M44 22 Q22 60 40 98 M76 22 Q98 60 80 98" fill="none" stroke="rgba(110,35,0,.5)" stroke-width="2.2" stroke-linecap="round"/>'+
+ '<path d="M54 20 Q54 8 64 3 L71 9 Q63 12 64 22 Z" fill="url(#ps'+id+')"/><path d="M68 10 Q82 4 88 12 Q78 12 72 16Z" fill="#5a8a22"/>'+
+ '<g class="hf" fill="#ffe27a">'+eyes+'<path d="M60 58 L55 67 L65 67 Z"/>'+mouth+'</g></svg>'}
+const L=document.createElement("div");L.className="hwp l";L.innerHTML=pk("a",0);
+const R=document.createElement("div");R.className="hwp r";R.innerHTML=pk("b",1);
+/* ----- Fond 3D : braises en perspective, lune orange, chauves-souris ----- */
+const cv=document.createElement("canvas");cv.id="hw3d";cv.setAttribute("aria-hidden","true");
+document.body.appendChild(cv);document.body.appendChild(L);document.body.appendChild(R);
+const c=cv.getContext("2d"),rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+let W=0,H=0,tx=0,ty=0,px=0,py=0;
+function size(){const d=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;c.setTransform(d,0,0,d,0,0)}
+size();addEventListener("resize",size);
+addEventListener("pointermove",e=>{tx=e.clientX/W-.5;ty=e.clientY/H-.5},{passive:true});
+addEventListener("deviceorientation",e=>{if(e.gamma!=null){tx=Math.max(-.5,Math.min(.5,e.gamma/60));ty=Math.max(-.5,Math.min(.5,(e.beta-45)/90))}},{passive:true});
+const mk=z=>({x:(Math.random()-.5)*2.6,y:(Math.random()-.5)*2.6,z:z==null?Math.random():z,s:.5+Math.random()*.7});
+const E=Array.from({length:72},()=>mk());
+const B=Array.from({length:5},(_,i)=>({x:Math.random()*innerWidth,y:innerHeight*(.08+Math.random()*.38),v:(.35+Math.random()*.5)*(i%2?1:-1),sc:.45+Math.random()*.8,f:Math.random()*6.3,b:Math.random()*6.3}));
+function bat(x,y,s,f){const w=Math.sin(f)*11;c.save();c.translate(x,y);c.scale(s,s);c.fillStyle="#0b0300";c.beginPath();c.moveTo(0,0);
+ c.quadraticCurveTo(-14,-14-w,-36,-6+w*.6);c.quadraticCurveTo(-27,-1,-23,7);c.quadraticCurveTo(-16,1,-10,7);c.quadraticCurveTo(-6,3,0,9);
+ c.quadraticCurveTo(6,3,10,7);c.quadraticCurveTo(16,1,23,7);c.quadraticCurveTo(27,-1,36,-6+w*.6);c.quadraticCurveTo(14,-14-w,0,0);c.fill();
+ c.beginPath();c.arc(0,2,5,0,6.3);c.fill();c.beginPath();c.moveTo(-4,-2);c.lineTo(-3,-10);c.lineTo(0,-3);c.lineTo(3,-10);c.lineTo(4,-2);c.fill();c.restore()}
+function frame(){
+ c.clearRect(0,0,W,H);px+=(tx-px)*.05;py+=(ty-py)*.05;
+ const mx=W*.5-px*38,my=H*.7-py*26,mr=Math.min(W,H)*.17;
+ let g=c.createRadialGradient(mx,my,mr*.2,mx,my,mr*2.6);g.addColorStop(0,"rgba(255,140,40,.42)");g.addColorStop(.35,"rgba(255,90,0,.14)");g.addColorStop(1,"rgba(255,90,0,0)");
+ c.fillStyle=g;c.fillRect(0,0,W,H);
+ g=c.createRadialGradient(mx-mr*.25,my-mr*.25,mr*.1,mx,my,mr);g.addColorStop(0,"#ffd9a0");g.addColorStop(.6,"#ff9a3c");g.addColorStop(1,"#d9560a");
+ c.fillStyle=g;c.beginPath();c.arc(mx,my,mr,0,6.3);c.fill();
+ c.fillStyle="rgba(120,40,0,.22)";[[-.3,.25,.22],[.25,-.2,.15],[.1,.4,.1]].forEach(a=>{c.beginPath();c.arc(mx+a[0]*mr,my+a[1]*mr,a[2]*mr,0,6.3);c.fill()});
+ for(const e of E){
+  if(!rm){e.z-=.0032*e.s;e.y-=.0009}
+  if(e.z<=.03||e.y<-1.5){Object.assign(e,mk(1))}
+  const f=.55/(e.z+.18),sx=W/2+(e.x*W*.32-px*90*(1-e.z))*f,sy=H/2+(e.y*H*.32-py*70*(1-e.z))*f,r=(1-e.z)*2.8*e.s+.5,a=Math.min(1,(1-e.z)*1.1);
+  if(sx<-20||sx>W+20||sy<-20||sy>H+20)continue;
+  c.fillStyle="rgba(255,110,20,"+(a*.22)+")";c.beginPath();c.arc(sx,sy,r*3,0,6.3);c.fill();
+  c.fillStyle="rgba(255,200,110,"+a+")";c.beginPath();c.arc(sx,sy,r,0,6.3);c.fill()}
+ for(const b of B){if(!rm){b.x+=b.v;b.f+=.22;b.b+=.03}if(b.x>W+60)b.x=-60;if(b.x<-60)b.x=W+60;bat(b.x-px*30*b.sc,b.y+Math.sin(b.b)*14-py*14,b.sc,b.f)}
+}
+let raf=0;function loop(){frame();raf=requestAnimationFrame(loop)}
+if(rm)frame();else loop();
+document.addEventListener("visibilitychange",()=>{if(rm)return;if(document.hidden)cancelAnimationFrame(raf);else{cancelAnimationFrame(raf);loop()}});
+/* ----- Musique : Spooky Scary Skeletons (fichier spooky-scary-skeletons.mp3 à côté de index.html) ----- */
+const SK="spyaj_snd",au=new Audio("spooky-scary-skeletons.mp3");au.loop=true;au.preload="auto";au.volume=.4;
+let want=true,dead=false,on=false;const rd=()=>{try{want=localStorage.getItem(SK)!=="off"}catch{}};rd();
+au.addEventListener("error",()=>{dead=true;window.__hm=false});
+function go(){if(dead||on||!want||document.hidden)return;const p=au.play();if(p&&p.then)p.then(()=>{on=true;window.__hm=true;document.dispatchEvent(new Event("visibilitychange"))}).catch(()=>{})}
+["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,go,{passive:true}));
+const sb=document.getElementById("snd");
+if(sb)sb.addEventListener("click",()=>setTimeout(()=>{rd();if(want){on=false;go()}else{au.pause();on=false;window.__hm=false}},0));
+document.addEventListener("visibilitychange",()=>{if(document.hidden)au.pause();else if(want&&window.__hm){au.play().catch(()=>{})}});
+})();
 </script>
 
 </body>
