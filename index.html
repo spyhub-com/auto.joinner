@@ -243,6 +243,7 @@ body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 .gv-bl small{display:block;font-size:10px;letter-spacing:.16em;opacity:.7}.gv-amt{font-size:clamp(26px,8vw,38px);font-weight:800;letter-spacing:-.02em;color:#fff;text-shadow:0 0 24px rgba(167,139,250,.7)}
 .gv-num{font:600 clamp(13px,3.8vw,17px) ui-monospace,Menlo,monospace;letter-spacing:.16em}
 .ts-wrap{display:flex;justify-content:center;align-items:center;min-height:65px;overflow:hidden}
+#gate{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:20px;background:#05060a}#gate .box{width:100%;max-width:360px;text-align:center}
 </style>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
@@ -646,6 +647,11 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-oa]"
   else if(a==="copy"){try{await navigator.clipboard.writeText(b.dataset.c);toast("Copied")}catch{toast("Copy failed")}}
   else if(a==="save"){const r=await run("settings",{price:v("spr"),seats:v("sse"),banner:v("sba"),maintenance:$("#sma").checked,minMps:v("smi")},"Saved");if(r.ok){CONFIG.PRICE_PER_HOUR=+r.data.cfg.price;CONFIG.SEATS=+r.data.cfg.seats;S.banner=r.data.cfg.banner;S.maint=r.data.cfg.maintenance}}
 });
+/* ===== Entry captcha (Turnstile) ===== */
+(function(){let ok=0;try{ok=sessionStorage.getItem("spyaj_v")}catch{}if(ok)return;
+const o=document.createElement("div");o.id="gate";o.innerHTML='<div class="box"><h2>Verifying you are human</h2><p class="dim" id="gm">Complete the check to enter the site.</p><div id="gt" class="ts-wrap"></div></div>';document.body.appendChild(o);
+const run=(n=0)=>{if(!window.turnstile){if(n<100)setTimeout(()=>run(n+1),200);else $("#gm").textContent="Captcha failed to load. Disable your adblock and refresh.";return}
+turnstile.render("#gt",{sitekey:TS.key,theme:"dark",callback:async t=>{const r=await api(A+"/verify",{turnstile:t});if(r.ok||r.status===503){try{sessionStorage.setItem("spyaj_v","1")}catch{}o.remove()}else{$("#gm").textContent=r.data.error||"Verification failed, try again";try{turnstile.reset()}catch{}}}})};run()})();
 showLd(900);load();
 </script>
 <script>
@@ -871,5 +877,6 @@ if(rm)frame();else loop();
 document.addEventListener("visibilitychange",()=>{if(rm)return;if(document.hidden)cancelAnimationFrame(raf);else{cancelAnimationFrame(raf);loop()}});
 })();
 </script>
+
 </body>
 </html>
