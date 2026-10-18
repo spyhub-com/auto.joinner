@@ -10,7 +10,7 @@
 <meta property="og:site_name" content="SpyHub AJ">
 <meta property="og:title" content="SpyHub AJ - Live brainrot finder and auto-join">
 <meta property="og:description" content="SpyHub AJ spots the best brainrots live and joins the right server for you. Book a slot, run the script, and let the auto-join do the work. Sign in with Discord.">
-<meta property="og:url" content="https://spyhub.kdns.fr/">
+<meta property="og:url" content="https://spy-aj.kdns.fr/">
 <meta property="og:image" content="https://i.postimg.cc/rpv14ZQw/file-000000007f2081f4953cf83a6ef8c035.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="SpyHub AJ - Live brainrot finder and auto-join">
@@ -162,9 +162,6 @@ main.pg{animation:pg .5s cubic-bezier(.2,.8,.2,1) backwards}@keyframes pg{from{o
 #ow label{display:block;margin-top:4px}
 .box.dn{border-color:rgba(248,113,113,.35)}.dn-r{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}.dn-r p{margin:2px 0 0}
 .ow-act{display:flex;gap:8px;flex-wrap:wrap}
-.hs-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.hdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#f87171;margin-right:8px;vertical-align:1px}.hdot.running{background:#34d399;box-shadow:0 0 8px #34d399}.hdot.stopping{background:#fbbf24}
-.b.hs-g{color:#6ee7b7;border-color:rgba(52,211,153,.5)}.b.hs-r{color:#ff8a93;border-color:rgba(255,107,118,.5)}
-.hcon{height:320px;overflow:auto;background:#05050a;border:1px solid var(--ln);border-radius:12px;padding:10px;margin-bottom:8px;font:11.5px/1.45 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-all;color:#d6d6dc}
 .dnp{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px;position:relative;z-index:1}.dnp .box{max-width:440px;display:grid;gap:10px;justify-items:center}.dn-i{font-size:42px}
 .lgn{max-width:400px;margin:8vh auto;text-align:center;padding:26px 18px}
 #ld{position:fixed;inset:0;z-index:20;background:rgba(5,4,12,.92);display:grid;place-content:center;justify-items:center;gap:12px;font-weight:650;transition:opacity .25s}#ld.out{opacity:0;pointer-events:none}
@@ -249,6 +246,37 @@ body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 <div id="app"></div>
 <script>
 /* ===== Settings ===== */
+
+// ===== Deep-link router (lit sessionStorage mis par 404.html) =====
+(function(){
+    var ROUTES={
+        "home":"home","dashboard":"dash","dash":"dash","buy":"buy",
+        "giftcard":"gift","gift":"gift","stats":"stats",
+        "leaderboard":"board","board":"board","settings":"settings",
+        "owner":"owner","terms":"terms","privacy":"privacy","refund":"refund"
+    };
+    var PUBLIC=["home","stats","terms","privacy","refund"];
+    var raw=sessionStorage.getItem("spyhub_route");
+    if(!raw)return;
+    sessionStorage.removeItem("spyhub_route");
+    var tab=ROUTES[raw]||"home";
+    if(tab==="home")return;
+    // attend que go() et S existent (définis plus bas dans le script)
+    var tries=0;
+    var iv=setInterval(function(){
+        if(++tries>120){clearInterval(iv);return;}
+        if(typeof go!=="function"||typeof S==="undefined")return;
+        clearInterval(iv);
+        var needsLogin=PUBLIC.indexOf(tab)===-1;
+        if(needsLogin&&!S.me){
+            S.tab=tab;
+            if(typeof render==="function")render();
+        }else{
+            go(tab);
+        }
+    },50);
+})();
+
 const CONFIG={API_BASE:"https://spyhub-finder.spyuhq.workers.dev",SITE_BASE:"https://spyhub-web.spyuhq.workers.dev",LOGIN_PATH:"/api/site/auth/discord",SEATS:4,PRICE_PER_HOUR:1,MIN_H:1,MAX_H:3,
   LEGAL:{publisher:"",country:"",email:""}};
 const OWNER_ID="1499805186523136134",COFOUNDER_ID="717433759342788659";
@@ -296,16 +324,10 @@ async function loadStats(){
 async function loadBoard(){const r=await api(`${A}/leaderboard?range=${S.f}`);S.lb=r.ok?(r.data.rows||[]):null;if(S.tab==="board")render()}
 async function loadDock(){const[b,c]=await Promise.all([api("/api/brainrots?limit=100"),api("/api/logs")]);if(b.ok)DK.recent=b.data.brainrots||[];if(c.ok)DK.logs=c.data.logs||[];DK.upd=Date.now();paintCharts();if(S.tab==="dash")paintDash()}
 async function load(){
-  const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance;S.downWeb=!!cg.data.downWeb;S.downAll=!!cg.data.downAll;S.off=cg.data.off||{}}
+  const cg=await api(A+"/config");if(cg.ok){CONFIG.PRICE_PER_HOUR=+cg.data.price;CONFIG.SEATS=+cg.data.seats;S.banner=cg.data.banner||"";S.maint=!!cg.data.maintenance;S.downWeb=!!cg.data.downWeb;S.downAll=!!cg.data.downAll}
   const r=await api(A+"/me");
-  if(r.ok){S.me={user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],stl:r.data.stl||null,live:!!r.data.live,dm:r.data.dm||{},reservations:r.data.reservations||[]};_meFail=0}
-  else if(r.status===401||r.status===403){S.me=null;setTok("")}   /* token refusé : vraie déconnexion */
-  else if(tok()){   /* erreur serveur (500) ou réseau : on GARDE la session et on réessaie */
-    _meFail++;if(_meFail<=6)setTimeout(load,Math.min(30000,3000*_meFail))
-    if(!S.me)toast("Server error, retrying...")
-  }else S.me=null;
+  S.me=r.ok?{user:r.data.user,balance:r.data.balance||0,hours:r.data.hours||0,gifts:r.data.gifts||[],steals:r.data.steals||[],stl:r.data.stl||null,live:!!r.data.live,dm:r.data.dm||{},reservations:r.data.reservations||[]}:null;
   if(S.me){cacheTeam(S.me.user);await loadAvail()}render()}
-let _meFail=0;
 
 /* ===== Team (home) ===== */
 const TEAM=[[OWNER_ID,"Founder",""],[COFOUNDER_ID,"Co-founder","co"]];
@@ -534,7 +556,7 @@ document.addEventListener("click",async e=>{
   else if(a==="tab")go(b.dataset.t);
   else if(a==="menu"){const m=$("#mn");m.hidden=!m.hidden;b.setAttribute("aria-expanded",String(!m.hidden))}
   else if(a==="mtab"){const t=b.dataset.t;if(lk(t))return login();go(t)}
-  else if(a==="plan"){if(!S.me)return login();if(S.off&&S.off.reserve&&!S.me.user.owner)return toast("Booking is turned off for now");openPlan()}
+  else if(a==="plan"){if(!S.me)return login();openPlan()}
   else if(a==="redeem"){const c=$("#code").value.trim().toUpperCase();if(!c)return toast("Enter a code");b.disabled=true;const r=await api(A+"/giftcard",{code:c});b.disabled=false;
     if(r.ok){toast(money(r.data.added)+" added to your balance");await load();$("#gb")?.classList.add("flash")}else toast(r.data.error||"Code refused")}
   else if(a==="sendtog"){S.sendOpen=!S.sendOpen;const f=$(".snd-f");if(f)f.hidden=!S.sendOpen;b.setAttribute("aria-expanded",String(S.sendOpen));if(S.sendOpen)$("#tid")?.focus()}
@@ -574,7 +596,7 @@ function reveal(){document.querySelectorAll(".rv").forEach(el=>io?io.observe(el)
 
 /* ===== Owner panel ===== */
 const OW={s:"over"},OA=A+"/owner/";
-const owner=()=>`<h1 class="sm">Owner</h1><div class="fl">${[["over","Overview"],["users","Users"],["gifts","Gift cards"],["feat","Features"],["set","Settings"],["host","Hosting"]].map(([k,n])=>`<button class="b sm${OW.s===k?" on":""}" data-oa="sec" data-k="${k}">${n}</button>`).join("")}</div><div id="ow">${none("Loading...")}</div>`;
+const owner=()=>`<h1 class="sm">Owner</h1><div class="fl">${[["over","Overview"],["users","Users"],["gifts","Gift cards"],["set","Settings"],["log","Log"]].map(([k,n])=>`<button class="b sm${OW.s===k?" on":""}" data-oa="sec" data-k="${k}">${n}</button>`).join("")}</div><div id="ow">${none("Loading...")}</div>`;
 async function userView(put){const r=await api(OA+"user?id="+encodeURIComponent(OW.u));if(!r.ok){OW.u=null;return put(none(esc(r.data.error||"Error")))}const x=r.data.u,n=Date.now();
   put(`<button class="b sm" data-oa="back">&larr; Users</button><div class="box prof" style="margin-top:10px">${x.avatar?`<img class="pp" src="${esc(x.avatar)}" alt="">`:""}<div class="pi"><h2>${esc(x.name)}${x.active?"":' <span class="bad">banned</span>'}</h2><p class="dim">${esc(x.email)}</p><p class="dim">ID ${esc(x.id)}</p></div></div>
   <div class="grid"><div class="box"><span class="dim">Balance</span><div class="big">${money(x.balance)}</div></div><div class="box"><span class="dim">Hours</span><div class="big">${x.hours}</div></div></div>
@@ -583,46 +605,17 @@ async function userView(put){const r=await api(OA+"user?id="+encodeURIComponent(
   <div class="box"><h2>Bookings</h2>${x.res.length?x.res.map(y=>`<div class="line"><span>${new Date(y.start).toLocaleString("en-US")} / ${dur((y.end-y.start)/6e4)} / ${money(y.price)}</span>${y.end>n?`<button class="b sm" data-oa="cancel" data-s="${y.start}">Cancel</button>`:""}</div>`).join(""):none("None")}</div>`)}
 async function ownerPaint(){if(!$("#ow"))return;const s=OW.s,put=h=>{if($("#ow")&&OW.s===s)$("#ow").innerHTML=h},bad=r=>put(none(esc(r.data.error||"Error")));
   if(s==="over"){const[r,f,ru]=await Promise.all([api(OA+"stats"),api("/api/stats"),api(A+"/recent-users")]);if(!r.ok)return bad(r);const d=r.data,c=(k,v)=>`<div class="box"><span class="dim">${k}</span><div class="big">${v}</div></div>`,fs=f.ok?f.data:{};
-    put(`<div class="box dn"><h2>Emergency</h2><div class="dn-r"><div><b>Down web</b><p class="dim">Website closed to everyone except you.</p></div><button class="tg${d.cfg.downWeb?" on":""}" role="switch" aria-checked="${!!d.cfg.downWeb}" aria-label="Down web" data-oa="down" data-k="web"><i></i></button></div><div class="dn-r"><div><b>Down all</b><p class="dim">Website, bots, hub and API all stop.</p></div><button class="tg${d.cfg.downAll?" on":""}" role="switch" aria-checked="${!!d.cfg.downAll}" aria-label="Down all" data-oa="down" data-k="all"><i></i></button></div></div><div class="grid g4">${c("Users",d.users)}${c("Gift cards used",d.gu+" / "+d.gc)}${c("Bots",fs.scanners>0?"Online":"Offline")}${c("Brainrots today",fs.activeToday??"-")}</div>${d.cfg.maintenance?'<p class="bad">Maintenance mode is ON.</p>':""}<div class="box"><h2>Quick actions</h2><div class="ow-act"><button class="b s sm" data-oa="sec" data-k="gifts">Create gift card</button><button class="b sm" data-oa="sec" data-k="users">Manage users</button><button class="b sm" data-oa="sec" data-k="set">Settings</button><button class="b sm" data-oa="sec" data-k="host">Hosting</button></div></div><div class="box"><h2>Recently connected</h2>${ru.ok&&ru.data.users.length?`<div class="rcl">${ru.data.users.map(x=>`<div class="rcp">${av2(x.avatar,x.name)}<b>${esc(x.name)}</b><span class="dim">${ago(x.t)}</span></div>`).join("")}</div>`:none("Nobody yet.")}</div>`)}
+    put(`<div class="box dn"><h2>Emergency</h2><div class="dn-r"><div><b>Down web</b><p class="dim">Website closed to everyone except you.</p></div><button class="tg${d.cfg.downWeb?" on":""}" role="switch" aria-checked="${!!d.cfg.downWeb}" aria-label="Down web" data-oa="down" data-k="web"><i></i></button></div><div class="dn-r"><div><b>Down all</b><p class="dim">Website, bots, hub and API all stop.</p></div><button class="tg${d.cfg.downAll?" on":""}" role="switch" aria-checked="${!!d.cfg.downAll}" aria-label="Down all" data-oa="down" data-k="all"><i></i></button></div></div><div class="grid g4">${c("Users",d.users)}${c("Users' balance",money(d.bal))}${c("Redeemed today",money(d.day))}${c("Redeemed this month",money(d.month))}${c("Redeemed all time",money(d.all))}${c("Gift cards used",d.gu+" / "+d.gc)}${c("Bots",fs.scanners>0?"Online":"Offline")}${c("Brainrots today",fs.activeToday??"-")}</div>${d.cfg.maintenance?'<p class="bad">Maintenance mode is ON.</p>':""}<div class="box"><h2>Quick actions</h2><div class="ow-act"><button class="b s sm" data-oa="sec" data-k="gifts">Create gift card</button><button class="b sm" data-oa="sec" data-k="users">Manage users</button><button class="b sm" data-oa="sec" data-k="set">Settings</button><button class="b sm" data-oa="sec" data-k="log">Logs</button></div></div><div class="box"><h2>Recently connected</h2>${ru.ok&&ru.data.users.length?`<div class="rcl">${ru.data.users.map(x=>`<div class="rcp">${av2(x.avatar,x.name)}<b>${esc(x.name)}</b><span class="dim">${ago(x.t)}</span></div>`).join("")}</div>`:none("Nobody yet.")}</div>`)}
   else if(s==="users"){if(OW.u)return userView(put);const r=await api(OA+"users?q="+encodeURIComponent(OW.q||""));if(!r.ok)return bad(r);
-    put(`<div class="box"><input id="oq" placeholder="Search name or ID" value="${esc(OW.q||"")}"><button class="b sm" data-oa="search">Search</button></div><div class="box sx"><table><thead><tr><th>User</th><th>Balance</th><th>Hours</th><th></th></tr></thead><tbody>${r.data.users.map(x=>`<tr><td><div style="display:flex;align-items:center;gap:8px">${av2(x.v,x.n||x.id)}<div>${esc(x.n||x.id)}${x.a===false?' <span class="bad">banned</span>':""}<br><span class="dim">${esc(x.id)}</span></div></div></td><td>${money(x.b)}</td><td>${x.h||0}</td><td><button class="b sm" data-oa="user" data-id="${esc(x.id)}">Open</button></td></tr>`).join("")}</tbody></table></div>`)}
+    put(`<div class="box"><input id="oq" placeholder="Search name or ID" value="${esc(OW.q||"")}"><button class="b sm" data-oa="search">Search</button></div><div class="box sx"><table><thead><tr><th>User</th><th>Balance</th><th>Hours</th><th></th></tr></thead><tbody>${r.data.users.map(x=>`<tr><td>${esc(x.n||x.id)}${x.a===false?' <span class="bad">banned</span>':""}<br><span class="dim">${esc(x.id)}</span></td><td>${money(x.b)}</td><td>${x.h||0}</td><td><button class="b sm" data-oa="user" data-id="${esc(x.id)}">Open</button></td></tr>`).join("")}</tbody></table></div>`)}
   else if(s==="gifts"){const r=await api(OA+"gifts");if(!r.ok)return bad(r);
     put(`<div class="box"><h2>Create gift cards</h2><label class="dim" for="gam">Amount in $</label><input id="gam" type="number" min="1" step="0.5" value="5"><label class="dim" for="gco">How many (1 to 20)</label><input id="gco" type="number" min="1" max="20" value="1"><button class="b sm" data-oa="gnew">Create</button>${OW.codes?`<p>${OW.codes.map(c=>`<code>${esc(c)}</code> <button class="b sm" data-oa="copy" data-c="${esc(c)}">Copy</button>`).join("<br>")}</p>`:""}</div><div class="box sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Status</th></tr></thead><tbody>${r.data.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.a)}</td><td>${g.u?"Used":`Unused <button class="b sm" data-oa="gdel" data-c="${esc(g.code)}">Delete</button>`}</td></tr>`).join("")}</tbody></table></div>`)}
-  else if(s==="feat"){const r=await api(A+"/config");if(!r.ok)return bad(r);const off=r.data.off||{};S.off=off;
-    const F=[["reserve","Slot booking","Nobody can book a slot (Buy tab)"],["buy","Hour packs","Buying hour packs is blocked"],["gift","Gift card redeem","Codes cannot be redeemed"],["transfer","Send balance","Users cannot send money to each other"],["signup","New sign-ups","New Discord accounts cannot register"],["board","Leaderboard","Leaderboard is closed"],["aj","AJ script","The AJ script locks for every user"],["scanner","Scanner","Scanners stop sending brainrots"]];
-    put(`<div class="box"><h2>Features</h2>${none("Switch a feature off to block it for everyone except you. Changes apply within seconds.")}${F.map(([k,n,d])=>`<div class="dn-r"><div><b>${n}</b><p class="dim">${d}</p></div><button class="tg${off[k]?"":" on"}" role="switch" aria-checked="${!off[k]}" aria-label="${n}" data-oa="flag" data-k="${k}"><i></i></button></div>`).join("")}<p class="dim" style="margin-top:8px">On = feature works. Off = feature blocked.</p></div>`)}
   else if(s==="set"){const r=await api(OA+"stats");if(!r.ok)return bad(r);const c=r.data.cfg;
     put(`<div class="box"><h2>Settings</h2><label class="dim" for="spr">Price per hour ($)</label><input id="spr" type="number" step="0.05" value="${c.price}"><label class="dim" for="sse">Seats per slot</label><input id="sse" type="number" min="1" value="${c.seats}"><label class="dim" for="sba">Banner shown on top of the site (empty = none)</label><input id="sba" maxlength="200" value="${esc(c.banner)}"><label class="dim" for="smi">Minimum brainrot value saved by the bot (MPS)</label><input id="smi" type="number" min="0" value="${r.data.minMps}"><label><input id="sma" type="checkbox" ${c.maintenance?"checked":""}>Maintenance mode (blocks bookings and purchases)</label><button class="b sm" data-oa="save">Save</button></div>`)}
-  else if(s==="host"){put(hostView());HS.drawn=0;hostDraw();if(HS.cfg)hostSt(HS.cfg);hostPoll(true)}}
-/* ===== Hosting (site control + console) ===== */
-const HS={srv:[],loc:[],cfg:null,drawn:0};
-const hts=t=>{const d=new Date(t),p=n=>String(n).padStart(2,"0");return p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds())};
-const hostView=()=>`<div class="box hs-h"><div><h2 style="margin:0"><span class="hdot" id="hdot"></span><span id="hsl">...</span></h2><p class="dim" id="hst">&nbsp;</p></div><div class="ow-act"><button class="b sm hs-g" data-oa="hp" data-k="start">Start</button><button class="b sm" data-oa="hp" data-k="stop">Stop web</button><button class="b sm hs-r" data-oa="hp" data-k="stopall">Stop all</button></div></div><div class="grid g4"><div class="box"><span class="dim">Users</span><div class="big" id="hu">-</div></div><div class="box"><span class="dim">Gift cards used</span><div class="big" id="hg">-</div></div><div class="box"><span class="dim">Bots</span><div class="big" id="hb">-</div></div><div class="box"><span class="dim">Brainrots today</span><div class="big" id="hbr">-</div></div></div><div class="box"><div class="hcon" id="hc"></div><input id="hin" placeholder="Type a command... (help)" autocomplete="off" autocapitalize="off" spellcheck="false"></div>`;
-function hostDraw(){const c=$("#hc");if(!c)return;const nb=!HS.drawn||c.scrollHeight-c.scrollTop-c.clientHeight<40,a=[...HS.srv,...HS.loc].sort((x,y)=>x.t-y.t),f=document.createDocumentFragment();(a.length?a:[{t:Date.now(),m:"No logs yet. Type help."}]).forEach(l=>{const d=document.createElement("div");d.textContent="["+hts(l.t)+"] "+l.m;f.appendChild(d)});c.textContent="";c.appendChild(f);if(nb)c.scrollTop=c.scrollHeight;HS.drawn=1}
-function hostSt(c){HS.cfg=c;const d=$("#hdot");if(!d)return;d.className="hdot "+(c.downAll?"offline":c.downWeb?"stopping":"running");$("#hsl").textContent=c.downAll?"All down":c.downWeb?"Web down":"Online";$("#hst").textContent=(c.maintenance?"Maintenance ON · ":"")+money(c.price)+"/h · "+c.seats+" seats"}
-function hostAdd(m){HS.loc.push({t:Date.now(),m});if(HS.loc.length>60)HS.loc.shift();hostDraw()}
-async function hostCards(){const[r,f]=await Promise.all([api(OA+"stats"),api("/api/stats")]);if(!$("#hu"))return;const d=r.ok?r.data:{},fs=f.ok?f.data:{};$("#hu").textContent=d.users??"-";$("#hg").textContent=r.ok?d.gu+" / "+d.gc:"-";$("#hb").textContent=fs.scanners>0?"Online":"Offline";$("#hbr").textContent=fs.activeToday??"-"}
-async function hostPoll(first){if(!$("#hc")||OW.s!=="host")return;const[l,g]=await Promise.all([api(OA+"log"),api(A+"/config")]);if(!$("#hc"))return;if(l.ok){HS.srv=l.data.log||[];hostDraw()}if(g.ok)hostSt({downWeb:!!g.data.downWeb,downAll:!!g.data.downAll,maintenance:!!g.data.maintenance,price:+g.data.price,seats:+g.data.seats});if(first===true)hostCards()}
-setInterval(hostPoll,5000);
-async function hostCmd(line){line=line.trim();if(!line)return;const[c,...rs]=line.split(/\s+/),x=rs.join(" "),k=c.toLowerCase(),say=hostAdd;say("> "+line);
-  const dn=async d=>{const r=await api(OA+"down",d);if(!r.ok)return say("Error: "+(r.data.error||"failed"));S.downWeb=!!r.data.cfg.downWeb;S.downAll=!!r.data.cfg.downAll;say(S.downAll?"All services stopped":S.downWeb?"Web stopped (only you can access it)":"Web is online");hostSt(r.data.cfg);render()};
-  const st=async p=>{const g=await api(OA+"stats");if(!g.ok)return say("Error: "+(g.data.error||"failed"));const q=g.data.cfg,s=await api(OA+"settings",{price:q.price,seats:q.seats,banner:q.banner,maintenance:q.maintenance,...p});if(!s.ok)return say("Error: "+(s.data.error||"failed"));CONFIG.PRICE_PER_HOUR=+s.data.cfg.price;CONFIG.SEATS=+s.data.cfg.seats;S.banner=s.data.cfg.banner;S.maint=s.data.cfg.maintenance;say("Saved");hostSt(s.data.cfg);render()};
-  if(k==="help")["start - put the web online","stop - close the web (owner only)","stopall - stop web, bots, hub and API","maintenance on|off","banner <text> (empty = remove)","price <n>  /  seats <n>","status  /  refresh"].forEach(say);
-  else if(k==="start")await dn({web:false});
-  else if(k==="stop")await dn({web:true});
-  else if(k==="stopall")await dn({all:true});
-  else if(k==="maintenance"&&/^(on|off)$/i.test(x))await st({maintenance:x.toLowerCase()==="on"});
-  else if(k==="banner")await st({banner:x});
-  else if(k==="price"&&x!==""&&isFinite(+x))await st({price:+x});
-  else if(k==="seats"&&x!==""&&isFinite(+x))await st({seats:+x});
-  else if(k==="status"){const h=HS.cfg;say(h?(h.downAll?"ALL DOWN":h.downWeb?"WEB DOWN":"ONLINE")+(h.maintenance?" + maintenance":""):"unknown")}
-  else if(k==="refresh")await hostPoll(true);
-  else say("Unknown command. Type help.")}
-document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="hin"){const v=e.target.value;e.target.value="";hostCmd(v)}});
+  else if(s==="log"){const r=await api(OA+"log");if(!r.ok)return bad(r);put(`<div class="box">${r.data.log.length?r.data.log.map(l=>`<div class="line"><span>${esc(l.m)}</span><span class="dim">${ago(l.t)}</span></div>`).join(""):none("Nothing yet.")}</div>`)}}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-oa]");if(!b)return;const a=b.dataset.oa,v=id=>$("#"+id)?.value,run=async(p,d,ok)=>{const r=await api(OA+p,d);toast(r.ok?(ok||"Done"):(r.data.error||"Error"));return r};
   if(a==="sec"){OW.s=b.dataset.k;OW.u=null;render()}
   else if(a==="down"){const k=b.dataset.k,on=!b.classList.contains("on");if(on&&!confirm(k==="all"?"Stop EVERYTHING (site, bots, hub, API)?":"Close the site to everyone except you?"))return;const r=await run("down",{[k]:on},on?"Down":"Back online");if(r.ok){S.downWeb=!!r.data.cfg.downWeb;S.downAll=!!r.data.cfg.downAll;render()}}
-  else if(a==="flag"){const k=b.dataset.k,off=b.classList.contains("on");const r=await run("flag",{k,v:off},off?"Turned off":"Turned on");if(r.ok){S.off=r.data.cfg.off||{};ownerPaint()}}
   else if(a==="search"){OW.q=v("oq");ownerPaint()}
   else if(a==="user"){OW.u=b.dataset.id;ownerPaint()}
   else if(a==="back"){OW.u=null;ownerPaint()}
@@ -632,7 +625,6 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-oa]"
   else if(a==="cancel"){if(confirm("Cancel this booking and refund it?")){await run("cancel",{id:OW.u,start:+b.dataset.s});ownerPaint()}}
   else if(a==="gnew"){const r=await run("gifts/create",{amount:v("gam"),count:v("gco")});if(r.ok){OW.codes=r.data.codes;ownerPaint()}}
   else if(a==="gdel"){await run("gifts/delete",{code:b.dataset.c});ownerPaint()}
-  else if(a==="hp"){const k=b.dataset.k;if(k==="stop"&&!confirm("Close the site to everyone except you?"))return;if(k==="stopall"&&!confirm("Stop EVERYTHING (site, bots, hub, API)?"))return;hostCmd(k)}
   else if(a==="copy"){try{await navigator.clipboard.writeText(b.dataset.c);toast("Copied")}catch{toast("Copy failed")}}
   else if(a==="save"){const r=await run("settings",{price:v("spr"),seats:v("sse"),banner:v("sba"),maintenance:$("#sma").checked,minMps:v("smi")},"Saved");if(r.ok){CONFIG.PRICE_PER_HOUR=+r.data.cfg.price;CONFIG.SEATS=+r.data.cfg.seats;S.banner=r.data.cfg.banner;S.maint=r.data.cfg.maintenance}}
 });
@@ -673,59 +665,21 @@ addEventListener("pointermove",e=>{x=e.clientX;y=e.clientY;cd.style.transform="t
 document.addEventListener("pointerover",e=>cr.classList.toggle("h",!!(e.target.closest&&e.target.closest("a,button,.b,input,summary,[data-act]"))));
 addEventListener("pointerdown",()=>cr.style.transform+=" scale(.8)");
 (function f(){rx+=(x-rx)*.18;ry+=(y-ry)*.18;cr.style.transform="translate("+rx+"px,"+ry+"px)";requestAnimationFrame(f)})()})();
-/* ===== Musique Halloween (originale, générée, sans grésillement) ===== */
-/* Halloween waltz : musique originale générée (pas de fichier mp3). Boucle parfaite, sans clip. */
-function hwSynth(sr,onDone,yieldFn){
- var BEAT=.5,BARS=16,N=Math.round(BARS*3*BEAT*sr),L=new Float32Array(N),R=new Float32Array(N);
- var hz=function(m){return 440*Math.pow(2,(m-69)/12)};
- function add(buf,t0,pan,gain,src,len){var o=Math.round(t0*sr),gl=gain*(1-pan),gr=gain*(1+pan);
-  for(var e=0;e<3;e++){var d=Math.round([0,.375,.75][e]*sr),g=[1,.32,.15][e],p=e==1?-pan:e==2?pan:0,a=g*gain*(1-p)*.5,b=g*gain*(1+p)*.5;
-   if(e==0){a=gl*.5;b=gr*.5}
-   var s=(o+d)%N;for(var i=0;i<len;i++){var j=s+i;if(j>=N)j-=N;L[j]+=src[i]*a;R[j]+=src[i]*b}}}
- function note(kind,t,m,dur,gain,pan){
-  var f=hz(m),len=Math.round(Math.min(dur,3)*sr),s=new Float32Array(len),w=6.283185307*f/sr,i,x,env;
-  var att=kind=="pad"?.45*sr:.01*sr,rel=Math.min(len*.5,(kind=="pad"?.6:.05)*sr);
-  for(i=0;i<len;i++){
-   if(kind=="box"){env=Math.exp(-i/sr*3.2);x=Math.sin(w*i)+.35*Math.sin(2*w*i)*Math.exp(-i/sr*6)+.12*Math.sin(3.01*w*i)*Math.exp(-i/sr*10)}
-   else if(kind=="bass"){env=Math.exp(-i/sr*2.2);x=Math.sin(w*i)+.3*Math.sin(2*w*i)}
-   else{env=1;x=Math.sin(w*i)+.5*Math.sin(w*i*1.004)+.25*Math.sin(2*w*i)}
-   var a=i<att?i/att:1,r=i>len-rel?(len-i)/rel:1;a=a*a*(3-2*a);r=r*r*(3-2*r);s[i]=x*env*a*r}
-  add(null,t,pan||0,gain,s,len)}
- var A=57,E=64;var bar=3*BEAT;
- var ch=[[57,60,64],[57,60,64],[50,53,57],[57,60,64],[53,57,60],[52,56,59],[57,60,64],[52,56,59]];
- var bs=[45,45,38,45,41,40,45,40];
- var mel=[[0,76,1],[1,72,1],[2,69,1],[3,72,1],[4,71,2],[6,69,1],[7,64,1],[8,69,1],[9,72,1],[10,76,1],[11,77,2],[13,76,1],[14,72,1],[15,69,1],
-  [16,65,1],[17,69,1],[18,72,1],[19,76,1],[20,74,2],[22,72,1],[23,71,1],[24,68,1],[25,71,1],[26,74,1],[27,76,2],[29,71,1],[30,68,1],[31,64,1],
-  [32,69,3],[35,72,1],[36,76,2],[38,72,1],[39,69,1],[40,64,2],[42,68,1],[43,71,1],[44,72,1],[45,71,1],[46,69,3]];
- var jobs=[];
- for(var rep=0;rep<2;rep++)for(var k=0;k<8;k++){(function(rep,k){var t=(rep*8+k)*bar;
-  jobs.push(function(){var c=ch[k];c.forEach(function(m,q){note("pad",t,m,bar*1.15,.07,q-1?.3:-.3)});
-   note("bass",t,bs[k],bar*.95,.2,0);note("bass",t+BEAT*2,bs[k]+7,BEAT*1.5,.07,0);
-   note("box",t+BEAT,c[1]+12,BEAT*3,.05,-.4);note("box",t+BEAT*2,c[2]+12,BEAT*3,.05,.4)})})(rep,k)}
- for(var rep2=0;rep2<2;rep2++)mel.forEach(function(n){jobs.push(function(){var m=n[1]+(rep2&&n[0]%2?0:0);note("box",rep2*24+n[0]*BEAT,rep2?m+(n[0]>30?0:0):m,n[2]*BEAT*3,.22,((n[0]*37)%7-3)*.07)})});
- var ji=0;(function step(){var t0=Date.now();while(ji<jobs.length&&Date.now()-t0<12)jobs[ji++]();
-  if(ji<jobs.length){yieldFn(step);return}
-  var pk=0,i;for(i=0;i<N;i++){pk=Math.max(pk,Math.abs(L[i]),Math.abs(R[i]))}
-  var g=.55/(pk||1);for(i=0;i<N;i++){L[i]*=g;R[i]*=g}onDone(L,R,sr)})()}
-
-(()=>{const SK="spyaj_snd";let want=true;try{want=localStorage.getItem(SK)!=="off"}catch{}
-let ctx=null,gain=null,src=null,buf=null,gen=false,playing=false;
-const btn=document.createElement("button");btn.id="snd";btn.className="ic"+(want?"":" off");btn.type="button";btn.setAttribute("aria-label","Toggle music");
+/* ===== Soft ambient sound (home only) ===== */
+(()=>{const body=document.body,isHome=()=>body.classList.contains("home"),SK="spyaj_snd";let want=true;try{want=localStorage.getItem(SK)!=="off"}catch{}
+let ctx=null,master=null,started=false;
+const btn=document.createElement("button");btn.id="snd";btn.className="ic"+(want?"":" off");btn.type="button";btn.setAttribute("aria-label","Toggle ambient sound");
 btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wv" d="M16.5 9a4 4 0 010 6M19 6.5a8 8 0 010 11"/><path class="x" d="M17 9l5 6M22 9l-5 6"/></svg>';document.body.appendChild(btn);
-function init(){if(ctx)return true;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
- try{ctx=new AC({latencyHint:"playback"})}catch{ctx=new AC()}
- gain=ctx.createGain();gain.gain.value=0;gain.connect(ctx.destination);return true}
-function build(){if(gen||buf)return;gen=true;hwSynth(ctx.sampleRate,(L,R,sr)=>{buf=ctx.createBuffer(2,L.length,sr);buf.copyToChannel(L,0);buf.copyToChannel(R,1);upd()},f=>setTimeout(f,0))}
-function ramp(to,s){const t=ctx.currentTime;gain.gain.cancelScheduledValues(t);gain.gain.setValueAtTime(gain.gain.value,t);gain.gain.linearRampToValueAtTime(to,t+s)}
-function upd(){if(!ctx)return;const should=want&&!document.hidden;
- if(should){ctx.resume();if(!buf){build();return}
-  if(!playing){src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);src.start();playing=true}
-  ramp(.35,2.5)}
- else if(playing){ramp(0,.6);setTimeout(()=>{if(!(want&&!document.hidden)&&ctx&&playing){try{src.stop()}catch{}playing=false;ctx.suspend()}},800)}}
-const kick=()=>{if(!want||!init())return;upd()};
+function build(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;ctx=new AC();master=ctx.createGain();master.gain.value=0;
+ const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=700;lp.Q.value=.3;const out=ctx.createGain();out.gain.value=1;const cp=ctx.createDynamicsCompressor();cp.threshold.value=-30;cp.knee.value=30;cp.ratio.value=6;master.connect(lp);lp.connect(out);out.connect(cp);cp.connect(ctx.destination);
+ [110,164.81,220,277.18,329.63].forEach((f,i)=>{const b=.2/(1+i*.4);for(const k of[-1,1]){const o=ctx.createOscillator();o.type="sine";o.frequency.value=f;o.detune.value=k*(2+i*.5);
+  const g=ctx.createGain();g.gain.value=b*.5,l=ctx.createOscillator();l.frequency.value=.04+i*.013;const lg=ctx.createGain();lg.gain.value=b*.5;l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(master);o.start();l.start()}});return true}
+function fade(to,s){if(!master)return;const t=ctx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+s)}
+function upd(){if(!started||!ctx)return;if(isHome()&&want&&!document.hidden){ctx.resume();fade(.3,3)}else{fade(0,1.2);setTimeout(()=>{if(!(isHome()&&want&&!document.hidden)&&ctx)ctx.suspend()},1400)}}
+const kick=()=>{if(started||!isHome()||!want)return;if(!ctx&&!build())return;started=true;upd()};
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,kick,{passive:true}));
-btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch{}btn.classList.toggle("off",!want);if(want&&!init())return;upd()});
-document.addEventListener("visibilitychange",upd)})();
+btn.addEventListener("click",()=>{want=!want;try{localStorage.setItem(SK,want?"on":"off")}catch{}btn.classList.toggle("off",!want);if(want&&!started){if(!ctx&&!build())return;started=true}upd()});
+new MutationObserver(upd).observe(body,{attributes:true,attributeFilter:["class"]});document.addEventListener("visibilitychange",upd)})();
 
 (()=>{const cv=document.createElement("canvas");cv.id="pl";cv.setAttribute("aria-hidden","true");document.body.insertBefore(cv,document.body.firstChild);const c=cv.getContext("2d"),rm=matchMedia("(prefers-reduced-motion:reduce)").matches,N=innerWidth<700?900:2200,g=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5;
 const P=Array.from({length:N},()=>{const r=Math.pow(Math.random(),1.5),arm=Math.floor(Math.random()*3);const t=arm*2.0944+r*5.5+g()*(.1+.5*(1-r));const k=Math.random();return{r,t,s:.6+Math.random()*1.4*(1.1-r),c:r<.25?"255,225,180":k<.5?"150,185,255":k<.8?"190,140,255":"255,255,255",o:.35+Math.random()*.65}});
@@ -784,82 +738,6 @@ window.board=function(){
   rest=L.slice(3,10);
   return fl+best+`<div class="pdm2">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box"><h2 class="lbh">Other players</h2>${rest.map((r,i)=>`<div class="rw${r.u===me?" me":""}"><span class="rn">#${i+4}</span>${brImg(r.n)}<div class="fx"><b>${esc(r.n)}</b> ${mu(r)}<div class="dim">${esc(r.u)}${r.t?" · "+ago(r.t):""}</div></div><span class="vl">${fmt(r.v)}</span></div>`).join("")}</div>`:"")};
 if(typeof S!=="undefined"&&S.tab==="board")render();
-</script>
-
-<!-- === HALLOWEEN : thème orange, citrouilles, fond 3D, musique générée (aucun fichier mp3) === -->
-<style>
-body.hw{--hw1:#ff8a1f;--hw2:#ff5a00;--hw3:#ffd27a}
-body.hw #gl,body.hw.home #gl{background:radial-gradient(120% 90% at 50% 105%,#4a1c00,#1a0800 52%,#050200)}
-body.hw .vig{background:radial-gradient(130% 100% at 50% 40%,transparent 48%,rgba(26,8,0,.72))}
-body.hw h1{text-shadow:0 0 28px rgba(255,122,26,.45)}
-body.hw #wp{mix-blend-mode:screen}
-#hw3d{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.hwp{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) - 4px);z-index:0;pointer-events:none;width:clamp(96px,27vw,190px);--ry:14deg;animation:hwb 5s ease-in-out infinite;transform-origin:50% 100%}
-.hwp.l{left:max(56px,calc(env(safe-area-inset-left,0px) + 56px))}
-.hwp.r{right:max(8px,env(safe-area-inset-right,0px));--ry:-14deg;width:clamp(84px,24vw,165px);animation-delay:-2.2s}
-.hwp svg{display:block;width:100%;height:auto;overflow:visible}
-.hwp .gl{position:absolute;left:-30%;right:-30%;top:-10%;bottom:-20%;background:radial-gradient(closest-side,rgba(255,138,31,.55),rgba(255,90,0,.18) 55%,transparent 75%);animation:hwf 2.6s ease-in-out infinite alternate;z-index:-1}
-.hwp .hf{animation:hwf 1.7s ease-in-out infinite alternate}
-@keyframes hwb{0%,100%{transform:perspective(520px) rotateY(var(--ry)) translateY(0)}50%{transform:perspective(520px) rotateY(calc(var(--ry) * -.45)) translateY(-7px)}}
-@keyframes hwf{from{opacity:.62}to{opacity:1}}
-#snd{display:inline-grid!important}
-@media(prefers-reduced-motion:reduce){.hwp,.hwp .gl,.hwp .hf{animation:none!important}}
-</style>
-<script>
-(()=>{
-document.body.classList.add("hw");
-/* ----- Citrouilles (SVG, bas gauche et bas droite) ----- */
-function pk(id,v){
- const eyes=v?'<path d="M36 54 Q44 44 52 54 Z"/><path d="M68 54 Q76 44 84 54 Z"/>':'<path d="M36 52 L52 52 L44 36 Z"/><path d="M68 52 L84 52 L76 36 Z"/>';
- const mouth=v?'<path d="M34 68 Q60 98 86 68 Q60 84 34 68 Z"/><path d="M52 80 L56 88 L60 82 L64 88 L68 80 Q60 84 52 80Z" fill="#2a0e00"/>':'<path d="M34 70 L42 68 L48 78 L54 70 L60 80 L66 70 L72 78 L78 68 L86 70 Q60 100 34 70 Z"/>';
- return '<div class="gl"></div><svg viewBox="0 0 120 112" aria-hidden="true"><defs>'+
- '<radialGradient id="pg'+id+'" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#ffc062"/><stop offset=".45" stop-color="#ff8a1f"/><stop offset="1" stop-color="#b53a00"/></radialGradient>'+
- '<linearGradient id="ps'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b8f2a"/><stop offset="1" stop-color="#2e4a12"/></linearGradient></defs>'+
- '<ellipse cx="60" cy="106" rx="46" ry="6" fill="rgba(0,0,0,.5)"/>'+
- '<ellipse cx="32" cy="62" rx="28" ry="40" fill="url(#pg'+id+')"/><ellipse cx="88" cy="62" rx="28" ry="40" fill="url(#pg'+id+')"/>'+
- '<ellipse cx="60" cy="60" rx="33" ry="44" fill="url(#pg'+id+')"/>'+
- '<path d="M60 18 Q50 60 60 102 M44 22 Q22 60 40 98 M76 22 Q98 60 80 98" fill="none" stroke="rgba(110,35,0,.5)" stroke-width="2.2" stroke-linecap="round"/>'+
- '<path d="M54 20 Q54 8 64 3 L71 9 Q63 12 64 22 Z" fill="url(#ps'+id+')"/><path d="M68 10 Q82 4 88 12 Q78 12 72 16Z" fill="#5a8a22"/>'+
- '<g class="hf" fill="#ffe27a">'+eyes+'<path d="M60 58 L55 67 L65 67 Z"/>'+mouth+'</g></svg>'}
-const L=document.createElement("div");L.className="hwp l";L.innerHTML=pk("a",0);
-const R=document.createElement("div");R.className="hwp r";R.innerHTML=pk("b",1);
-/* ----- Fond 3D : braises en perspective, lune orange, chauves-souris ----- */
-const cv=document.createElement("canvas");cv.id="hw3d";cv.setAttribute("aria-hidden","true");
-document.body.appendChild(cv);document.body.appendChild(L);document.body.appendChild(R);
-const c=cv.getContext("2d"),rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
-let W=0,H=0,tx=0,ty=0,px=0,py=0;
-function size(){const d=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;c.setTransform(d,0,0,d,0,0)}
-size();addEventListener("resize",size);
-addEventListener("pointermove",e=>{tx=e.clientX/W-.5;ty=e.clientY/H-.5},{passive:true});
-addEventListener("deviceorientation",e=>{if(e.gamma!=null){tx=Math.max(-.5,Math.min(.5,e.gamma/60));ty=Math.max(-.5,Math.min(.5,(e.beta-45)/90))}},{passive:true});
-const mk=z=>({x:(Math.random()-.5)*2.6,y:(Math.random()-.5)*2.6,z:z==null?Math.random():z,s:.5+Math.random()*.7});
-const E=Array.from({length:72},()=>mk());
-const B=Array.from({length:5},(_,i)=>({x:Math.random()*innerWidth,y:innerHeight*(.08+Math.random()*.38),v:(.35+Math.random()*.5)*(i%2?1:-1),sc:.45+Math.random()*.8,f:Math.random()*6.3,b:Math.random()*6.3}));
-function bat(x,y,s,f){const w=Math.sin(f)*11;c.save();c.translate(x,y);c.scale(s,s);c.fillStyle="#0b0300";c.beginPath();c.moveTo(0,0);
- c.quadraticCurveTo(-14,-14-w,-36,-6+w*.6);c.quadraticCurveTo(-27,-1,-23,7);c.quadraticCurveTo(-16,1,-10,7);c.quadraticCurveTo(-6,3,0,9);
- c.quadraticCurveTo(6,3,10,7);c.quadraticCurveTo(16,1,23,7);c.quadraticCurveTo(27,-1,36,-6+w*.6);c.quadraticCurveTo(14,-14-w,0,0);c.fill();
- c.beginPath();c.arc(0,2,5,0,6.3);c.fill();c.beginPath();c.moveTo(-4,-2);c.lineTo(-3,-10);c.lineTo(0,-3);c.lineTo(3,-10);c.lineTo(4,-2);c.fill();c.restore()}
-function frame(){
- c.clearRect(0,0,W,H);px+=(tx-px)*.05;py+=(ty-py)*.05;
- const mx=W*.5-px*38,my=H*.7-py*26,mr=Math.min(W,H)*.17;
- let g=c.createRadialGradient(mx,my,mr*.2,mx,my,mr*2.6);g.addColorStop(0,"rgba(255,140,40,.42)");g.addColorStop(.35,"rgba(255,90,0,.14)");g.addColorStop(1,"rgba(255,90,0,0)");
- c.fillStyle=g;c.fillRect(0,0,W,H);
- g=c.createRadialGradient(mx-mr*.25,my-mr*.25,mr*.1,mx,my,mr);g.addColorStop(0,"#ffd9a0");g.addColorStop(.6,"#ff9a3c");g.addColorStop(1,"#d9560a");
- c.fillStyle=g;c.beginPath();c.arc(mx,my,mr,0,6.3);c.fill();
- c.fillStyle="rgba(120,40,0,.22)";[[-.3,.25,.22],[.25,-.2,.15],[.1,.4,.1]].forEach(a=>{c.beginPath();c.arc(mx+a[0]*mr,my+a[1]*mr,a[2]*mr,0,6.3);c.fill()});
- for(const e of E){
-  if(!rm){e.z-=.0032*e.s;e.y-=.0009}
-  if(e.z<=.03||e.y<-1.5){Object.assign(e,mk(1))}
-  const f=.55/(e.z+.18),sx=W/2+(e.x*W*.32-px*90*(1-e.z))*f,sy=H/2+(e.y*H*.32-py*70*(1-e.z))*f,r=(1-e.z)*2.8*e.s+.5,a=Math.min(1,(1-e.z)*1.1);
-  if(sx<-20||sx>W+20||sy<-20||sy>H+20)continue;
-  c.fillStyle="rgba(255,110,20,"+(a*.22)+")";c.beginPath();c.arc(sx,sy,r*3,0,6.3);c.fill();
-  c.fillStyle="rgba(255,200,110,"+a+")";c.beginPath();c.arc(sx,sy,r,0,6.3);c.fill()}
- for(const b of B){if(!rm){b.x+=b.v;b.f+=.22;b.b+=.03}if(b.x>W+60)b.x=-60;if(b.x<-60)b.x=W+60;bat(b.x-px*30*b.sc,b.y+Math.sin(b.b)*14-py*14,b.sc,b.f)}
-}
-let raf=0;function loop(){frame();raf=requestAnimationFrame(loop)}
-if(rm)frame();else loop();
-document.addEventListener("visibilitychange",()=>{if(rm)return;if(document.hidden)cancelAnimationFrame(raf);else{cancelAnimationFrame(raf);loop()}});
-})();
 </script>
 
 </body>
