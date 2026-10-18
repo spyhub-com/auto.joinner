@@ -243,7 +243,25 @@ body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 .gv-bl small{display:block;font-size:10px;letter-spacing:.16em;opacity:.7}.gv-amt{font-size:clamp(26px,8vw,38px);font-weight:800;letter-spacing:-.02em;color:#fff;text-shadow:0 0 24px rgba(167,139,250,.7)}
 .gv-num{font:600 clamp(13px,3.8vw,17px) ui-monospace,Menlo,monospace;letter-spacing:.16em}
 .ts-wrap{display:flex;justify-content:center;align-items:center;min-height:65px;overflow:hidden}
-#gate{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:20px;background:#05060a}#gate .box{width:100%;max-width:360px;text-align:center}
+#gate{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:16px;background:#05060a;color:#fff;overflow:hidden;transition:opacity .4s ease,visibility .4s}
+#gate.out{opacity:0;visibility:hidden}
+#gate::before,#gate::after{content:"";position:absolute;width:60vmax;height:60vmax;border-radius:50%;filter:blur(90px);opacity:.32;animation:gfl 14s ease-in-out infinite alternate}
+#gate::before{background:#6d4cff;top:-25vmax;left:-20vmax}
+#gate::after{background:#1fb6a6;bottom:-28vmax;right:-22vmax;animation-delay:-7s}
+@keyframes gfl{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+#gate .gc{position:relative;z-index:1;width:100%;max-width:380px;padding:30px 18px 22px;text-align:center;border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.12);animation:gin .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes gin{from{opacity:0;transform:translateY(14px) scale(.97)}}
+#gate .gb{font-size:12px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;opacity:.7;margin-bottom:20px}
+#gate .gs{position:relative;width:64px;height:64px;margin:0 auto 18px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}
+#gate .gs::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(255,255,255,.25);animation:gpl 2.4s ease-out infinite}
+@keyframes gpl{from{transform:scale(.85);opacity:.9}to{transform:scale(1.4);opacity:0}}
+#gate .gs svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#gate h2{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-.01em}
+#gate #gm{margin:0 0 20px;font-size:14px;line-height:1.4;opacity:.65;min-height:20px}
+#gate #gm.er{color:#ff7a7a;opacity:1}
+#gate #gt{min-height:65px;display:flex;justify-content:center}
+#gate .gf{margin-top:18px;font-size:11px;letter-spacing:.05em;opacity:.4}
+@media (prefers-reduced-motion:reduce){#gate::before,#gate::after,#gate .gs::after,#gate .gc{animation:none}}
 </style>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
@@ -649,9 +667,9 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-oa]"
 });
 /* ===== Entry captcha (Turnstile) ===== */
 (function(){let ok=0;try{ok=sessionStorage.getItem("spyaj_v")}catch{}if(ok)return;
-const o=document.createElement("div");o.id="gate";o.innerHTML='<div class="box"><h2>Verifying you are human</h2><p class="dim" id="gm">Complete the check to enter the site.</p><div id="gt" class="ts-wrap"></div></div>';document.body.appendChild(o);
+const o=document.createElement("div");o.id="gate";o.innerHTML='<div class="gc"><div class="gb">SpyHub AJ</div><div class="gs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div><h2>Security check</h2><p id="gm">One quick step to confirm you are human.</p><div id="gt"></div><div class="gf">Protected by Cloudflare</div></div>';document.body.appendChild(o);
 const run=(n=0)=>{if(!window.turnstile){if(n<100)setTimeout(()=>run(n+1),200);else $("#gm").textContent="Captcha failed to load. Disable your adblock and refresh.";return}
-turnstile.render("#gt",{sitekey:TS.key,theme:"dark",callback:async t=>{const r=await api(A+"/verify",{turnstile:t});if(r.ok||r.status===503){try{sessionStorage.setItem("spyaj_v","1")}catch{}o.remove()}else{$("#gm").textContent=r.data.error||"Verification failed, try again";try{turnstile.reset()}catch{}}}})};run()})();
+turnstile.render("#gt",{sitekey:TS.key,theme:"dark",size:"flexible",callback:async t=>{const r=await api(A+"/verify",{turnstile:t});if(r.ok||r.status===503){try{sessionStorage.setItem("spyaj_v","1")}catch{}o.classList.add("out");setTimeout(()=>o.remove(),450)}else{const m=$("#gm");m.className="er";m.textContent=r.data.error||"Verification failed, try again";try{turnstile.reset()}catch{}}}})};run()})();
 showLd(900);load();
 </script>
 <script>
