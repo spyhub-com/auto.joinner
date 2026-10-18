@@ -265,25 +265,21 @@ body:not(.home) #app{max-width:1120px;padding-left:16px;padding-right:16px}}
 </style>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <style id="hw">
-::selection{background:rgba(255,122,26,.45)}
-.vig{background:radial-gradient(130% 100% at 50% 40%,transparent 55%,rgba(0,0,0,.65)),linear-gradient(0deg,rgba(255,106,0,.16),transparent 32%)}
-#gate{background:#0a0503}
-header{border-color:rgba(255,140,40,.28);box-shadow:var(--spec),0 0 22px -12px rgba(255,122,26,.6)}
-.chip,.ic{border-color:rgba(255,150,60,.3)}
-.ic:hover{border-color:#ff9a3c}
-.bar i{background:linear-gradient(90deg,#c2410c,#ffb066)}
+::selection{background:rgba(255,122,26,.4)}
+#gl{background:radial-gradient(120% 90% at 70% 20%,#17120f,#070605 60%,#000)}
+#gate{background:#070605}
+header{border-color:rgba(255,150,60,.22)}
+.bar i{background:linear-gradient(90deg,#9a3412,#ff9a3c)}
 @media(max-width:999px){
-header:has(#mn:not([hidden])){-webkit-backdrop-filter:none;backdrop-filter:none}
-header:has(#mn:not([hidden])) .ic[data-act=menu]{position:relative;z-index:50;border-color:#ff9a3c}
-body:has(#mn:not([hidden]))::after{content:"";position:fixed;inset:0;background:rgba(5,2,0,.55);z-index:4}
-.mn{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(310px,84vw);padding:calc(74px + env(safe-area-inset-top)) 14px 24px;overflow:auto;z-index:40;border:0;border-left:1px solid rgba(255,160,70,.5);border-radius:26px 0 0 26px;background:linear-gradient(160deg,rgba(255,150,60,.2),rgba(32,14,6,.55) 42%,rgba(12,6,3,.72));-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);box-shadow:-30px 0 80px -20px #000,-2px 0 26px -6px rgba(255,122,26,.5),inset 1px 1px 0 rgba(255,225,190,.35);animation:mnin .35s cubic-bezier(.2,.8,.2,1)}
-.mn button{padding:14px 16px;border-radius:14px;font-size:15px;font-weight:600;color:#f6ebe0}
-.mn button:hover{background:rgba(255,140,40,.12)}
-.mn button.lk{color:#b39a86}
-.mn button[aria-current=page]{color:#ffb066;background:linear-gradient(90deg,rgba(255,122,26,.22),transparent);box-shadow:inset 3px 0 0 #ff7a1a}
-.mn hr{border:0;height:1px;margin:12px 4px;background:linear-gradient(90deg,transparent,rgba(255,140,40,.75),transparent)}
+header:has(#mn:not([hidden])){-webkit-backdrop-filter:none;backdrop-filter:none;z-index:60}
+.mn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 64px);left:10px;right:10px;width:auto;max-height:calc(100dvh - env(safe-area-inset-top,0px) - 84px);overflow:auto;padding:10px;z-index:40;border:1px solid rgba(255,160,70,.38);border-radius:26px;background:linear-gradient(165deg,rgba(255,255,255,.13),rgba(26,18,12,.8) 40%,rgba(9,7,5,.9));-webkit-backdrop-filter:blur(28px) saturate(1.7);backdrop-filter:blur(28px) saturate(1.7);box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 22px 50px -20px rgba(255,122,26,.4),inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(255,150,60,.15);animation:mndown .28s cubic-bezier(.2,.8,.2,1)}
+.mn button{padding:15px 18px;border-radius:16px;font-size:17px;font-weight:600;color:#efe9e3}
+.mn button:hover{background:rgba(255,255,255,.07)}
+.mn button.lk{color:#8d8680}
+.mn button[aria-current=page]{color:#ff9a3c;background:rgba(255,122,26,.15);box-shadow:inset 0 0 0 1px rgba(255,150,60,.35)}
+.mn hr{border:0;height:1px;margin:10px 8px;background:linear-gradient(90deg,transparent,rgba(255,150,60,.65),transparent)}
 }
-@keyframes mnin{from{opacity:0;transform:translateX(40px)}}
+@keyframes mndown{from{opacity:0;transform:translateY(-14px) scale(.98)}}
 </style>
 </head>
 <body>
@@ -896,12 +892,6 @@ function bat(x,y,s,f){const w=Math.sin(f)*11;c.save();c.translate(x,y);c.scale(s
  c.beginPath();c.arc(0,2,5,0,6.3);c.fill();c.beginPath();c.moveTo(-4,-2);c.lineTo(-3,-10);c.lineTo(0,-3);c.lineTo(3,-10);c.lineTo(4,-2);c.fill();c.restore()}
 function frame(){
  c.clearRect(0,0,W,H);px+=(tx-px)*.05;py+=(ty-py)*.05;
- const mx=W*.5-px*38,my=H*.7-py*26,mr=Math.min(W,H)*.17;
- let g=c.createRadialGradient(mx,my,mr*.2,mx,my,mr*2.6);g.addColorStop(0,"rgba(255,140,40,.42)");g.addColorStop(.35,"rgba(255,90,0,.14)");g.addColorStop(1,"rgba(255,90,0,0)");
- c.fillStyle=g;c.fillRect(0,0,W,H);
- g=c.createRadialGradient(mx-mr*.25,my-mr*.25,mr*.1,mx,my,mr);g.addColorStop(0,"#ffd9a0");g.addColorStop(.6,"#ff9a3c");g.addColorStop(1,"#d9560a");
- c.fillStyle=g;c.beginPath();c.arc(mx,my,mr,0,6.3);c.fill();
- c.fillStyle="rgba(120,40,0,.22)";[[-.3,.25,.22],[.25,-.2,.15],[.1,.4,.1]].forEach(a=>{c.beginPath();c.arc(mx+a[0]*mr,my+a[1]*mr,a[2]*mr,0,6.3);c.fill()});
  for(const e of E){
   if(!rm){e.z-=.0032*e.s;e.y-=.0009}
   if(e.z<=.03||e.y<-1.5){Object.assign(e,mk(1))}
