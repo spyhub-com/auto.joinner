@@ -472,7 +472,7 @@ function board(){
   return flt+`<div class="pdm">${[1,0,2].map(col).join("")}</div>`+(rest.length?`<div class="box sx"><table><thead><tr><th>#</th><th>Player</th><th>Last steal</th><th>Stolen</th><th>Total value</th></tr></thead><tbody>${rest.map((r,i)=>`<tr class="${r.name===me?"me":""}"><td>${i+4}</td><td><span class="lbu">${img(r)}<b>${esc(r.name)}</b></span></td><td class="dim">${r.last?stealH(r.last.name,r.last.mut,r.last.value):"—"}</td><td>${+r.count||0}</td><td>${fmt(r.value)}</td></tr>`).join("")}</tbody></table></div>`:"")}
 
 /* --- Gift --- */
-const gift=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="gv-card"><div class="pln"></div><div class="gv-top"><b>SPYHUB</b><span>AJ</span></div><div class="gv-mid"><div class="gv-chip"></div><div class="gv-bl"><small>BALANCE</small><div class="gv-amt">${money(S.me.balance)}</div></div></div><div class="gv-num">•••• •••• •••• ${esc(String(S.me.user.id||"0000").slice(-4))}</div><div class="gv-ft"><span>${esc(String(S.me.user.name||"Player").toUpperCase())}</span><span>${S.me.hours?S.me.hours+" FREE H":"SPYHUB CARD"}</span></div></div><div class="gv-form"><label for="code" class="dim">Enter your code</label><input id="code" type="text" placeholder="SPY-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40"><div id="ts-gift" class="ts-wrap"></div><button class="b s w" id="rdm" data-act="redeem">Redeem code</button><p class="dim" style="margin:0;font-size:12px">A code works for one person only and is burned as soon as it is redeemed.</p></div></div>
+const gift=()=>`<h1 class="sm">Giftcard</h1><div class="gv" id="gb"><div class="gv-card"><div class="pln"></div><div class="gv-top"><b>SPYHUB</b><span>AJ</span></div><div class="gv-mid"><div class="gv-chip"></div><div class="gv-bl"><small>BALANCE</small><div class="gv-amt">${money(S.me.balance)}</div></div></div><div class="gv-num">•••• •••• •••• ${esc(String(S.me.user.id||"0000").slice(-4))}</div><div class="gv-ft"><span>${esc(String(S.me.user.name||"Player").toUpperCase())}</span><span>${S.me.hours?S.me.hours+" FREE H":"SPYHUB CARD"}</span></div></div><div class="gv-form"><label for="code" class="dim">Enter your code</label><input id="code" type="text" placeholder="SPY-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40"><button class="b s w" id="rdm" data-act="redeem">Redeem code</button><p class="dim" style="margin:0;font-size:12px">A code works for one person only and is burned as soon as it is redeemed.</p></div></div>
 <div class="box"><h2>History</h2>${S.me.gifts.length?`<div class="sx"><table><thead><tr><th>Code</th><th>Amount</th><th>Date</th></tr></thead><tbody>${S.me.gifts.map(g=>`<tr><td><code>${esc(g.code)}</code></td><td>${money(g.v)}</td><td class="dim">${new Date(g.t).toLocaleString("en-US")}</td></tr>`).join("")}</tbody></table></div>`:none("No codes redeemed yet.")}</div>`;
 
 /* --- Settings --- */
@@ -574,7 +574,7 @@ function render(){
   document.querySelectorAll(".grid>.box,.tm,.gv-card").forEach(e=>e.classList.add("tilt"));
   paintCharts();reveal();
   if(S.tab!==_lt){_lt=S.tab;showLd()}
-  if(S.tab==="owner")ownerPaint();if(S.tab==="dash")dashFx();if(S.tab==="home"||S.tab==="stats"||pcSide())loadHome();if(S.tab==="gift")tsMount()}
+  if(S.tab==="owner")ownerPaint();if(S.tab==="dash")dashFx();if(S.tab==="home"||S.tab==="stats"||pcSide())loadHome();}
 let _rc=null,_ra=0;
 async function addRecent(){const m=document.querySelector("main");if(S.tab!=="home"||!m||m.querySelector(".rcu"))return;
   if(!_rc||Date.now()-_ra>3e4){const r=await api(A+"/recent-users");_rc=r.ok?r.data.users||[]:[];_ra=Date.now()}
@@ -593,7 +593,7 @@ document.addEventListener("click",async e=>{
   else if(a==="menu"){const m=$("#mn");m.hidden=!m.hidden;b.setAttribute("aria-expanded",String(!m.hidden))}
   else if(a==="mtab"){const t=b.dataset.t;if(lk(t))return login();go(t)}
   else if(a==="plan"){if(!S.me)return login();if(S.off&&S.off.reserve&&!S.me.user.owner)return toast("Booking is turned off for now");openPlan()}
-  else if(a==="redeem"){const c=$("#code").value.trim().toUpperCase();if(!c)return toast("Enter a code");if(!TS.tok)return toast("Please complete the captcha first");const t=TS.tok;b.disabled=true;const r=await api(A+"/giftcard",{code:c,turnstile:t});b.disabled=false;tsReset();
+  else if(a==="redeem"){const c=$("#code").value.trim().toUpperCase();if(!c)return toast("Enter a code");b.disabled=true;const r=await api(A+"/giftcard",{code:c});b.disabled=false;
     if(r.ok){toast(money(r.data.added)+" added to your balance");await load();$("#gb")?.classList.add("flash")}else toast(r.data.error||"Code refused")}
   else if(a==="sendtog"){S.sendOpen=!S.sendOpen;const f=$(".snd-f");if(f)f.hidden=!S.sendOpen;b.setAttribute("aria-expanded",String(S.sendOpen));if(S.sendOpen)$("#tid")?.focus()}
   else if(a==="send"){const to=$("#tid").value.trim(),am=+$("#tam").value;
